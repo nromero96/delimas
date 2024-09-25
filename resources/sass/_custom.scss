@@ -1,0 +1,323 @@
+// Custom style...
+
+.antialiased {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.font-sans {
+  font-family: Nunito, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+}
+
+.btn-primary, .btn-primary:hover, .btn-primary:active, .btn-secondary, .btn-secondary:hover, .btn-secondary:active {
+  color: #fff;
+}
+
+.form-label {
+  margin-bottom: 0.4rem;
+  font-weight: 500;
+}
+
+
+
+/*
+ * Dropdown Menu Animation for Bootstrap Navbar
+ * https://startbootstrap.com/snippets/animated-navbar-dropdown
+ */
+
+// Change this breakpoint if you change the breakpoint of the navbar
+@media (min-width: 992px) {
+  .animate {
+    animation-duration: 0.3s;
+    -webkit-animation-duration: 0.3s;
+    animation-fill-mode: both;
+    -webkit-animation-fill-mode: both;
+  }
+}
+
+@keyframes slideIn {
+  0% {
+    transform: translateY(1rem);
+    opacity: 0;
+  }
+  100% {
+    transform:translateY(0rem);
+    opacity: 1;
+  }
+  0% {
+    transform: translateY(1rem);
+    opacity: 0;
+  }
+}
+
+@-webkit-keyframes slideIn {
+  0% {
+    -webkit-transform: transform;
+    -webkit-opacity: 0;
+  }
+  100% {
+    -webkit-transform: translateY(0);
+    -webkit-opacity: 1;
+  }
+  0% {
+    -webkit-transform: translateY(1rem);
+    -webkit-opacity: 0;
+  }
+}
+
+.opcsmenu i{
+    display: block;
+    text-align: center;
+    font-size: 18px;
+    margin-bottom: -10px;
+}
+
+.opcsmenu:hover i{
+  animation: crescendo 1.2s alternate;
+}
+
+@keyframes crescendo {
+  0%   {transform: scale(1.1);}
+  50%   {transform: scale(1.4);}
+  100% {transform: scale(1);}
+}
+
+.opcsmenu span{
+  font-weight: 500;
+}
+
+.slideIn {
+  -webkit-animation-name: slideIn;
+  animation-name: slideIn;
+}
+
+.bg-indigo {
+  background-color: #6574cd !important;
+}
+
+.h-5 {
+  height: 1.25rem !important;
+}
+
+.w-5 {
+  height: 1.25rem !important;
+}
+
+.flex-1 {
+  flex: 1 1 0%;
+}
+
+// Extra large devices (large desktops, 1200px and up)
+@media (min-width: 1200px) {
+  .container {
+    max-width: 1250px;
+  }
+}
+
+.bg-light {
+  background: #f3f4f6 !important;
+}
+
+.card {
+  border-radius: 0.475rem;
+  border: 0;
+}
+
+.card-footer {
+  padding: 0.75rem 1.25rem;
+  background-color: #f9fafb;
+  border-top: 0;
+}
+
+.card-footer:last-child {
+  border-radius: 0 0 0.475rem 0.475rem;
+}
+
+.dropdown-menu {
+  width: 200px;
+  border: none;
+  box-shadow: 0px 0px 10px 0px rgb(0 0 0 / 10%);
+}
+
+.dropdown-divider {
+  color: rgb(0 0 0 / 17%);
+}
+
+.small {
+  font-size: .875rem !important;
+}
+
+.navbar .profilenav img {
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  margin-right: 10px;
+}
+
+.navbar .profilenav .dropdown-item i {
+  font-size: 20px;
+    margin-right: 5px;
+}
+
+.profilenav .nav-link, .profilenav .nav-link:hover, .profilenav .nav-link:active{
+  color:white;
+}
+
+.titlepage{
+  color: $vcol1;
+}
+
+.welcmbox h1{
+  font-size: 3.2rem;
+  color: $vcol1;
+}
+
+.welcmbox img{
+
+}
+
+.welcmbox p{
+  color: $vcol3;
+  font-size: 1.1rem;
+}
+
+.cardofday{
+  background: $vcol1;
+  border-radius: 10px;
+}
+
+.cardofday .imgmotor{
+  z-index: 2;
+}
+
+.cardofday .card-body{
+  background: white;
+  border-radius: 10px;
+}
+
+.cardofday .card-title{
+ color:$vcol2
+}
+
+.cardofday .moticon{
+  width: 125px;
+  margin-top: -50px;
+  margin-bottom: -50px;
+}
+
+.bxdays{
+  border-radius: 10px;  
+  background: #f58201;
+}
+
+.bxstarday{
+  border-radius: 10px; 
+  background: #8ec500;
+}
+
+.bxlistday{
+  border-radius: 10px; 
+  background: #8ec500;
+}
+
+.bxlistday .dvtable{
+  background: white;
+  border-radius: 10px; 
+}
+
+.divquantity{
+  text-align: -webkit-center;
+}
+
+.divquantity input{
+  width: 65px;
+  text-align: center;
+}
+
+.trdayactive{
+    box-shadow: 0px 0px 20px 0px rgb(142 197 0 / 45%);
+    border-radius: 10px;
+}
+
+.trdayactive td:last-child{
+  background: rgb(142 197 0 / 37%);
+  border-radius: 0px 10px 10px 0px;
+}
+
+.trdayactive td{
+  background: rgb(142 197 0 / 37%);
+}
+
+.trdayactive td:first-child{
+  background: rgb(142 197 0 / 37%);
+  border-radius: 10px 0px 0px 10px;
+}
+
+.infospan{
+  display: block;
+  background: #efeeee;
+  padding: 5px;
+  border-radius: 5px;
+}
+
+.datedelday{
+    background: #8ec500;
+    border-radius: 5px;
+    padding: 0px 6px;
+    color: white;
+    -webkit-box-shadow: 0px 0px 10px 0px rgb(142 197 0 / 44%);
+    box-shadow: 0px 0px 20px 0px rgb(142 197 0 / 44%);
+    font-weight: 500;
+}
+
+.btnaddprogprice{
+    padding: 0px 2px;
+    box-shadow: 0px 0px 20px 0px rgb(156 199 0 / 32%);
+}
+
+.btnaddprogprice i{
+  font-size: 24px;
+    line-height: 26px;
+}
+
+.optionshome{
+
+  a{
+    text-align: center;
+    border-radius: 0.475rem;
+    position: relative;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    min-width: 0;
+    word-wrap: break-word;
+    background-color: #fff;
+    background-clip: border-box;
+    text-decoration: none;
+
+    i{
+      font-size: 3rem;
+      transition-duration: 0.4s;
+    }
+
+    span{
+      font-size: 1.3rem;
+      font-weight: 500;
+      color:$secondary;
+    }
+
+    &:hover{
+
+      i{
+        color:#f58201;
+      }
+    
+    }
+
+  }
+
+}
