@@ -10316,6 +10316,19 @@ textarea.form-control-lg {
   border-color: #309d3c;
 }
 
+.card_mov_logo {
+  margin-left: 30px;
+  margin-right: 30px;
+  background: #ffffff;
+  border-radius: 0px 0px 15px 15px;
+  box-shadow: 0px 0px 15px 0px rgba(0, 0, 0, 0.31);
+}
+.card_mov_logo img {
+  width: 185px;
+  margin-bottom: 20px;
+  margin-top: 15px;
+}
+
 .sub_ecc {
   font-size: 20px;
   font-family: "Aleo", serif;
@@ -10705,6 +10718,7 @@ textarea.form-control-lg {
   z-index: 9999;
   text-decoration: none;
   text-align: center;
+  transition: bottom 0.3s;
 }
 .float-whatsapp span {
   display: block;
@@ -10824,6 +10838,87 @@ textarea.form-control-lg {
 @media (min-width: 1200px) {
   .container {
     max-width: 1250px;
+  }
+}
+@media (max-width: 525px) {
+  .cardmarco {
+    margin: -110px auto;
+  }
+  .cardmarco .contenido {
+    padding-left: 15px;
+    padding-right: 15px;
+  }
+  .cardmarco .contenido img {
+    width: 50px;
+  }
+  .cardmarco .contenido h3, .cardmarco .contenido .h3 {
+    font-size: 20px;
+  }
+  .cardmarco .contenido p {
+    line-height: 16px;
+    font-size: 12px;
+  }
+  .tit_acc {
+    font-size: 36px;
+    line-height: 32px;
+  }
+  .tit_dcb {
+    font-size: 30px;
+  }
+  .slc_mnusema {
+    padding: 8px 50px 8px 0px;
+    font-size: 14px;
+    width: 100%;
+  }
+  .slc_mnusema:before {
+    width: 17px;
+    height: 17px;
+    margin-top: 3px;
+  }
+  .num-paso {
+    font-size: 45px;
+    line-height: 75px;
+    height: 65px;
+    width: 65px;
+  }
+  .num-paso::before {
+    width: 65px;
+    height: 65px;
+  }
+  .paso p {
+    width: 85px;
+    font-size: 11px;
+    line-height: 11px;
+  }
+  .cob_mb-deliv img {
+    width: 80px;
+  }
+  .cob_mb-deliv h4, .cob_mb-deliv .h4 {
+    color: #309d3c;
+    font-size: 18px;
+    line-height: 18px;
+    font-weight: bold;
+  }
+  .cob_mb-deliv p {
+    font-size: 12px;
+    line-height: 14px;
+  }
+  .list_district {
+    display: ruby;
+  }
+  .tit_stp {
+    font-size: 32px;
+  }
+  .btn-solicitar {
+    width: 100%;
+  }
+  .hmfooter {
+    background-position-x: -50px;
+  }
+  .hmfooter .ftcontact {
+    border-top: 0px solid white;
+    border-bottom: 0px solid white;
+    padding: 0px 0px;
   }
 }
 .bg-light {

@@ -36,11 +36,14 @@
         <div class="container">
             <div class="row">
                 <div class="col-md-6 text-left">
-                    <img src="{{ asset('images/landing/img-hd-delimas.png') }}" alt="Landing Promo" class="img-deli-person">
+                    <div class="card_mov_logo d-sm-none text-center">
+                        <img src="{{ asset('images/landing/logo-delimas-mov.svg') }}" alt="Delimas">
+                    </div>
+                    <img src="{{ asset('images/landing/img-hd-delimas.png') }}" alt="Delimas" class="img-deli-person d-none d-sm-block">
                 </div>
-                <div class="col-md-6 text-center mt-5">
+                <div class="col-md-6 text-center pb-5 pb-sm-0 mb-5 mb-sm-0 mt-4 mt-sm-5">
                     <img src="{{ asset('images/landing/texto-saludable-delimas.svg') }}" alt="Landing Promo" class="img-text-saludable">
-                    <p class="text-center text-white">
+                    <p class="text-center text-white mt-2 mt-sm-0 mb-5 mb-sm-0">
                         Deja de preocuparte y <b>¡LIBERA TU TIEMPO!</b><br>Nosotros nos ocupamos de brindarte:
                     </p>
                 </div>
@@ -50,19 +53,19 @@
     <div class="hmmenucontent" style="background-image: url('{{ asset('images/landing/persona-w1-delimas-73633.svg') }}');">
         <div class="container">
             <div class="row">
-                <div class="col-md-6 text-center pt-5 pb-5">
-                    <h3 class="tit_acc">¡Adiós a contar calorías!</h3>
+                <div class="col-md-6 text-center pt-5 pb-5 mt-4 mt-sm-0 order-last order-md-first">
+                    <h3 class="tit_acc mt-5 mt-sm-0 pt-5 pt-sm-0">¡Adiós a contar calorías!</h3>
                     <p class="w-75 m-auto mb-2">
                         El secreto para reducir grasa corporal no consiste en contar calorías, sino en crear el hábito de comer más sano.
                     </p>
                     <span class="sub_ecc">El conteo de calorías</span>
                     <span class="sub_adp">es algo del pasado,</span>
-                    <p class="w-50 m-auto">
+                    <p class="w-75 w-sm-50 m-auto">
                         nuestro concepto se enfoca en la calidad de los alimentos que consumimos.
                     </p>
                     <img src="{{ asset('images/landing/tres-menu.png') }}" alt="Delimas" class="menu-img-3">
                 </div>
-                <div class="col-md-6 text-center">
+                <div class="col-md-6 text-center order-first order-md-last">
                     <div class="cardmarco">
                         <div class="imagen">
                             <img src="{{ asset('images/landing/bg-marco-334.svg') }}" alt="Landing Promo" class="bg-marco-img">
@@ -70,7 +73,7 @@
                         <div class="contenido">
                             <img src="{{ asset('images/landing/icono-63743.svg') }}" alt="Landing Promo" class="img-fluid">
                             <h3>Sabor:</h3>
-                            <p class="mb-4">
+                            <p class="mb-3 mb-sm-4">
                                 Ofrecemos un <b>delicioso menú</b> con la <b>mejor selección de
                                     platos nacionales e internacionales</b> preparados diariamente
 por un equipo de cocina con <b>24 años de experiencia</b>.<br>
@@ -82,7 +85,7 @@ como horno de convección y plancha; aplicamos <b>controles
 
                             <img src="{{ asset('images/landing/icono-63252.svg') }}" alt="Landing Promo" class="img-fluid">
                             <h3>Salud:</h3>
-                            <p class="mb-4">
+                            <p class="mb-3 mb-sm-4">
                                 Nuestros planes <b>cumplen</b> con los lineamientos generales de
 <b>Alimentación Saludable de los Organismos Mundiales
     de Salud</b>, por eso están indicados para la mayoría de
@@ -106,7 +109,7 @@ una marca de Alamesa Service, una empresa con
         </div>
     </div>
 
-    <div class="hmtextinfo pt-5">
+    <div class="hmtextinfo pt-1 pt-sm-5">
         <div class="container">
             <div class="row justify-content-center">
                 <div class="col-md-7 text-center">
@@ -126,7 +129,7 @@ una marca de Alamesa Service, una empresa con
         <div class="container">
             <div class="row">
                 <div class="col-md-12">
-                    <p>
+                    <p class="text-center mt-2">
                         <b>Menú del 1 de febrero al 7 de febrero</b>
                     </p>
                 </div>
@@ -136,39 +139,50 @@ una marca de Alamesa Service, una empresa con
 
     <div class="hmformulario" id="hmformulario">
         <div class="container">
-            <div class="row">
-                <div class="col-md-12 mt-5 mb-3"><hr></div>
-                <div class="col-md-3 text-center">
-                    <h4 class="tit_pasos mt-4">Pasos para tu compra</h4>
 
-                    <div class="pasos">
+            <div class="row">
+                <div class="col-md-12 mt-2 mb-1 mt-sm-5 mb-sm-3"><hr></div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-3 text-center order-last order-md-first">
+                    <h4 class="tit_pasos mt-1 mt-sm-4">Pasos para tu compra</h4>
+                </div>
+
+                <div class="col-md-9 text-center order-first order-md-last">
+                    <h4 class="text-center tit_stp mb-0 mb-sm-5">Solicita tu pedido</h4>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-3 text-center">
+                    <div class="pasos d-flex justify-content-evenly d-sm-block">
                         <div class="paso paso-1">
                             <span class="num-paso">1</span>
                             <p>Verifica si tu zona
                                 está dentro de
                                 nuestra cobertura</p>
-                            <span class="vertical-line"></span>
+                            <span class="vertical-line d-none d-sm-inline-block"></span>
                         </div>
                         <div class="paso paso-2">
                             <span class="num-paso">2</span>
                             <p>Selecciona tu producto
                                 y servicio</p>
-                            <span class="vertical-line"></span>
+                            <span class="vertical-line d-none d-sm-inline-block"></span>
                         </div>
                         <div class="paso paso-3">
                             <span class="num-paso">3</span>
                             <p>Selecciona tu plan</p>
-                            <span class="vertical-line"></span>
+                            <span class="vertical-line d-none d-sm-inline-block"></span>
                         </div>
                         <div class="paso paso-4">
                             <span class="num-paso">4</span>
                             <p>Medio de pago</p>
                         </div>
                     </div>
-
                 </div>
                 <div class="col-md-9">
-                    <h4 class="text-center tit_stp mb-5">Solicita tu pedido</h4>
+                    <div class="mt-1 mb-2 d-block d-sm-none"><hr style="height: 1.5px;"></div>
                     <form action="{{route('solicitar-pedido')}}" method="POST">
                         @csrf
                         <div class="row">
@@ -178,14 +192,25 @@ una marca de Alamesa Service, una empresa con
                             </div>
                         </div>
                         <div class="row">
-                            <div class="form-group mt-3 mb-3 col-md-12">
+                            <div class="form-group mt-3 mb-1 mb-sm-3 col-md-12">
                                 <div class="px-2 py-2 rounded" style="background: #fcf4c6;">
                                     <div class="row">
-                                        <div class="col-md-4 ps-5 text-end">
-                                            <img src="{{ asset('images/landing/img-344532.png') }}" alt="Cobertura Delimas" class="cb_imgmoto">
+                                        <div class="col-md-4 ps-2 ps-sm-5 text-end">
+                                            <img src="{{ asset('images/landing/img-344532.png') }}" alt="Cobertura Delimas" class="cb_imgmoto d-none d-sm-block">
+
+                                            <div class="row pt-2 pb-1 cob_mb-deliv d-sm-none">
+                                                <div class="col-4">
+                                                   <img src="{{ asset('images/landing/moto-delivery.svg') }}" alt="Cobertura de delivery" class="">
+                                                </div>
+                                                <div class="col-8 text-start">
+                                                    <h4>Cobertura de delivery gratuito en Lima</h4>
+                                                    <p>Revisa que tu distrito se encuentre en nuestra zona de cobertura.</p>
+                                                </div>
+                                            </div>
+
                                         </div>
                                         <div class="col-md-5">
-                                            <img src="{{ asset('images/landing/maps-w1-delimas-73633.png') }}" alt="Landing Promo" class="img-fluid">
+                                            <img src="{{ asset('images/landing/maps-w1-delimas-73633.png') }}" alt="Cobertura de delivery mapa" class="img-fluid">
                                         </div>
                                         <div class="col-md-3">
                                             <ul class="list_district">
@@ -210,12 +235,12 @@ una marca de Alamesa Service, una empresa con
                             </div>
                         </div>
                         <div class="row">
-                            <div class="form-group col-md-12 mt-2 mb-3">
+                            <div class="form-group col-md-12 mt-0 mb-2 mt-sm-2 mb-sm-3">
                                 <hr>
                             </div>
                         </div>
                         <div class="row">
-                            <div class="form-group col-md-6">
+                            <div class="form-group col-md-6 mb-3 mb-sm-0">
                                 <div class="rounded prod_servcard">
                                     <h4>Almuerzos saludables</h4>
                                     <div class="form-check form-check-inline">
@@ -243,7 +268,7 @@ una marca de Alamesa Service, una empresa con
                             </div>
                         </div>
                         <div class="row">
-                            <div class="form-group col-md-12 mt-3 mb-3">
+                            <div class="form-group col-md-12 mt-1 mb-1 mt-sm-3 mb-sm-3">
                                 <hr>
                             </div>
                         </div>
@@ -252,7 +277,7 @@ una marca de Alamesa Service, una empresa con
                                 <img src="{{ asset('images/landing/img-7433.jpg') }}" alt="Landing Promo" class="img-fluid">
                             </div>
                             <div class="form-group col-md-7">
-                                <h4>Reducción</h4>
+                                <h4 class="mt-2 mt-sm-0">Reducción</h4>
                                 <p>Dirigido a personas que desean bajar de peso, realizando 3 comidas principales por día.</p>
                                 <table class="table-listdias">
                                     <thead>
@@ -323,12 +348,12 @@ una marca de Alamesa Service, una empresa con
                             </div>
                         </div>
 
-                        <div class="row mt-5 rwtb_plan">
+                        <div class="row mt-4 mt-sm-5 rwtb_plan">
                             <div class="form-group col-md-5">
                                 <img src="{{ asset('images/landing/img-7434.jpg') }}" alt="Landing Promo" class="img-fluid">
                             </div>
                             <div class="form-group col-md-7">
-                                <h4>Mentenimiento</h4>
+                                <h4 class="mt-2 mt-sm-0">Mentenimiento</h4>
                                 <p>Dirigido a personas que desean mantener su peso o que realizan actividad física</p>
                                 <table class="table-listdias">
                                     <thead>
@@ -400,24 +425,24 @@ una marca de Alamesa Service, una empresa con
                         </div>
 
                         <div class="row">
-                            <div class="form-group col-md-12 mt-3 mb-3">
+                            <div class="form-group col-md-12 mt-1 mb-1 mt-sm-3 mb-sm-3">
                                 <hr>
                             </div>
                         </div>
 
                         <div class="row mb-5">
                             <div class="form-group col-md-12">
-                                <p>La programación de pedidos se realiza con un día de anticipación, de lunes a viernes de 10 am a 3 pm; si el pedido llega fuera de ese horario, se programa el
+                                <p class="text-center text-sm-start">La programación de pedidos se realiza con un día de anticipación, de lunes a viernes de 10 am a 3 pm; si el pedido llega fuera de ese horario, se programa el
                                     siguiente día útil y la entrega el subsiguiente día.</p>
                             </div>
                             <div class="form-group mb-3 col-md-6">
                                 <input type="text" class="form-control rounded-pill" name="name" placeholder="Nombres y apellidos:" required>
                             </div>
-                            <div class="form-group mb-3 col-md-6">
+                            <div class="form-group mb-2 mb-sm-3 col-md-6">
                                 <input type="text" class="form-control rounded-pill" name="phone" placeholder="Teléfono:" required>
                             </div>
                             <div class="form-group mb-3 col-md-6">
-                                <b class="d-inline-block align-top me-3 text_pagar">Pagar con:</b>
+                                <b class="d-block d-sm-inline-block align-top me-sm-3 text-center text-sm-star border-bottom mb-1 mb-sm-0 text_pagar">Pagar con:</b>
                                 <div class="d-inline align-top me-3 text-end">
                                     <label class="form-check-label payment_yape" for="payment_yape"><b>Yape</b><br><span>999 999 999</span></label>
                                     <input class="form-check-input" type="radio" name="payment" id="payment_yape" value="Yape">
@@ -435,7 +460,7 @@ una marca de Alamesa Service, una empresa con
                                 <input type="file" class="form-control rounded-pill" name="voucher" placeholder="Adjuntar comprobante de pago">
                             </div>
                             <div class="form-group mb-3 col-md-12 text-end">
-                                <button type="submit" class="btn-solicitar mb-4">Solicitar Plan</button>
+                                <button type="submit" class="btn-solicitar mt-2 mt-sm-2 mb-2 mb-sm-4">Solicitar Plan</button>
                             </div>
                         </div>
 
@@ -449,21 +474,21 @@ una marca de Alamesa Service, una empresa con
 
     <div class="hmfooter" style="background-image: url('{{ asset('images/landing/persona-delimas-73633.svg') }}');">
         <div class="container pt-3 pb-3">
-            <div class="row">
-                <div class="col-md-5 ftlogo">
+            <div class="row align-items-center">
+                <div class="col-4 col-md-5 ftlogo">
                     <img src="{{ asset('images/landing/logo-white-delimas-736784.svg') }}" alt="Landing Promo" class="img-fluid">
                 </div>
-                <div class="col-md-7">
+                <div class="col-8 col-md-7">
                     <div class="row ftcontact">
-                        <div class="col-md-3 datosinfo">
+                        <div class="col-md-3 datosinfo text-end text-sm-center">
                             <span>945-147-262</span>
                             <img src="{{ asset('images/landing/icono-whatsapp-ft-3234.svg') }}" alt="Landing Promo" class="img-fluid">
                         </div>
-                        <div class="col-md-4 datosinfo">
+                        <div class="col-md-4 datosinfo text-end text-sm-center">
                             <span>sacd@delimas.pe</span>
                             <img src="{{ asset('images/landing/icono-mail-ft-3244.svg') }}" alt="Landing Promo" class="img-fluid">
                         </div>
-                        <div class="col-md-5 datosinfo">
+                        <div class="col-md-5 datosinfo text-end text-sm-center">
                             <span>Jr. Progreso Nº 45 – Barranco</span>
                             <img src="{{ asset('images/landing/icono-map-ft.svg') }}" alt="Landing Promo" class="img-fluid">
                         </div>
@@ -507,6 +532,30 @@ una marca de Alamesa Service, una empresa con
         });
       </script>
     @endif
+
+    <script>
+        window.addEventListener('scroll', function() {
+        const floatBtn = document.querySelector('.float-whatsapp');
+        const footer = document.querySelector('.hmfooter');
+
+        // Distancia entre el final del botón y el top del viewport
+        const btnBottomPosition = floatBtn.getBoundingClientRect().bottom;
+
+        // Distancia entre el footer y el top del viewport
+        const footerTopPosition = footer.getBoundingClientRect().top;
+
+        console.log(floatBtn.getBoundingClientRect().bottom);
+
+        if (footerTopPosition <= btnBottomPosition) {
+            // Si el footer está alcanzado, posicionar el botón justo encima del footer
+            floatBtn.style.bottom = '23%';
+
+        } else {
+            // Si el footer no ha sido alcanzado, mantener el botón en su posición original
+            floatBtn.style.bottom = '5%';
+        }
+    });
+    </script>
 
 
 </body>
