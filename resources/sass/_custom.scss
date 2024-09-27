@@ -19,6 +19,509 @@
 }
 
 
+//Landings
+.landing-promo{
+    background-color: white;
+
+    .container{
+        max-width: 1190px;
+    }
+
+    h3{
+        font-family: "Aleo", serif;
+        font-style: italic;
+    }
+
+    h4{
+        font-family: "Aleo", serif;
+        font-style: italic;
+    }
+
+    p{
+        line-height: 17px;
+        color: #334233;
+        font-family: "Omnes-Regular", sans-serif;
+    }
+
+    label{
+        color: #334233;
+        font-family: "Omnes-Regular", sans-serif;
+    }
+
+    .form-check-input:checked {
+        background-color: #309d3c;
+        border-color: #309d3c;
+    }
+
+}
+
+.sub_ecc{
+    font-size: 20px;
+    font-family: "Aleo", serif;
+    font-style: italic;
+    display: block;
+    color: #f8764b;
+    font-weight: bold;
+    margin-bottom: -19px;
+}
+
+.sub_adp{
+    font-size: 45px;
+    font-family: "Ballet Harmony", serif;
+    font-style: italic;
+    display: block;
+    color: #f8764b;
+}
+
+.cb_imgmoto{
+    max-width: 200px;
+}
+
+.prod_servcard{
+    background: #f1f0ec;
+    padding: 20px 15px;
+    border: 1px solid #cbc7b7;
+
+    &:before{
+        content: "";
+        position: absolute;
+        width: 53px;
+        height: 10px;
+        background: #f8764b;
+        z-index: 1;
+        border-radius: 10px;
+        margin-top: -26px;
+    }
+
+    h4{
+        font-size: 15px;
+        font-weight: bold;
+        color: #309d3c;
+    }
+
+    label{
+        font-size: 12px;
+        line-height: 15px;
+        cursor: pointer;
+    }
+
+    input[type="radio"]{
+        margin-right: 5px;
+        box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.1);
+        cursor: pointer;
+        width: 18px;
+        height: 18px;
+    }
+}
+
+#payment_yape, #payment_plin, #payment_pos{
+    box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    width: 18px;
+    height: 18px;
+}
+
+.list_district{
+    list-style-type: none;
+    margin-left: -2rem;
+    li{
+        font-family: 'Omnes-Regular', sans-serif;
+        color: #334233;
+    font-size: 15px;
+    line-height: 18px;
+
+        &:before{
+            content: "•";
+            color: #3d9e3b;
+            margin-right: 9px;
+        }
+
+    }
+}
+
+.tit_acc{
+    font-size: 38px;
+    color: #309d3c;
+    font-weight: bold;
+}
+
+.tit_dcb{
+    font-size: 45px;
+    color: #309d3c;
+    font-weight: bold;
+}
+
+.img-deli-person{
+    max-width: 536px;
+    margin-left: -56px;
+}
+
+.menu-img-3{
+    max-width: 100%;
+}
+
+.img-text-saludable{
+    max-width: 540px;
+}
+
+.hmbanner{
+    background-size: cover;
+    border-top: 10px solid #f7774a;
+}
+
+.hmbanner .container{
+    margin-top: -10px;
+}
+
+.hmmenucontent{
+    background-color: #f1f0ec;
+}
+
+.bg-marco-img{
+    filter: drop-shadow(0px 0px 10px rgba(0, 0, 0, 0.2));
+    width: 100%;
+}
+
+.cardmarco{
+    max-width: 460px;
+    margin: -215px auto;
+    position: relative;
+
+    .imagen {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 1; /* Fondo */
+    }
+
+    .contenido {
+        padding-top: 30px;
+        padding-bottom: 30px;
+        padding-left: 40px;
+        padding-right: 40px;
+        position: relative;
+        z-index: 2; /* Encima */
+
+        img{
+            width: 80px;
+            margin-bottom: 5px;
+        }
+
+        h3{
+            font-size: 32px;
+            font-weight: bold;
+            color: #f8764b;
+            margin-bottom: -3px;
+        }
+
+        p{
+            line-height: 17px;
+            font-size: 15px;
+        }
+    }
+}
+
+
+.hmfooter{
+    background-color: #309d3c;
+    color: white;
+    padding: 20px 0px;
+    background-repeat: no-repeat;
+    background-position-x: 262px;
+
+    .ftlogo{
+
+        img{
+            width: 140px;
+        }
+    }
+
+    .ftcontact{
+        font-size: 18px;
+        border-top: 1px solid white;
+        border-bottom: 1px solid white;
+        padding: 20px 0px;
+    }
+
+    .datosinfo{
+
+        img{
+            width: 26px;
+            margin-right: 10px;
+            margin-top: -6px;
+        }
+
+        span {
+            font-size: 15px;
+            font-family: 'Omnes-Regular', sans-serif;
+        }
+    }
+}
+
+.rwtb_plan{
+
+    h4{
+        font-size: 18px;
+        font-weight: bold;
+        margin-bottom: 6px;
+    }
+
+    p{
+        font-size: 12px;
+        line-height: 13px;
+        margin-bottom: 5px;
+    }
+}
+
+#successModalLabel{
+    font-size: 20px;
+    font-weight: bold;
+    color: #309d3c;
+}
+
+.img-gracias-modal{
+    width: 115px;
+    display: block;
+    margin: 0 auto;
+    margin-bottom: 13px;
+}
+
+.slc_mnusema{
+    font-family: "Aleo", serif;
+    background: #309d3c;
+    color: white;
+    font-weight: bold;
+    padding: 10px 100px 10px 0px;
+    text-decoration: none;
+    border-radius: 25px;
+    font-style: italic;
+    font-size: 15px;
+    margin-top: 5px;
+    display: inline-block;
+    width: 410px;
+    position: relative;
+
+    &:hover{
+        background: #309d3c;
+        color: white;
+    }
+
+    &:before{
+        content: "";
+        background-image: url('/images/landing/fle-icon.svg');
+        position: absolute;
+        width: 20px;
+        height: 20px;
+        z-index: 0;
+        margin-top: 2px;
+        right: 20px;
+    }
+
+}
+
+.tit_pasos{
+    color: #334233;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.num-paso{
+    font-family: "Aleo", serif;
+    color: #334233;
+    font-size: 80px;
+    line-height: 130px;
+    font-weight: bold;
+    display: inline-grid;
+    font-style: italic;
+    height: 125px;
+    width: 125px;
+
+    &:before{
+        content: "";
+        background-image: url('/images/landing/bg-pasos-numero.svg');
+        position: absolute;
+        width: 125px;
+        height: 125px;
+        z-index: -1;
+    }
+}
+
+.vertical-line{
+    display: inline-block;
+    width: 1px;
+    background-color: #334233;
+    margin-bottom: -6px;
+}
+
+.paso{
+
+    p{
+        width: 155px;
+        margin: 0 auto;
+    }
+}
+
+.paso-1 .vertical-line{
+    height: 270px;
+}
+
+.paso-2 .vertical-line{
+    height: 50px;
+}
+
+.paso-3 .vertical-line{
+    height: 250px;
+}
+
+.tit_stp{
+    color: #f8764b;
+    font-weight: bold;
+    font-size: 35px;
+}
+
+.table-listdias{
+    width: 100%;
+    border-collapse: collapse;
+
+    thead{
+        background-color: #f8764b;
+        color: white;
+
+        th{
+            padding: 3px;
+            text-align: center;
+            font-size: 12px;
+        }
+
+        th:first-child{
+            border-radius: 10px 0px 0px 0px;
+        }
+
+        th:last-child{
+            border-radius: 0px 10px 0px 0px;
+        }
+
+    }
+
+    tbody{
+        background-color: #f1f0ec;
+
+        tr{
+            transition: 0.4s;
+
+            &:hover{
+                background-color: #e9e8e5;
+                color: #f8764b;
+            }
+
+            td{
+                padding: 1px;
+                font-family: 'Omnes-Regular', sans-serif;
+                border: 1px solid #cdcabb;
+                text-align: center;
+                font-size: 12px;
+                color: #334233;
+
+                label{
+                    width: 100px;
+
+                }
+
+                input[type="radio"]{
+                    margin-right: 5px;
+                    box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.1);
+                    cursor: pointer;
+                    width: 16px;
+                    height: 16px;
+                }
+
+            }
+        }
+
+        tr:last-child{
+
+            td:first-child{
+                border-radius: 0px 0px 0px 10px;
+                border-bottom: 0px;
+                border-left: 0px;
+            }
+
+            td:last-child{
+                border-radius: 0px 0px 10px 0px;
+                border-bottom: 0;
+                border-right: 0px;
+            }
+        }
+
+    }
+}
+
+.text_pagar{
+    color: #334233;
+}
+
+.payment_yape{
+    b{
+        color: #7a3494;
+        cursor: pointer;
+    }
+}
+
+.payment_plin{
+    b{
+        color: #2461b7;
+        cursor: pointer;
+    }
+}
+
+.payment_pos{
+    b{
+        color: #3ca348;
+        cursor: pointer;
+    }
+}
+
+
+.btn-solicitar{
+    background-color: #309d3c;
+    color: white;
+    border: 1px solid #309d3c;
+    padding: 5px 40px;
+    border-radius: 25px;
+    font-size: 16px;
+    font-weight: 500;
+    font-style: italic;
+    transition: 0.4s;
+}
+
+.float-whatsapp{
+    position: fixed;
+    bottom: 5%;
+    right: 1%;
+    z-index: 9999;
+    text-decoration: none;
+    text-align: center;
+
+    span{
+        display: block;
+        background-color: white;
+        color: #309d3c;
+        margin-bottom: 7px;
+        font-weight: bold;
+        padding: 4px 10px;
+        border-radius: 10px;
+        font-size: 13px;
+        box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.1);
+    }
+
+    img{
+        width: 60px;
+    }
+}
+
+
 
 /*
  * Dropdown Menu Animation for Bootstrap Navbar
@@ -206,23 +709,23 @@
 }
 
 .bxdays{
-  border-radius: 10px;  
+  border-radius: 10px;
   background: #f58201;
 }
 
 .bxstarday{
-  border-radius: 10px; 
+  border-radius: 10px;
   background: #8ec500;
 }
 
 .bxlistday{
-  border-radius: 10px; 
+  border-radius: 10px;
   background: #8ec500;
 }
 
 .bxlistday .dvtable{
   background: white;
-  border-radius: 10px; 
+  border-radius: 10px;
 }
 
 .divquantity{
@@ -315,7 +818,7 @@
       i{
         color:#f58201;
       }
-    
+
     }
 
   }

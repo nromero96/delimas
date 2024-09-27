@@ -9,6 +9,7 @@ use App\Http\Controllers\PeriodController;
 use App\Http\Controllers\ProgramController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\DistrictController;
+use App\Http\Controllers\PlanrequestController;
 
 /*
 |--------------------------------------------------------------------------
@@ -22,8 +23,16 @@ use App\Http\Controllers\DistrictController;
 */
 
 Route::get('/', function () {
+    return view('landing-promo/index');
+});
+
+Route::get('/mi-cuenta', function () {
     return view('auth/login');
 });
+
+//Solicitar pedido
+Route::post('/solicitar-pedido', [PlanrequestController::class, 'store'])->name('solicitar-pedido');
+
 
 Route::middleware([
     'auth:sanctum',
@@ -34,6 +43,24 @@ Route::middleware([
     // Route::get('/dashboard', function () {
     //     return view('dashboard');
     // })->name('dashboard');
+
+    //Ejecutar migración
+    Route::get('/ejecutar-migraciones', function () {
+        Artisan::call('migrate');
+        return 'Migraciones ejecutadas con éxito.';
+    });
+
+    //Limpiar cache
+    Route::get('/limpiar-cache', function () {
+        Artisan::call('cache:clear');
+        return 'Cache limpiado con éxito.';
+    });
+
+    //storage link
+    Route::get('/storage-link', function () {
+        Artisan::call('storage:link');
+        return 'Storage link creado correctamente en cpanel.';
+    });
 
     //Route::get('dashboard','App\Http\Controllers\DashboardController')->name('dashboard');
 
