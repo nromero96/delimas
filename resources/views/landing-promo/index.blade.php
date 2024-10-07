@@ -30,6 +30,8 @@
 
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="{{ mix('css/app.css') }}">
+    <link rel="stylesheet" href="{{ asset('plugins/slick/slick.css') }}">
+    <link rel="stylesheet" href="{{ asset('plugins/slick/slick-theme.css') }}">
 </head>
 <body class="landing-promo">
     <div class="hmbanner" style="background-image: url('{{ asset('images/landing/bg-gd-dlmas.jpg') }}');">
@@ -98,7 +100,7 @@ elevados, hígado graso, diabetes, entre otros.
                             <p>
                                 Tienes la opción de <b>personalizar tus comidas de acuerdo
                                     a tus gustos y preferencias</b>. Entregamos todo por
-<b>delivery gratuito</b> en 20 distritos de Lima. <br>Delimás es
+<b>delivery gratuito</b> en 14 distritos de Lima. <br>Delimás es
 una marca de Alamesa Service, una empresa con
 24 años de experiencia.
                             </p>
@@ -125,13 +127,29 @@ una marca de Alamesa Service, una empresa con
         </div>
     </div>
 
-    <div class="card-menus" id="listcardmenus">
+    <div class="card-menus listcardmenus d-none" id="listcardmenus">
         <div class="container">
             <div class="row">
                 <div class="col-md-12">
-                    <p class="text-center mt-2">
-                        <b>Menú del 1 de febrero al 7 de febrero</b>
+                    <p class="text-center mt-2 titmenusm">
+                        <img src="{{ asset('images/landing/calendar-img.svg') }}" alt="Menu semanal" class="iconcalendar-ms"> <b>Menú del 1 de febrero al 7 de febrero</b>
                     </p>
+
+                    <div class="listmenusemanal">
+                        <div>
+                            <img src="{{ asset('storage/uploads/menu-semanal/menu-opcion1.PNG') }}" alt="Landing Promo" class="img-fluid">
+                        </div>
+                        <div>
+                            <img src="{{ asset('storage/uploads/menu-semanal/menu-opcion2.PNG') }}" alt="Landing Promo" class="img-fluid">
+                        </div>
+                        <div>
+                            <img src="{{ asset('storage/uploads/menu-semanal/menu-opcion1.PNG') }}" alt="Landing Promo" class="img-fluid">
+                        </div>
+                        <div>
+                            <img src="{{ asset('storage/uploads/menu-semanal/menu-opcion2.PNG') }}" alt="Landing Promo" class="img-fluid">
+                        </div>
+                      </div>
+
                 </div>
             </div>
         </div>
@@ -444,11 +462,11 @@ una marca de Alamesa Service, una empresa con
                             <div class="form-group mb-3 col-md-6">
                                 <b class="d-block d-sm-inline-block align-top me-sm-3 text-center text-sm-star border-bottom mb-1 mb-sm-0 text_pagar">Pagar con:</b>
                                 <div class="d-inline align-top me-3 text-end">
-                                    <label class="form-check-label payment_yape" for="payment_yape"><b>Yape</b><br><span>999 999 999</span></label>
+                                    <label class="form-check-label payment_yape" for="payment_yape"><b>Yape</b><br><span>945 147 262</span></label>
                                     <input class="form-check-input" type="radio" name="payment" id="payment_yape" value="Yape">
                                 </div>
                                 <div class="d-inline align-top me-3 text-end">
-                                    <label class="form-check-label payment_plin" for="payment_plin"><b>Plin</b> <br><span>999 999 999</span></label>
+                                    <label class="form-check-label payment_plin" for="payment_plin"><b>Plin</b> <br><span>984 984 184</span></label>
                                     <input class="form-check-input" type="radio" name="payment" id="payment_plin" value="Transferencia">
                                 </div>
                                 <div class="d-inline align-top text-end">
@@ -462,10 +480,14 @@ una marca de Alamesa Service, una empresa con
                             <div class="form-group mb-3 col-md-12 text-end">
                                 <button type="submit" class="btn-solicitar mt-2 mt-sm-2 mb-2 mb-sm-4">Solicitar Plan</button>
                             </div>
+
+                            <div class="card-blog">
+                                <p>
+                                    Si buscas información para mejorar tu calidad de vida y llevar un estilo de vida saludable ingresa a nuestro blog &nbsp; <a href="https://vive-sano.org/" target="_blank">www.vive-sano.org</a>
+                                </p>
+                            </div>
+
                         </div>
-
-
-
                     </form>
                 </div>
             </div>
@@ -482,15 +504,15 @@ una marca de Alamesa Service, una empresa con
                     <div class="row ftcontact">
                         <div class="col-md-3 datosinfo text-end text-sm-center">
                             <span>945-147-262</span>
-                            <img src="{{ asset('images/landing/icono-whatsapp-ft-3234.svg') }}" alt="Landing Promo" class="img-fluid">
+                            <img src="{{ asset('images/landing/icono-whatsapp-ft-3234.svg') }}" alt="WhatsApp" class="img-fluid">
                         </div>
                         <div class="col-md-4 datosinfo text-end text-sm-center">
-                            <span>sacd@delimas.pe</span>
-                            <img src="{{ asset('images/landing/icono-mail-ft-3244.svg') }}" alt="Landing Promo" class="img-fluid">
+                            <span>sac@delimas.pe</span>
+                            <img src="{{ asset('images/landing/icono-mail-ft-3244.svg') }}" alt="Email" class="img-fluid">
                         </div>
                         <div class="col-md-5 datosinfo text-end text-sm-center">
                             <span>Jr. Progreso Nº 45 – Barranco</span>
-                            <img src="{{ asset('images/landing/icono-map-ft.svg') }}" alt="Landing Promo" class="img-fluid">
+                            <img src="{{ asset('images/landing/icono-map-ft.svg') }}" alt="Maps" class="img-fluid">
                         </div>
                     </div>
                 </div>
@@ -498,9 +520,9 @@ una marca de Alamesa Service, una empresa con
         </div>
     </div>
 
-    <a href="https://wa.me/51999999999" class="float-whatsapp" target="_blank">
+    <a href="https://wa.me/51945147262" class="float-whatsapp" target="_blank">
         <span>¿Tienes dudas?</span>
-        <img src="{{ asset('images/landing/icono-whatsapp-35223.svg') }}" alt="Landing Promo" >
+        <img src="{{ asset('images/landing/icono-whatsapp-35223.svg') }}" alt="WhatsApp Delimas" >
     </a>
 
 
@@ -523,6 +545,8 @@ una marca de Alamesa Service, una empresa con
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <!-- Option 1: Bootstrap Bundle with Popper -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+    <script src="{{asset('plugins/slick/slick.min.js')}}"></script>
+
 
     @if(session('success'))
         <script>
@@ -535,26 +559,43 @@ una marca de Alamesa Service, una empresa con
 
     <script>
         window.addEventListener('scroll', function() {
-        const floatBtn = document.querySelector('.float-whatsapp');
-        const footer = document.querySelector('.hmfooter');
+            const floatBtn = document.querySelector('.float-whatsapp');
+            const footer = document.querySelector('.hmfooter');
 
-        // Distancia entre el final del botón y el top del viewport
-        const btnBottomPosition = floatBtn.getBoundingClientRect().bottom;
+            // Distancia entre el final del botón y el top del viewport
+            const btnBottomPosition = floatBtn.getBoundingClientRect().bottom;
 
-        // Distancia entre el footer y el top del viewport
-        const footerTopPosition = footer.getBoundingClientRect().top;
+            // Distancia entre el footer y el top del viewport
+            const footerTopPosition = footer.getBoundingClientRect().top;
 
-        console.log(floatBtn.getBoundingClientRect().bottom);
+            console.log(floatBtn.getBoundingClientRect().bottom);
 
-        if (footerTopPosition <= btnBottomPosition) {
-            // Si el footer está alcanzado, posicionar el botón justo encima del footer
-            floatBtn.style.bottom = '23%';
+            if (footerTopPosition <= btnBottomPosition) {
+                // Si el footer está alcanzado, posicionar el botón justo encima del footer
+                floatBtn.style.bottom = '23%';
 
-        } else {
-            // Si el footer no ha sido alcanzado, mantener el botón en su posición original
-            floatBtn.style.bottom = '5%';
-        }
-    });
+            } else {
+                // Si el footer no ha sido alcanzado, mantener el botón en su posición original
+                floatBtn.style.bottom = '5%';
+            }
+        });
+
+        //if click class slc_mnusema add remove class listcardmenus
+        $('.slc_mnusema').click(function(){
+            $('#listcardmenus').toggleClass('d-none');
+
+            $('.listmenusemanal').slick({
+            infinite: true,
+            slidesToShow: 2,
+            slidesToScroll: 1,
+            prevArrow: '<button type="button" class="slick-prev"><span>Semana Pasada</span></button>',
+            nextArrow: '<button type="button" class="slick-next"><span>Siguiente Semana</span></button>'
+        });
+
+        });
+
+
+
     </script>
 
 
