@@ -461,21 +461,51 @@ una marca de Alamesa Service, una empresa con
                             </div>
                             <div class="form-group mb-3 col-md-6">
                                 <b class="d-block d-sm-inline-block align-top me-sm-3 text-center text-sm-star border-bottom mb-1 mb-sm-0 text_pagar">Pagar con:</b>
-                                <div class="d-inline align-top me-3 text-end">
-                                    <label class="form-check-label payment_yape" for="payment_yape"><b>Yape</b><br><span>945 147 262</span></label>
-                                    <input class="form-check-input" type="radio" name="payment" id="payment_yape" value="Yape">
+                                <div class="d-inline align-top me-2 text-end">
+                                    <label class="form-check-label payment_yape" for="payment_yape"><b>Yape</b></label>
+                                    <input class="form-check-input" type="radio" name="payment" id="payment_yape" value="Yape" data-info="datapayment_yape">
+                                    <span id="datapayment_yape" class="d-none">
+                                        <b>945 147 262</b>
+                                    </span>
                                 </div>
-                                <div class="d-inline align-top me-3 text-end">
-                                    <label class="form-check-label payment_plin" for="payment_plin"><b>Plin</b> <br><span>984 984 184</span></label>
-                                    <input class="form-check-input" type="radio" name="payment" id="payment_plin" value="Transferencia">
+                                <div class="d-inline align-top me-2 text-end">
+                                    <label class="form-check-label payment_plin" for="payment_plin"><b>Plin</b></label>
+                                    <input class="form-check-input" type="radio" name="payment" id="payment_plin" value="Plin" data-info="datapayment_plin">
+                                    <span id="datapayment_plin" class="d-none">
+                                        <b>984 984 184</b>
+                                    </span>
                                 </div>
-                                <div class="d-inline align-top text-end">
+                                <div class="d-inline align-top me-2 text-end">
+                                    <label class="form-check-label payment_transferencia" for="payment_transferencia"><b>Transferencia</b></label>
+                                    <input class="form-check-input" type="radio" name="payment" id="payment_transferencia" value="Transferencia" data-info="datapayment_transferencia">
+                                    <span id="datapayment_transferencia" class="d-none">
+                                        <b>BCP Cuenta Corriente:</b> 194 1904608 0 63.<br>
+                                        <b>BBVA ahorro Soles:</b> 0011 0426 0200114708.<br>
+                                        <b>Interbank ahorro soles:</b> 108 314 355 7461.<br>
+                                        <b>Scotiabank ahorro soles:</b> 059 7603380.<br>
+                                    </span>
+                                </div>
+                                <div class="d-inline align-top me-2 text-end">
                                     <label class="form-check-label payment_pos" for="payment_pos"><b>POS físico</b></label>
-                                    <input class="form-check-input" type="radio" name="payment" id="payment_pos" value="POS físico">
+                                    <input class="form-check-input" type="radio" name="payment" id="payment_pos" value="POS físico" data-info="datapayment_pos">
+                                    <span id="datapayment_pos" class="d-none">
+                                        Usted puede pagar con tarjeta de <b>crédito</b> o <b>débito</b> en la entrega de su pedido.
+                                    </span>
                                 </div>
                             </div>
+
                             <div class="form-group mb-3 col-md-6">
-                                <input type="file" class="form-control rounded-pill" name="voucher" placeholder="Adjuntar comprobante de pago">
+
+                                <div class="datos_pago mb-3 d-none" id="datos_pago">
+                                    <h5 id="dp_title">Pago con Yape</h5>
+                                    <p id="dp_text" class="mb-2">Realiza el pago a través de Yape y adjunta el comprobante de pago.</p>
+                                    {{-- opcion para copia nuemero --}}
+                                    <div class="infopago" id="infopago">
+                                        ..
+                                    </div>
+                                </div>
+
+                                <input type="file" class="form-control rounded-pill" name="voucher" id="voucher" placeholder="Adjuntar comprobante de pago" required>
                             </div>
                             <div class="form-group mb-3 col-md-12 text-end">
                                 <button type="submit" class="btn-solicitar mt-2 mt-sm-2 mb-2 mb-sm-4">Solicitar Plan</button>
@@ -558,6 +588,52 @@ una marca de Alamesa Service, una empresa con
     @endif
 
     <script>
+
+        //change change class in datos_pago when change payment method
+        document.querySelectorAll('input[name="payment"]').forEach(function(element) {
+            element.addEventListener('change', function() {
+                var payment = this.value;
+                var data_info = this.getAttribute('data-info');
+                var datos_pago = document.getElementById("datos_pago");
+                var dp_title = document.getElementById("dp_title");
+                var dp_text = document.getElementById("dp_text");
+                var infopago = document.getElementById("infopago");
+                var voucher = document.getElementById("voucher");
+
+                datos_pago.classList.remove('d-none','cardyape', 'cardplin', 'cardtransferencia', 'cardpos'); // Remueve todas las clases
+                if (payment === 'Yape') {
+                    datos_pago.classList.add('cardyape');
+                    dp_title.innerHTML = "Pago con Yape";
+                    dp_text.innerHTML = "Realiza el pago a través de Yape y adjunta el comprobante de pago.";
+                    infopago.innerHTML = document.getElementById(data_info).innerHTML;
+                    voucher.required = true;
+                    voucher.classList.remove('d-none');
+                } else if (payment === 'Plin') {
+                    datos_pago.classList.add('cardplin');
+                    dp_title.innerHTML = "Pago con Plin";
+                    dp_text.innerHTML = "Realiza el pago a través de Plin y adjunta el comprobante de pago.";
+                    infopago.innerHTML = document.getElementById(data_info).innerHTML;
+                    voucher.required = true;
+                    voucher.classList.remove('d-none');
+                } else if (payment === 'Transferencia') {
+                    datos_pago.classList.add('cardtransferencia');
+                    dp_title.innerHTML = "Pago con Transferencia";
+                    dp_text.innerHTML = "Realiza el pago a través de Transferencia y adjunta el comprobante de pago.";
+                    infopago.innerHTML = document.getElementById(data_info).innerHTML;
+                    voucher.required = true;
+                    voucher.classList.remove('d-none');
+                } else if (payment === 'POS físico') {
+                    datos_pago.classList.add('cardpos');
+                    dp_title.innerHTML = "Pago con POS físico";
+                    dp_text.innerHTML = "Realiza el pago con POS físico y adjunta el comprobante de pago.";
+                    infopago.innerHTML = document.getElementById(data_info).innerHTML;
+                    voucher.required = false;
+                    voucher.classList.add('d-none');
+                }
+            });
+        });
+
+
         window.addEventListener('scroll', function() {
             const floatBtn = document.querySelector('.float-whatsapp');
             const footer = document.querySelector('.hmfooter');
@@ -589,7 +665,16 @@ una marca de Alamesa Service, una empresa con
             slidesToShow: 2,
             slidesToScroll: 1,
             prevArrow: '<button type="button" class="slick-prev"><span>Semana Pasada</span></button>',
-            nextArrow: '<button type="button" class="slick-next"><span>Siguiente Semana</span></button>'
+            nextArrow: '<button type="button" class="slick-next"><span>Siguiente Semana</span></button>',
+            responsive: [
+                {
+                breakpoint: 768,
+                settings: {
+                    slidesToShow: 1,
+                    slidesToScroll: 1
+                }
+                }
+            ]
         });
 
         });
