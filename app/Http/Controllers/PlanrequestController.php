@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Planrequest;
+use Illuminate\Support\Facades\Http;
 
 class PlanrequestController extends Controller
 {
@@ -58,9 +59,49 @@ class PlanrequestController extends Controller
         $planrequest->status = 'Pendiente';
         $planrequest->save();
 
+        // Enviar notificación por WhatsApp al administrador
+        $this->sendWhatsAppNotification($planrequest);
+
         //devuelve a la vista anterior con un mensaje success
         return back()->with('success', 'Pedido creado correctamente. Nos pondremos en contacto contigo en breve.');
     }
+
+    private function sendWhatsAppNotification($planrequest)
+    {
+        $url = config('services.whatsapp.api_url');
+        $token = config('services.whatsapp.access_token');
+        $adminPhone = config('services.whatsapp.admin_phone');
+    
+        $payload = [
+            "messaging_product" => "whatsapp",
+            "to" => $adminPhone,
+            "type" => "template",
+            "template" => [
+                "name" => "nuevo_pedido", // 🔹 Reemplaza con el nombre real de tu plantilla
+                "language" => ["code" => "es"], // 🔹 Idioma de la plantilla
+                "components" => [
+                    [
+                        "type" => "body",
+                        "parameters" => [
+                            ["type" => "text", "text" => $planrequest->name],   // Cliente
+                            ["type" => "text", "text" => $planrequest->phone],  // Teléfono
+                            ["type" => "text", "text" => $planrequest->product],// Producto
+                            ["type" => "text", "text" => $planrequest->plan],   // Plan
+                            ["type" => "text", "text" => $planrequest->address],// Dirección
+                            ["type" => "text", "text" => $planrequest->payment] // Método de pago
+                        ]
+                    ]
+                ]
+            ]
+        ];
+    
+        $response = Http::withToken($token)
+            ->withHeaders(['Content-Type' => 'application/json'])
+            ->post($url, $payload);
+    
+        return $response->json();
+    }
+    
 
     /**
      * Display the specified resource.
