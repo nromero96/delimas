@@ -2,7 +2,7 @@
 /*!
  * Bootstrap v5.1.3 (https://getbootstrap.com/)
  * Copyright 2011-2021 The Bootstrap Authors
- * Copyright 2011-2021 Twitter, Inc...
+ * Copyright 2011-2021 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
  */
 :root {
@@ -10369,6 +10369,60 @@ textarea.form-control-lg {
 }
 .listmenusemanal .slick-slide {
   padding: 0px 10px;
+}
+.listmenusemanal .cardmenu {
+  border: 1px solid #cbc7b7;
+  border-radius: 10px;
+  background: #ffffff;
+}
+.listmenusemanal .cardmenu .cardmenu-header {
+  padding: 10px 15px;
+  border-radius: 10px 10px 0px 0px;
+}
+.listmenusemanal .cardmenu .cardmenu-header h4, .listmenusemanal .cardmenu .cardmenu-header .h4 {
+  font-size: 15px;
+  font-weight: bold;
+  color: white;
+  text-align: center;
+  margin-bottom: 0px;
+}
+.listmenusemanal .cardmenu .cardmenu-body table {
+  width: 100%;
+}
+.listmenusemanal .cardmenu .cardmenu-body table tr {
+  border-bottom: 1px solid #cbc7b7;
+}
+.listmenusemanal .cardmenu .cardmenu-body table tr:last-child {
+  border-bottom: 0px;
+}
+.listmenusemanal .cardmenu .cardmenu-body table td {
+  padding: 9px 9px;
+  font-family: "Omnes-Regular", sans-serif;
+  font-size: 12px;
+  line-height: 15px;
+  color: #334233;
+}
+.listmenusemanal .cardmenu .cardmenu-body table td img {
+  width: 70px;
+  border-radius: 50%;
+}
+.listmenusemanal .cardmenu .cardmenu-body table td h5, .listmenusemanal .cardmenu .cardmenu-body table td .h5 {
+  font-size: 17px;
+  font-weight: bold;
+  font-family: "Aleo", serif;
+  margin-bottom: 2px;
+  font-style: italic;
+}
+.listmenusemanal .cardmenu .cardmenu-body table td h6, .listmenusemanal .cardmenu .cardmenu-body table td .h6 {
+  font-size: 16px;
+  font-weight: bold;
+  color: #394739;
+  margin-bottom: 0px;
+}
+.listmenusemanal .cardmenu .cardmenu-body table td p {
+  font-size: 15px;
+  margin-bottom: 0px;
+  color: #394739;
 }
 
 .card_mov_logo {

@@ -119,6 +119,74 @@
     .slick-slide{
         padding: 0px 10px;
     }
+
+
+    .cardmenu{
+        border: 1px solid #cbc7b7;
+        border-radius: 10px;
+        background: #ffffff;
+
+        .cardmenu-header{
+            padding: 10px 15px;
+            border-radius: 10px 10px 0px 0px;
+
+            h4{
+                font-size: 15px;
+                font-weight: bold;
+                color: white;
+                text-align: center;
+                margin-bottom: 0px;
+            }
+        }
+
+        .cardmenu-body{
+
+            table{
+                width: 100%;
+                tr{
+                    border-bottom: 1px solid #cbc7b7;
+                    &:last-child{
+                        border-bottom: 0px;
+                    }
+                }
+
+                td{
+                    padding: 9px 9px;
+                    font-family: "Omnes-Regular", sans-serif;
+                    font-size: 12px;
+                    line-height: 15px;
+                    color: #334233;
+
+                    img{
+                        width: 70px;
+                        border-radius: 50%;
+                    }
+
+                    h5{
+                        font-size: 17px;
+                        font-weight: bold;
+                        font-family: "Aleo", serif;
+                        margin-bottom: 2px;
+                        font-style: italic;
+                    }
+
+                    h6{
+                        font-size: 16px;
+                        font-weight: bold;
+                        color: #394739;
+                        margin-bottom: 0px;
+                    }
+
+                    p{
+                        font-size: 15px;
+                        margin-bottom: 0px;
+                        color: #394739;
+                    }
+                }
+            }
+        }
+    }
+
 }
 
 .card_mov_logo{

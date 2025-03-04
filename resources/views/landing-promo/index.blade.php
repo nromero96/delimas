@@ -132,23 +132,50 @@ una marca de Alamesa Service, una empresa con
             <div class="row">
                 <div class="col-md-12">
                     <p class="text-center mt-2 titmenusm">
-                        <img src="{{ asset('images/landing/calendar-img.svg') }}" alt="Menu semanal" class="iconcalendar-ms"> <b>Menú del 1 de febrero al 7 de febrero</b>
+                        <img src="{{ asset('images/landing/calendar-img.svg') }}" alt="Menu semanal" class="iconcalendar-ms"> <b>{{ $weekly_title }}</b>
                     </p>
 
                     <div class="listmenusemanal">
-                        <div>
-                            <img src="{{ asset('storage/uploads/menu-semanal/menu-opcion1.PNG') }}" alt="Landing Promo" class="img-fluid">
+                        @foreach ($menus as $menu)
+                            <div>
+                                <div class="cardmenu">
+                                    <div class="cardmenu-header" style="background: {{ $menu['color'] ?? '#f8764a' }}">
+                                        <h4>{{ $menu['title'] ?? '' }}</h4>
+                                    </div>
+                                    <div class="cardmenu-body">
+                                        <table>
+                                            @foreach (['lunes', 'martes', 'miercoles', 'jueves', 'viernes'] as $day)
+                                                <tr>
+                                                    <td width="85px">
+                                                        @if (!empty($menu['days'][$day]['image']))
+                                                                    <img src="{{ asset($menu['days'][$day]['image']) }}" alt="{{ $menu['days'][$day]['title'] }}" class="img-fluid">
+                                                        @endif
+                                                    </td>
+                                                    <td>
+                                                        <h5 style="color: {{ $menu['color'] ?? '#f8764a' }}">{{ ucfirst($day) }}</h5>
+                                                        <h6>{{ $menu['days'][$day]['title'] ?? '' }}</h6>
+                                                        <p>{{ $menu['days'][$day]['description'] ?? '' }}</p>
+                                                    </td>
+                                                </tr>
+                                            @endforeach
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        @endforeach
+                        {{-- <div>
+                            <img src="{{ asset('storage/menu-semanal/menu-opcion1.png') }}" alt="Landing Promo" class="img-fluid">
                         </div>
                         <div>
-                            <img src="{{ asset('storage/uploads/menu-semanal/menu-opcion2.PNG') }}" alt="Landing Promo" class="img-fluid">
+                            <img src="{{ asset('storage/menu-semanal/menu-opcion2.png') }}" alt="Landing Promo" class="img-fluid">
                         </div>
                         <div>
-                            <img src="{{ asset('storage/uploads/menu-semanal/menu-opcion1.PNG') }}" alt="Landing Promo" class="img-fluid">
+                            <img src="{{ asset('storage/menu-semanal/menu-opcion1.png') }}" alt="Landing Promo" class="img-fluid">
                         </div>
                         <div>
-                            <img src="{{ asset('storage/uploads/menu-semanal/menu-opcion2.PNG') }}" alt="Landing Promo" class="img-fluid">
-                        </div>
-                      </div>
+                            <img src="{{ asset('storage/menu-semanal/menu-opcion2.png') }}" alt="Landing Promo" class="img-fluid">
+                        </div> --}}
+                    </div>
 
                 </div>
             </div>

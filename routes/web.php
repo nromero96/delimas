@@ -10,6 +10,7 @@ use App\Http\Controllers\ProgramController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\DistrictController;
 use App\Http\Controllers\PlanrequestController;
+use App\Http\Controllers\LandingPageSettingController;
 
 /*
 |--------------------------------------------------------------------------
@@ -22,9 +23,8 @@ use App\Http\Controllers\PlanrequestController;
 |
 */
 
-Route::get('/', function () {
-    return view('landing-promo/index');
-});
+
+Route::get('/', [LandingPageSettingController::class, 'viewPage'])->name('viewPageLanding');
 
 Route::get('/mi-cuenta', function () {
     return view('auth/login');
@@ -83,8 +83,10 @@ Route::middleware([
 
     Route::resource('users', 'App\Http\Controllers\UserController');
 
-
     Route::resource('districts','App\Http\Controllers\DistrictController');
+
+    Route::get('landing-setting', [LandingPageSettingController::class, 'index'])->name('landingsetting');
+    Route::post('landing-setting-save-menu', [LandingPageSettingController::class, 'saveMenu'])->name('landingsetting.save.menu');
 
 });
 

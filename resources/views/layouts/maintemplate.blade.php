@@ -83,9 +83,11 @@
                                 <span>Ajustes</span>
                             </a>
                             <ul class="dropdown-menu" aria-labelledby="navbarDropdownSetting">
-                                <li><a class="dropdown-item" href="{{  url('holiday') }}">Feriados</a></li>
+                                <li><a class="dropdown-item" href="{{  route('holiday.index') }}">Feriados</a></li>
                                 <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="{{  url('districts') }}">Distritos</a></li>
+                                <li><a class="dropdown-item" href="{{  route('districts.index') }}">Distritos</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="{{  route('landingsetting') }}">Landing Page</a></li>
                             </ul>
                         </li>
 
