@@ -110,7 +110,6 @@
                                                     <tr>
                                                         <th>Días</th>
                                                         <th>Precio</th>
-                                                        <th>Nota</th>
                                                         <th>Acciones</th>
                                                     </tr>
                                                 </thead>
@@ -123,7 +122,6 @@
                                                         <tr>
                                                             <td><input type="text" name="{{ $planKey }}[{{ $tipo }}][{{ $categoria }}][{{ $index }}][dias]" class="form-control" value="{{ $item['dias'] }}" required></td>
                                                             <td><input type="number" step="0.01" name="{{ $planKey }}[{{ $tipo }}][{{ $categoria }}][{{ $index }}][precio]" class="form-control" value="{{ $item['precio'] }}" required></td>
-                                                            <td><input type="text" name="{{ $planKey }}[{{ $tipo }}][{{ $categoria }}][{{ $index }}][nota]" class="form-control" value="{{ $item['nota'] }}" required></td>
                                                             <td><button type="button" class="btn btn-danger" onclick="removeRow(this)">Eliminar</button></td>
                                                         </tr>
                                                     @endforeach
@@ -251,7 +249,6 @@
         row.innerHTML = `
             <td><input type="text" name="${planKey}[${tipo}][${categoria}][${index}][dias]" class="form-control" required></td>
             <td><input type="number" step="0.01" name="${planKey}[${tipo}][${categoria}][${index}][precio]" class="form-control" required></td>
-            <td><input type="text" name="${planKey}[${tipo}][${categoria}][${index}][nota]" class="form-control" required></td>
             <td><button type="button" class="btn btn-danger" onclick="removeRow(this)">Eliminar</button></td>
         `;
 
