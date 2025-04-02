@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Planrequest;
 use Illuminate\Support\Facades\Http;
+use App\Mail\LibroDeReclamaciones;
+use Illuminate\Support\Facades\Mail;
 
 //Log
 use Illuminate\Support\Facades\Log;
@@ -186,4 +188,45 @@ class PlanrequestController extends Controller
     {
         //
     }
+
+
+    public function sendReclamo(Request $request)
+    {
+        // Validación de los campos del formulario
+        $request->validate([
+            'name' => 'required',
+            'dni' => 'required',
+            'email' => 'required|email', // Asegurar que sea un correo electrónico válido
+            'phone' => 'required', // Asegurar que sea un número
+            'date' => 'required|date', // Asegurar que sea una fecha válida
+            'description' => 'required',
+            'solution' => 'required',
+        ]);
+
+        // Enviar reclamo por correo electrónico
+        $data = [
+            'name' => $request->name,
+            'dni' => $request->dni,
+            'email' => $request->email,
+            'phone' => $request->phone,
+            'date' => $request->date,
+            'description' => $request->description,
+            'solution' => $request->solution,
+        ];
+ 
+        
+        try {
+            Mail::to($request->email) 
+                ->bcc(config('services.mail.reclamos_email'))  
+                ->send(new LibroDeReclamaciones($data));
+            Log::info('Correo enviado a: ' . $request->email);
+        } catch (\Exception $e) {
+            Log::error('Error al enviar el correo: ' . $e->getMessage());
+            return back()->with('error', 'Hubo un error al enviar el reclamo. Por favor, inténtalo de nuevo más tarde.');
+        }
+
+
+        return back()->with('success', 'Reclamo enviado correctamente. Nos pondremos en contacto contigo en breve.');
+    }
+
 }

@@ -473,22 +473,25 @@ una marca de Alamesa Service, una empresa con
     <div class="hmfooter" style="background-image: url('{{ asset('images/landing/persona-delimas-73633.svg') }}');">
         <div class="container pt-3 pb-3">
             <div class="row align-items-center">
-                <div class="col-4 col-md-5 ftlogo">
+                <div class="col-3 col-md-4 ftlogo">
                     <img src="{{ asset('images/landing/logo-white-delimas-736784.svg') }}" alt="Landing Promo" class="img-fluid">
                 </div>
-                <div class="col-8 col-md-7">
+                <div class="col-9 col-md-8">
                     <div class="row ftcontact">
                         <div class="col-md-3 datosinfo text-end text-sm-center">
                             <span>945-147-262</span>
                             <img src="{{ asset('images/landing/icono-whatsapp-ft-3234.svg') }}" alt="WhatsApp" class="img-fluid">
                         </div>
-                        <div class="col-md-4 datosinfo text-end text-sm-center">
+                        <div class="col-md-3 datosinfo text-end text-sm-center">
                             <span>sac@delimas.pe</span>
                             <img src="{{ asset('images/landing/icono-mail-ft-3244.svg') }}" alt="Email" class="img-fluid">
                         </div>
-                        <div class="col-md-5 datosinfo text-end text-sm-center">
+                        <div class="col-md-4 datosinfo text-end text-sm-center">
                             <span>Jr. Progreso Nº 45 – Barranco</span>
                             <img src="{{ asset('images/landing/icono-map-ft.svg') }}" alt="Maps" class="img-fluid">
+                        </div>
+                        <div class="col-md-2 px-0">
+                            <a href="{{route('libro-de-reclamaciones')}}"><img src="{{ asset('images/landing/icono-libro-reclamaciones-delimas.png') }}" alt="Libro de reclamaciones" class="img-fluid"></a>
                         </div>
                     </div>
                 </div>

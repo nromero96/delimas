@@ -36,4 +36,10 @@ return [
         'admin_phone' => env('WHATSAPP_ADMIN_PHONE'),
     ],
 
+    'mail' => [
+        'from_address' => env('MAIL_FROM_ADDRESS'),
+        'from_name' => env('MAIL_FROM_NAME'),
+        'reclamos_email' => env('MAIL_RECLAMOS_ADRESS'),
+    ]
+
 ];
