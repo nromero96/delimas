@@ -163,18 +163,6 @@ una marca de Alamesa Service, una empresa con
                                 </div>
                             </div>
                         @endforeach
-                        {{-- <div>
-                            <img src="{{ asset('storage/menu-semanal/menu-opcion1.png') }}" alt="Landing Promo" class="img-fluid">
-                        </div>
-                        <div>
-                            <img src="{{ asset('storage/menu-semanal/menu-opcion2.png') }}" alt="Landing Promo" class="img-fluid">
-                        </div>
-                        <div>
-                            <img src="{{ asset('storage/menu-semanal/menu-opcion1.png') }}" alt="Landing Promo" class="img-fluid">
-                        </div>
-                        <div>
-                            <img src="{{ asset('storage/menu-semanal/menu-opcion2.png') }}" alt="Landing Promo" class="img-fluid">
-                        </div> --}}
                     </div>
 
                 </div>
@@ -228,12 +216,32 @@ una marca de Alamesa Service, una empresa con
                 </div>
                 <div class="col-md-9">
                     <div class="mt-1 mb-2 d-block d-sm-none"><hr style="height: 1.5px;"></div>
-                    <form action="{{route('solicitar-pedido')}}" method="POST">
+                    <form action="{{route('solicitar-pedido')}}" method="POST" enctype="multipart/form-data">
                         @csrf
                         <div class="row">
-                            <div class="form-group col-md-12">
+                            <div class="form-group col-md-8">
                                 <label for="address" class="mb-1">Ingresa tu dirección de entrega:</label>
-                                <input type="text" class="form-control rounded-pill" name="address" id="address" placeholder="Ejem: Jirón San Lino 1222, Urb. Santa Luisa, Los Olivos" required>
+                                <input type="text" class="form-control rounded-pill" name="address" id="address" placeholder="Ejem: Jirón San Lino 1222, Urb. Santa Luisa" required>
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label for="district" class="mb-1">Distrito:</label>
+                                <select name="district" id="district" class="form-select rounded-pill" required>
+                                    <option value="">Selecciona un distrito</option>
+                                    <option value="Miraflores">Miraflores</option>
+                                    <option value="San Isidro">San Isidro</option>
+                                    <option value="Lince">Lince</option>
+                                    <option value="Jesús María">Jesús María</option>
+                                    <option value="Magdalena">Magdalena</option>
+                                    <option value="Surco">Surco</option>
+                                    <option value="San Borja">San Borja</option>
+                                    <option value="Surquillo">Surquillo</option>
+                                    <option value="Barranco">Barranco</option>
+                                    <option value="Chorrillos">Chorrillos</option>
+                                    <option value="San Miguel">San Miguel</option>
+                                    <option value="Breña">Breña</option>
+                                    <option value="Pueblo Libre">Pueblo Libre</option>
+                                    <option value="San Luis">San Luis</option>
+                                </select>
                             </div>
                         </div>
                         <div class="row">
@@ -317,155 +325,57 @@ una marca de Alamesa Service, una empresa con
                                 <hr>
                             </div>
                         </div>
-                        <div class="row rwtb_plan">
+
+                        <div class="row mt-4 mt-sm-5 rwtb_plan d-none" id="plan_pequeno">
+                            <div class="form-group col-md-5">
+                                <img src="{{ asset('images/landing/img-17673.jpg') }}" alt="Landing Promo" class="img-fluid">
+                            </div>
+                            <div class="form-group col-md-7">
+                                <h4 class="mt-2 mt-sm-0">Pequeño</h4>
+                                <p>Personas que desean bajar de peso que consumen meriendas a media mañana y media tarde y pueden consumir un almuerzo reducido.</p>
+                                <div id="table_pequeno">
+                                    {{-- Aqui se contruirá la tabla de precios --}}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mt-4 mt-sm-5 rwtb_plan d-none" id="plan_mediano">
+                            <div class="form-group col-md-5">
+                                <img src="{{ asset('images/landing/img-7433.jpg') }}" alt="Landing Promo" class="img-fluid">
+                            </div>
+                            <div class="form-group col-md-7">
+                                <h4 class="mt-2 mt-sm-0">Mediano</h4>
+                                <p>Personas que desean bajar de peso, realizando 3 comidas principales por día.</p>
+                                <div id="table_mediano">
+                                    {{-- Aqui se contruirá la tabla de precios --}}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row mt-4 mt-sm-5 rwtb_plan d-none" id="plan_reduccion">
                             <div class="form-group col-md-5">
                                 <img src="{{ asset('images/landing/img-7433.jpg') }}" alt="Landing Promo" class="img-fluid">
                             </div>
                             <div class="form-group col-md-7">
                                 <h4 class="mt-2 mt-sm-0">Reducción</h4>
-                                <p>Dirigido a personas que desean bajar de peso, realizando 3 comidas principales por día.</p>
-                                <table class="table-listdias">
-                                    <thead>
-                                        <tr>
-                                            <th>DÍAS</th>
-                                            <th>DES-ALM-CEN</th>
-                                            <th>SIN DES. NI SNACK</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td class="text-center">1</td>
-                                            <td>
-                                                <label for="plan1">S/ 37.00 </label>
-                                                <input type="radio" name="plan" class="form-check-input" id="plan1" value="37.00">
-                                            </td>
-                                            <td>
-                                                <label for="plan2">S/ 30.00 </label>
-                                                <input type="radio" name="plan" class="form-check-input" id="plan2" value="30.00">
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td class="text-center">5</td>
-                                            <td>
-                                                <label for="plan3">S/ 74.00 </label>
-                                                <input type="radio" name="plan" class="form-check-input" id="plan3" value="74.00">
-                                            </td>
-                                            <td>
-                                                <label for="plan4">S/ 60.00 </label>
-                                                <input type="radio" name="plan" class="form-check-input" id="plan4" value="60.00">
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td class="text-center">10 (+ 1 día gratis)</td>
-                                            <td>
-                                                <label for="plan5">S/ 148.00 </label>
-                                                <input type="radio" name="plan" class="form-check-input" id="plan5" value="148.00">
-                                            </td>
-                                            <td>
-                                                <label for="plan6">S/ 120.00 </label>
-                                                <input type="radio" name="plan" class="form-check-input" id="plan6" value="120.00">
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td class="text-center">20 (+ 2 días gratis)</td>
-                                            <td>
-                                                <label for="plan7">S/ 222.00 </label>
-                                                <input type="radio" name="plan" class="form-check-input" id="plan7" value="222.00">
-                                            </td>
-                                            <td>
-                                                <label for="plan8">S/ 180.00 </label>
-                                                <input type="radio" name="plan" class="form-check-input" id="plan8" value="180.00">
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td class="text-center">30 (+ 3 días gratis)</td>
-                                            <td>
-                                                <label for="plan9">S/ 296.00 </label>
-                                                <input type="radio" name="plan" class="form-check-input" id="plan9" value="296.00">
-                                            </td>
-                                            <td>
-                                                <label for="plan10">S/ 240.00 </label>
-                                                <input type="radio" name="plan" class="form-check-input" id="plan10" value="240.00">
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
+                                <p>Personas que desean bajar de peso, realizando 3 comidas principales por día.</p>
+                                <div id="table_reduccion">
+                                    {{-- Aqui se contruirá la tabla de precios --}}
+                                </div>
+
                             </div>
                         </div>
 
-                        <div class="row mt-4 mt-sm-5 rwtb_plan">
+                        <div class="row mt-4 mt-sm-5 rwtb_plan d-none" id="plan_mantenimiento">
                             <div class="form-group col-md-5">
                                 <img src="{{ asset('images/landing/img-7434.jpg') }}" alt="Landing Promo" class="img-fluid">
                             </div>
                             <div class="form-group col-md-7">
                                 <h4 class="mt-2 mt-sm-0">Mentenimiento</h4>
-                                <p>Dirigido a personas que desean mantener su peso o que realizan actividad física</p>
-                                <table class="table-listdias">
-                                    <thead>
-                                        <tr>
-                                            <th>DÍAS</th>
-                                            <th>DES-ALM-CEN</th>
-                                            <th>SIN DES. NI SNACK</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td class="text-center">1</td>
-                                            <td>
-                                                <label for="plan11">S/ 37.00 </label>
-                                                <input type="radio" name="plan" class="form-check-input" id="plan11" value="37.00">
-                                            </td>
-                                            <td>
-                                                <label for="plan12">S/ 30.00 </label>
-                                                <input type="radio" name="plan" class="form-check-input" id="plan12" value="30.00">
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td class="text-center">5</td>
-                                            <td>
-                                                <label for="plan13">S/ 74.00 </label>
-                                                <input type="radio" name="plan" class="form-check-input" id="plan13" value="74.00">
-                                            </td>
-                                            <td>
-                                                <label for="plan14">S/ 60.00 </label>
-                                                <input type="radio" name="plan" class="form-check-input" id="plan14" value="60.00">
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td class="text-center">10 (+ 1 día gratis)</td>
-                                            <td>
-                                                <label for="plan15">S/ 148.00 </label>
-                                                <input type="radio" name="plan" class="form-check-input" id="plan15" value="148.00">
-                                            </td>
-                                            <td>
-                                                <label for="plan16">S/ 120.00 </label>
-                                                <input type="radio" name="plan" class="form-check-input" id="plan16" value="120.00">
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td class="text-center">20 (+ 2 días gratis)</td>
-                                            <td>
-                                                <label for="plan17">S/ 222.00 </label>
-                                                <input type="radio" name="plan" class="form-check-input" id="plan17" value="222.00">
-                                            </td>
-                                            <td>
-                                                <label for="plan18">S/ 180.00 </label>
-                                                <input type="radio" name="plan" class="form-check-input" id="plan18" value="180.00">
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td class="text-center">30 (+ 3 días gratis)</td>
-                                            <td>
-                                                <label for="plan19">S/ 296.00 </label>
-                                                <input type="radio" name="plan" class="form-check-input" id="plan19" value="296.00">
-                                            </td>
-                                            <td>
-                                                <label for="plan20">S/ 240.00 </label>
-                                                <input type="radio" name="plan" class="form-check-input" id="plan20" value="240.00">
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
+                                <p>Personas que desean  mantener su peso o que realizan actividad física.</p>
+                                <div id="table_mantenimiento">
+                                    {{-- Aqui se contruirá la tabla de precios --}}
+                                </div>
                             </div>
                         </div>
 
@@ -481,10 +391,13 @@ una marca de Alamesa Service, una empresa con
                                     siguiente día útil y la entrega el subsiguiente día.</p>
                             </div>
                             <div class="form-group mb-3 col-md-6">
-                                <input type="text" class="form-control rounded-pill" name="name" placeholder="Nombres y apellidos:" required>
+                                <input type="text" class="form-control rounded-pill" name="name" id="name" placeholder="Nombres y apellidos:" required>
                             </div>
-                            <div class="form-group mb-2 mb-sm-3 col-md-6">
-                                <input type="text" class="form-control rounded-pill" name="phone" placeholder="Teléfono:" required>
+                            <div class="form-group mb-2 mb-sm-3 col-md-3">
+                                <input type="number" class="form-control rounded-pill" name="phone" id="phone" placeholder="Teléfono:" required>
+                            </div>
+                            <div class="form-group mb-2 mb-sm-3 col-md-3">
+                                <input type="number" class="form-control rounded-pill" name="document" id="document" placeholder="DNI:" required>
                             </div>
                             <div class="form-group mb-3 col-md-6">
                                 <b class="d-block d-sm-inline-block align-top me-sm-3 text-center text-sm-star border-bottom mb-1 mb-sm-0 text_pagar">Pagar con:</b>
@@ -532,7 +445,7 @@ una marca de Alamesa Service, una empresa con
                                     </div>
                                 </div>
 
-                                <input type="file" class="form-control rounded-pill" name="voucher" id="voucher" placeholder="Adjuntar comprobante de pago" required>
+                                <input type="file" class="form-control rounded-pill" name="voucher" id="voucher" placeholder="Adjuntar comprobante de pago" accept="image/*,application/pdf" required>
                             </div>
                             <div class="form-group mb-3 col-md-12 text-end">
                                 <button type="submit" class="btn-solicitar mt-2 mt-sm-2 mb-2 mb-sm-4">Solicitar Plan</button>
@@ -546,6 +459,12 @@ una marca de Alamesa Service, una empresa con
 
                         </div>
                     </form>
+                    <!-- Overlay oculto inicialmente -->
+                    <div id="overlay-carga" class="overlay-carga d-none">
+                        <div class="spinner-border text-light" role="status">
+                        <span class="visually-hidden">Cargando...</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -704,6 +623,213 @@ una marca de Alamesa Service, una empresa con
             ]
         });
 
+        });
+
+
+        //Obtener planes
+        document.querySelectorAll('input[name="product"]').forEach(function(element) {
+            element.addEventListener('change', function() {
+
+                //efecto cargando overlay-carga
+                document.getElementById('overlay-carga').classList.remove('d-none');
+
+                var product = this.value;
+                console.log("Producto seleccionado:", product);
+
+                fetch('list-healthplans?product=' + product)
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log("Datos recibidos:", data);
+                        if(product == 'Almuerzos saludables Estándar' || product == 'Almuerzos saludables Personalizado'){
+                            document.getElementById('plan_pequeno').classList.remove('d-none');
+                            document.getElementById('plan_mediano').classList.remove('d-none');
+                            document.getElementById('plan_reduccion').classList.add('d-none');
+                            document.getElementById('plan_mantenimiento').classList.remove('d-none');
+
+                            //Construir tabla
+                            construirTablaAlmuerzo('table_pequeno', data.pequeno);
+                            construirTablaAlmuerzo('table_mediano', data.mediano);
+                            construirTablaAlmuerzo('table_mantenimiento', data.mantenimiento);
+
+                        }else {
+                            document.getElementById('plan_pequeno').classList.add('d-none');
+                            document.getElementById('plan_mediano').classList.add('d-none');
+                            document.getElementById('plan_reduccion').classList.remove('d-none');
+                            document.getElementById('plan_mantenimiento').classList.remove('d-none');
+
+                            //Construir tabla
+                            construirTablaDieta('table_reduccion', data.reduccion);
+                            construirTablaDieta('table_mantenimiento', data.mantenimiento);
+                        }
+
+                        //Quitar agregar d-none en overlay-carga
+                        document.getElementById('overlay-carga').classList.add('d-none');
+                        
+
+                    })
+                    .catch(error => console.error('Error en la carga de datos:', error));
+            });
+        });
+
+        /**
+         * Construye una tabla con los nuevos datos recibidos
+         * @param {string} idTabla - ID de la tabla a actualizar
+         * @param {Array} datos - Array de objetos con los datos de precios
+         */
+        function construirTablaAlmuerzo(idTabla, datos) {
+            let contenedor = document.getElementById(idTabla);
+            if (!contenedor) return;
+            
+            let tablasPermitidas = ['table_pequeno', 'table_mediano', 'table_mantenimiento'];
+            if (!tablasPermitidas.includes(idTabla)) return;
+
+            let nameplan = idTabla === 'table_pequeno' ? 'Pequeño' : idTabla === 'table_mediano' ? 'Mediano' : 'Mantenimiento';
+
+            // Crear tabla desde cero
+            contenedor.innerHTML = '';
+            let tabla = document.createElement("table");
+            tabla.className = "table-listdias";
+
+            let thead = document.createElement("thead");
+            let trHead = document.createElement("tr");
+            let thDias = document.createElement("th");
+            thDias.textContent = "Días";
+            let thPrecio = document.createElement("th");
+            thPrecio.textContent = "Precio";
+            trHead.appendChild(thDias);
+            trHead.appendChild(thPrecio);
+            thead.appendChild(trHead);
+
+            let tbody = document.createElement("tbody");
+
+            // Construir las filas dinámicamente
+            datos.forEach((item, index) => {
+                let fila = document.createElement("tr");
+
+                let tdDias = document.createElement("td");
+                tdDias.className = "text-center";
+                tdDias.textContent = item.dias;
+                fila.appendChild(tdDias);
+
+                let idPrecio = `${idTabla}_precio_${index}`;
+                let tdPrecio = document.createElement("td");
+                tdPrecio.className = "text-center";
+                let label = document.createElement("label");
+                label.htmlFor = idPrecio;
+                label.textContent = `S/ ${parseFloat(item.precio).toFixed(2)}`;
+                let input = document.createElement("input");
+                input.type = "radio";
+                input.name = `plan`;
+                input.className = "form-check-input";
+                input.id = idPrecio;
+                input.value = `${nameplan} x ${item.dias} días a (S/${parseFloat(item.precio).toFixed(2)})`;
+                tdPrecio.appendChild(input);
+                tdPrecio.appendChild(label);
+                fila.appendChild(tdPrecio);
+
+                tbody.appendChild(fila);
+            });
+
+            tabla.appendChild(thead);
+            tabla.appendChild(tbody);
+            contenedor.appendChild(tabla);
+        }
+
+        function construirTablaDieta(idTabla, datos) {
+            let contenedor = document.getElementById(idTabla);
+            if (!contenedor) return;
+
+            let tablasPermitidas = ['table_reduccion', 'table_mantenimiento'];
+            if (!tablasPermitidas.includes(idTabla)) return;
+
+            let nameplan = idTabla === 'table_reduccion' ? 'Reducción' : 'Mantenimiento';
+
+            // Crear tabla desde cero
+            contenedor.innerHTML = '';
+            let tabla = document.createElement("table");
+            tabla.className = "table-listdias";
+
+            let thead = document.createElement("thead");
+            let trHead = document.createElement("tr");
+            let thDias = document.createElement("th");
+            thDias.textContent = "Días";
+            let thPrecio1 = document.createElement("th");
+            thPrecio1.textContent = "DES-ALM-CEN";
+            let thPrecio2 = document.createElement("th");
+            thPrecio2.textContent = "SIN DES. NI SNACK";
+            trHead.appendChild(thDias);
+            trHead.appendChild(thPrecio1);
+            trHead.appendChild(thPrecio2);
+            thead.appendChild(trHead);
+
+            let tbody = document.createElement("tbody");
+
+            // Construir las filas dinámicamente
+            datos.forEach((item, index) => {
+                let fila = document.createElement("tr");
+
+                let tdDias = document.createElement("td");
+                tdDias.className = "text-center";
+                tdDias.textContent = item.dias;
+                fila.appendChild(tdDias);
+
+                let idDesAlmCena = `${idTabla}_desalmcen_${index}`;
+                let idSinDesSnack = `${idTabla}_sindes_${index}`;
+
+                let tdPrecio1 = document.createElement("td");
+                tdPrecio1.className = "text-center";
+                let label1 = document.createElement("label");
+                label1.htmlFor = idDesAlmCena;
+                label1.textContent = `S/ ${parseFloat(item.precio_des_alm_cena).toFixed(2)}`;
+                let input1 = document.createElement("input");
+                input1.type = "radio";
+                input1.name = `plan`;
+                input1.className = "form-check-input";
+                input1.id = idDesAlmCena;
+                input1.value = `${nameplan} x ${item.dias} días (DES-ALM-CEN) a (S/${parseFloat(item.precio_des_alm_cena).toFixed(2)})`;
+                tdPrecio1.appendChild(input1);
+                tdPrecio1.appendChild(label1);
+                fila.appendChild(tdPrecio1);
+
+                let tdPrecio2 = document.createElement("td");
+                tdPrecio2.className = "text-center";
+                let label2 = document.createElement("label");
+                label2.htmlFor = idSinDesSnack;
+                label2.textContent = `S/ ${parseFloat(item.precio_sin_des_ni_snak).toFixed(2)}`;
+                let input2 = document.createElement("input");
+                input2.type = "radio";
+                input2.name = `plan`;
+                input2.className = "form-check-input";
+                input2.id = idSinDesSnack;
+                input2.value = `${nameplan} x ${item.dias} días (SIN DES. NI SNACK) a (S/${parseFloat(item.precio_sin_des_ni_snak).toFixed(2)})`;
+                tdPrecio2.appendChild(input2);
+                tdPrecio2.appendChild(label2);
+                fila.appendChild(tdPrecio2);
+
+                tbody.appendChild(fila);
+            });
+
+            tabla.appendChild(thead);
+            tabla.appendChild(tbody);
+            contenedor.appendChild(tabla);
+        }
+
+
+        //Submit form
+        document.querySelector('form').addEventListener('submit', function(event) {
+            var product = document.querySelector('input[name="product"]:checked');
+            var plan = document.querySelector('input[name="plan"]:checked');
+
+            if (!product && !plan) {
+                alert('Por favor, selecciona un producto y un plan.');
+                event.preventDefault();
+            } else if (!product) {
+                alert('Por favor, selecciona un producto.');
+                event.preventDefault();
+            } else if (!plan) {
+                alert('Por favor, selecciona un plan.');
+                event.preventDefault();
+            }
         });
 
 

@@ -10336,6 +10336,74 @@ textarea.form-control-lg {
   font-weight: bold;
 }
 
+.remove-menu {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  padding: 0px 2px;
+  box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.4);
+}
+.remove-menu i {
+  font-size: 22px;
+  line-height: 24px;
+}
+
+#add-menu {
+  position: relative;
+  z-index: 999999;
+  margin-top: -58px;
+  padding: 4px 6px;
+  box-shadow: 0px 0px 20px 0px rgba(0, 0, 0, 0.41);
+}
+#add-menu i {
+  font-size: 25px;
+  line-height: 29px;
+}
+
+.overlay-carga {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5); /* Fondo oscuro con opacidad */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1050; /* Encima de todo */
+}
+
+.healthplans .standard-personalized {
+  background: #fddace;
+  padding: 10px 10px;
+}
+.healthplans .reduce-mantain {
+  margin-left: 40px;
+  background: #f1f8e0;
+  padding: 10px 10px;
+  border-radius: 10px;
+  margin-bottom: 10px;
+}
+.healthplans h2, .healthplans .h2 {
+  background: #f8764b;
+  font-size: 20px;
+  color: white;
+  border-radius: 10px 10px 0px 0px;
+  padding: 10px 15px;
+  margin-bottom: 0px;
+  margin-top: 10px;
+}
+.healthplans h3, .healthplans .h3 {
+  font-size: 20px;
+}
+.healthplans h4, .healthplans .h4 {
+  font-family: "Aleo", serif;
+  font-style: italic;
+  font-size: 18px;
+  color: #f8764b;
+  font-weight: bold;
+}
+
 .listmenusemanal {
   padding-right: 50px;
   padding-left: 50px;
@@ -10795,6 +10863,12 @@ textarea.form-control-lg {
   color: #f8764b;
   font-weight: bold;
   font-size: 35px;
+}
+
+.rwtb_plan img {
+  border-radius: 15px;
+  border: solid 1px rgba(255, 255, 255, 0.0117647059);
+  box-shadow: 0px 0px 10px 0px rgba(232, 214, 130, 0.6392156863);
 }
 
 .table-listdias {

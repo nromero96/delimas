@@ -78,6 +78,83 @@
 
 }
 
+.remove-menu{
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    padding: 0px 2px;
+    box-shadow: 0px 0px 10px 0px #00000066;
+
+    i{
+        font-size: 22px;
+        line-height: 24px;
+    }
+}
+
+#add-menu{
+    position: relative;
+    z-index: 999999;
+    margin-top: -58px;
+    padding: 4px 6px;
+    box-shadow: 0px 0px 20px 0px rgb(0 0 0 / 41%);
+
+    i{
+        font-size: 25px;
+        line-height: 29px;
+    }
+}
+
+.overlay-carga {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.5); /* Fondo oscuro con opacidad */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1050; /* Encima de todo */
+  }
+
+.healthplans{
+
+    .standard-personalized{
+        background: #fddace;
+        padding: 10px 10px;
+    }
+
+    .reduce-mantain{
+        margin-left: 40px;
+        background: #f1f8e0;
+        padding: 10px 10px;
+        border-radius: 10px;
+        margin-bottom: 10px;
+    }
+
+    h2{
+        background: #f8764b;
+        font-size: 20px;
+        color: white;
+        border-radius: 10px 10px 0px 0px;
+        padding: 10px 15px;
+        margin-bottom: 0px;
+        margin-top: 10px;
+    }
+
+    h3{
+        font-size: 20px;
+    }
+
+    h4{
+        font-family: "Aleo", serif;
+        font-style: italic;
+        font-size: 18px;
+        color: #f8764b;
+        font-weight: bold;
+    }
+}
+
 .listmenusemanal{
     padding-right: 50px;
     padding-left: 50px;
@@ -119,7 +196,6 @@
     .slick-slide{
         padding: 0px 10px;
     }
-
 
     .cardmenu{
         border: 1px solid #cbc7b7;
@@ -598,6 +674,12 @@
     color: #f8764b;
     font-weight: bold;
     font-size: 35px;
+}
+
+.rwtb_plan img{
+    border-radius: 15px;
+    border: solid 1px #ffffff03;
+    box-shadow: 0px 0px 10px 0px #e8d682a3;
 }
 
 .table-listdias{

@@ -6,8 +6,21 @@
 
 <div class="row mt-4 mb-4">
 
+
     <div class="row">
         <div class="col-md-12">
+            @if (session('success'))
+                <div class="alert alert-success" role="alert">
+                    {{ session('success') }}
+                </div>
+            @endif
+
+            @if (session('error'))
+                <div class="alert alert-danger" role="alert">
+                    {{ session('error') }}
+                </div>
+            @endif
+
             <div class="card p-3 mb-3">
                 <form action="{{ route('landingsetting.save.menu') }}" method="POST" enctype="multipart/form-data">
                     @csrf
@@ -15,7 +28,7 @@
                     <div id="menus-container">
                         @foreach ($menus as $index => $menu)
                             <div class="card p-3 mb-3 option-menu" style="background: #f1f8e0;" data-index="{{ $index }}">
-                                <button type="button" class="btn btn-danger btn-sm remove-menu" style="position: absolute; top: 10px; right: 10px;">X</button>
+                                <button type="button" class="btn btn-danger rounded-circle btn-sm remove-menu"><i class="bi bi-x"></i></button>
                                 <div class="row">
                                     <div class="col-md-8">
                                         <label class="form-label mb-0">Título:</label>
@@ -28,7 +41,7 @@
                                 </div>
 
                                 <div class="row mt-2">
-                                    <h5>Days</h5>
+                                    <h5>Dias</h5>
 
                                     @foreach (['lunes', 'martes', 'miercoles', 'jueves', 'viernes'] as $day)
                                         <div class="col-md-4 mb-4">
@@ -61,7 +74,7 @@
                         @endforeach
                     </div>
                     <div class="text-end">
-                        <button type="button" class="btn btn-secondary" id="add-menu">Agregar</button>
+                        <button type="button" class="btn btn-secondary rounded-circle" id="add-menu"><i class="bi bi-plus-circle"></i></button>
                     </div>
                     <button type="submit" class="btn btn-primary">Actualizar Menu</button>
                 </form>
@@ -71,31 +84,100 @@
     <hr>
     <div class="row">
         <div class="col-md-12">
-            <div class="card p-3 mb-3">
-                <form action="" method="POST">
+            <div class="card healthplans p-3 mb-3">
+                <form action="{{ route('landingsetting.save.healthplans') }}" method="POST">
                     @csrf
-                    @method('PUT')
-                    <h5>Producto y Planes</h5>
-    
-                    <div class="mb-3">
-                        <label class="form-label">Fecha</label>
-                        <div class="input-group dvdate">
-                            <input type="text" name="date" id="inputdate" class="form-control" value="" autocomplete="off" aria-describedby="inputspdate" required>
-                            <span class="input-group-text" id="inputspdate"><i class="bi bi-calendar2-week"></i></span>
-                        </div>
-                    </div>
-    
-                    <div class="mb-3">
-                        <label class="form-label">Nombre</label>
-                        <input type="text" name="name" class="form-control" value="" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Nota</label>
-                        <textarea name="note" class="form-control" rows="3">---</textarea>
-                    </div>
-                    
-                    <button type="submit" class="btn btn-primary">Actualizar</button>
+                
+                    @foreach (['almuerzos_saludables' => 'Almuerzos Saludables', 'dieta_saludable' => 'Dieta Saludable'] as $planKey => $planTitle)
+                        <h2>{{ $planTitle }}</h2>
+                        
+                        @php
+                            $planData = $planKey === 'almuerzos_saludables' ? $almuerzosData : $dietaData;
+                        @endphp
+
+                        
+                
+                        @foreach (['estandar', 'personalizado'] as $tipo)
+                            <div class="standard-personalized">
+                                <h3>{{ ucfirst($tipo) }}</h3>
+                                @if($planKey === 'almuerzos_saludables')
+                                    Los de almuerzo saludable
+                                    @foreach (['pequeno', 'mediano', 'mantenimiento'] as $categoria)
+                                        <div class="reduce-mantain">
+                                            <h4>{{ ucfirst($categoria) }}</h4>
+                                            <table class="table">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Días</th>
+                                                        <th>Precio</th>
+                                                        <th>Nota</th>
+                                                        <th>Acciones</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="tbody-{{ $planKey }}-{{ strtolower($tipo) }}-{{ strtolower($categoria) }}">
+                                                    @php
+                                                        $items = $planData[$tipo][$categoria] ?? [];
+                                                    @endphp
+                            
+                                                    @foreach ($items as $index => $item)
+                                                        <tr>
+                                                            <td><input type="text" name="{{ $planKey }}[{{ $tipo }}][{{ $categoria }}][{{ $index }}][dias]" class="form-control" value="{{ $item['dias'] }}" required></td>
+                                                            <td><input type="number" step="0.01" name="{{ $planKey }}[{{ $tipo }}][{{ $categoria }}][{{ $index }}][precio]" class="form-control" value="{{ $item['precio'] }}" required></td>
+                                                            <td><input type="text" name="{{ $planKey }}[{{ $tipo }}][{{ $categoria }}][{{ $index }}][nota]" class="form-control" value="{{ $item['nota'] }}" required></td>
+                                                            <td><button type="button" class="btn btn-danger" onclick="removeRow(this)">Eliminar</button></td>
+                                                        </tr>
+                                                    @endforeach
+                                                </tbody>
+                                            </table>
+                                            <button type="button" class="btn btn-secondary" onclick="addRowAlmuerzo('{{ $planKey }}', '{{ strtolower($tipo) }}', '{{ strtolower($categoria) }}')">
+                                                Agregar fila
+                                            </button>
+                                        </div>
+                                    @endforeach
+                                @else
+                                    Los de dieta saludable
+                                    @foreach (['reduccion', 'mantenimiento'] as $categoria)
+                                        <div class="reduce-mantain">
+                                            <h4>{{ ucfirst($categoria) }}</h4>
+                                            <table class="table">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Días</th>
+                                                        <th>Precio con desayuno, almuerzo y cena</th>
+                                                        <th>Precio sin desayuno ni snack</th>
+                                                        <th>Acciones</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="tbody-{{ $planKey }}-{{ strtolower($tipo) }}-{{ strtolower($categoria) }}">
+                                                    @php
+                                                        $items = $planData[$tipo][$categoria] ?? [];
+                                                    @endphp
+                            
+                                                    @foreach ($items as $index => $item)
+                                                        <tr>
+                                                            <td><input type="text" name="{{ $planKey }}[{{ $tipo }}][{{ $categoria }}][{{ $index }}][dias]" class="form-control" value="{{ $item['dias'] }}" required></td>
+                                                            <td><input type="number" step="0.01" name="{{ $planKey }}[{{ $tipo }}][{{ $categoria }}][{{ $index }}][precio_des_alm_cena]" class="form-control" value="{{ $item['precio_des_alm_cena'] }}" required></td>
+                                                            <td><input type="number" step="0.01" name="{{ $planKey }}[{{ $tipo }}][{{ $categoria }}][{{ $index }}][precio_sin_des_ni_snak]" class="form-control" value="{{ $item['precio_sin_des_ni_snak'] }}" required></td>
+                                                            <td><button type="button" class="btn btn-danger" onclick="removeRow(this)">Eliminar</button></td>
+                                                        </tr>
+                                                    @endforeach
+                                                </tbody>
+                                            </table>
+                                            <button type="button" class="btn btn-secondary" onclick="addRow('{{ $planKey }}', '{{ strtolower($tipo) }}', '{{ strtolower($categoria) }}')">
+                                                Agregar fila
+                                            </button>
+                                        </div>
+                                    @endforeach
+                                @endif
+                                
+                            </div>
+                        @endforeach
+                    @endforeach
+                    <br>
+                    <button type="submit" class="btn btn-primary">Guardar</button>
                 </form>
+                
+                
             </div>
         </div>
     </div>
@@ -117,7 +199,7 @@
         newMenu.classList.add('card', 'p-3', 'mb-3', 'option-menu');
         newMenu.style.background = "#f1f8e0";
         newMenu.innerHTML = `
-            <button type="button" class="btn btn-danger btn-sm remove-menu" style="position: absolute; top: 10px; right: 10px;">X</button>
+            <button type="button" class="btn btn-danger btn-sm remove-menu"><i class="bi bi-x"></i></button>
             <div class="row">
                 <div class="col-md-8">
                     <label class="form-label mb-0">Título:</label>
@@ -129,7 +211,7 @@
                 </div>
             </div>
             <div class="row mt-2">
-                <h5>Days</h5>
+                <h5>Dias</h5>
                 ${['lunes', 'martes', 'miercoles', 'jueves', 'viernes'].map(day => `
                     <div class="col-md-4 mb-4">
                         <div class="card">
@@ -160,6 +242,43 @@
             menuCard.remove();
         }
     });
+
+    function addRowAlmuerzo(planKey, tipo, categoria) {
+        let tbody = document.getElementById(`tbody-${planKey}-${tipo}-${categoria}`);
+        let index = tbody.children.length;
+
+        let row = document.createElement('tr');
+        row.innerHTML = `
+            <td><input type="text" name="${planKey}[${tipo}][${categoria}][${index}][dias]" class="form-control" required></td>
+            <td><input type="number" step="0.01" name="${planKey}[${tipo}][${categoria}][${index}][precio]" class="form-control" required></td>
+            <td><input type="text" name="${planKey}[${tipo}][${categoria}][${index}][nota]" class="form-control" required></td>
+            <td><button type="button" class="btn btn-danger" onclick="removeRow(this)">Eliminar</button></td>
+        `;
+
+        tbody.appendChild(row);
+    }
+
+
+    function addRow(planKey, tipo, categoria) {
+        let tbody = document.getElementById(`tbody-${planKey}-${tipo}-${categoria}`);
+        let index = tbody.children.length;
+
+        let row = document.createElement('tr');
+        row.innerHTML = `
+            <td><input type="text" name="${planKey}[${tipo}][${categoria}][${index}][dias]" class="form-control" required></td>
+            <td><input type="number" step="0.01" name="${planKey}[${tipo}][${categoria}][${index}][precio_des_alm_cena]" class="form-control" required></td>
+            <td><input type="number" step="0.01" name="${planKey}[${tipo}][${categoria}][${index}][precio_sin_des_ni_snak]" class="form-control" required></td>
+            <td><button type="button" class="btn btn-danger" onclick="removeRow(this)">Eliminar</button></td>
+        `;
+
+        tbody.appendChild(row);
+    }
+
+    function removeRow(button) {
+        button.closest('tr').remove();
+    }
+
+
 
 </script>
 

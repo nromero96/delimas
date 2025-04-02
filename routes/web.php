@@ -30,8 +30,12 @@ Route::get('/mi-cuenta', function () {
     return view('auth/login');
 });
 
+//Listar planes
+Route::get('list-healthplans', [LandingPageSettingController::class, 'getListHealthPlans'])->name('listhealthplans');
+
 //Solicitar pedido
 Route::post('/solicitar-pedido', [PlanrequestController::class, 'store'])->name('solicitar-pedido');
+
 
 
 Route::middleware([
@@ -87,6 +91,11 @@ Route::middleware([
 
     Route::get('landing-setting', [LandingPageSettingController::class, 'index'])->name('landingsetting');
     Route::post('landing-setting-save-menu', [LandingPageSettingController::class, 'saveMenu'])->name('landingsetting.save.menu');
+    Route::post('landing-setting-save-healthplans', [LandingPageSettingController::class, 'saveHealthPlans'])->name('landingsetting.save.healthplans');
+
+    Route::get('list-request', [PlanrequestController::class, 'index'])->name('listrequest');
+    Route::get('show-request/{id}', [PlanrequestController::class, 'show'])->name('showrequest');
+    Route::post('update-request-status/{id}', [PlanrequestController::class, 'updateStatus'])->name('updaterequeststatus');
 
 });
 

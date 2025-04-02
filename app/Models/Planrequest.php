@@ -11,10 +11,12 @@ class Planrequest extends Model
 
     protected $fillable = [
         'address',
+        'district',
         'product',
         'plan',
         'name',
         'phone',
+        'document',
         'payment',
         'voucher',
         'status'

@@ -21,7 +21,7 @@ class CreatePlanrequestsTable extends Migration
             $table->string('name');
             $table->string('phone');
             $table->string('payment');
-            $table->string('voucher');
+            $table->string('voucher',255)->nullable();
             $table->string('status');
             $table->timestamps();
         });
