@@ -116,7 +116,7 @@ class PlanrequestController extends Controller
                             ["type" => "text", "text" => $planrequest->product],// Producto
                             ["type" => "text", "text" => $planrequest->plan],   // Plan
                             ["type" => "text", "text" => $planrequest->address],// Dirección
-                            ["type" => "text", "text" => $planrequest->distinct],// Distrito
+                            ["type" => "text", "text" => $planrequest->district],// Distrito
                             ["type" => "text", "text" => $planrequest->document],// DNI
                             ["type" => "text", "text" => $planrequest->payment] // Método de pago
                         ]
@@ -125,11 +125,28 @@ class PlanrequestController extends Controller
             ]
         ];
     
-        $response = Http::withToken($token)
-            ->withHeaders(['Content-Type' => 'application/json'])
-            ->post($url, $payload);
+        try {
+            $response = Http::withToken($token)
+                ->withHeaders(['Content-Type' => 'application/json'])
+                ->post($url, $payload);
     
-        return $response->json();
+            if (!$response->successful()) {
+                Log::error('Error al enviar notificación WhatsApp', [
+                    'status' => $response->status(),
+                    'body' => $response->body(),
+                    'payload' => $payload
+                ]);
+            }
+    
+            return $response->json();
+        } catch (\Exception $e) {
+            Log::error('Excepción al enviar notificación WhatsApp', [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+                'payload' => $payload
+            ]);
+            return null;
+        }
     }
     
 
