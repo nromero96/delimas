@@ -66,6 +66,23 @@ Route::middleware([
         return 'Cache limpiado con éxito.';
     });
 
+    //Optimize
+    Route::get('/optimize', function () {
+        Artisan::call('optimize');
+        return 'Optimizado.';
+    });
+
+    //Cache todo
+    Route::get('/cache-todo', function () {
+        Artisan::call('optimize');
+        Artisan::call('cache:clear');
+        Artisan::call('config:clear');
+        Artisan::call('view:clear');
+        Artisan::call('route:clear');
+        // Artisan::call('livewire:discover');
+        return 'Cache todo.';
+    });
+
     //storage link
     Route::get('/storage-link', function () {
         Artisan::call('storage:link');
