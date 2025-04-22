@@ -216,7 +216,7 @@ una marca de Alamesa Service, una empresa con
                 </div>
                 <div class="col-md-9">
                     <div class="mt-1 mb-2 d-block d-sm-none"><hr style="height: 1.5px;"></div>
-                    <form action="{{route('solicitar-pedido')}}" method="POST" enctype="multipart/form-data">
+                    <form action="{{route('solicitar-pedido')}}" method="POST" class="form-pedido" enctype="multipart/form-data">
                         @csrf
                         <div class="row">
                             <div class="form-group col-md-8">
@@ -371,7 +371,7 @@ una marca de Alamesa Service, una empresa con
                                 <img src="{{ asset('images/landing/img-7434.jpg') }}" alt="Landing Promo" class="img-fluid">
                             </div>
                             <div class="form-group col-md-7">
-                                <h4 class="mt-2 mt-sm-0">Mentenimiento</h4>
+                                <h4 class="mt-2 mt-sm-0">Mantenimiento</h4>
                                 <p>Personas que desean  mantener su peso o que realizan actividad física.</p>
                                 <div id="table_mantenimiento">
                                     {{-- Aqui se contruirá la tabla de precios --}}
@@ -448,7 +448,7 @@ una marca de Alamesa Service, una empresa con
                                 <input type="file" class="form-control rounded-pill" name="voucher" id="voucher" placeholder="Adjuntar comprobante de pago" accept="image/*,application/pdf" required>
                             </div>
                             <div class="form-group mb-3 col-md-12 text-end">
-                                <button type="submit" class="btn-solicitar mt-2 mt-sm-2 mb-2 mb-sm-4">Solicitar Plan</button>
+                                <button type="button" class="btn-solicitar mt-2 mt-sm-2 mb-2 mb-sm-4">Solicitar Plan</button>
                             </div>
 
                             <div class="card-blog">
@@ -819,21 +819,69 @@ una marca de Alamesa Service, una empresa con
 
 
         //Submit form
-        document.querySelector('form').addEventListener('submit', function(event) {
+
+        const submitButton = document.querySelector('.btn-solicitar');
+        const form = document.querySelector('.form-pedido');
+
+        submitButton.addEventListener('click', function (event) {
+            event.preventDefault(); // Evita el envío automático
+
             var product = document.querySelector('input[name="product"]:checked');
             var plan = document.querySelector('input[name="plan"]:checked');
+            var payment = document.querySelector('input[name="payment"]:checked');
+
+            // Validar el formulario antes de continuar
+            if (!form.checkValidity()) {
+                form.reportValidity(); // Muestra los errores nativos
+                return;
+            }
 
             if (!product && !plan) {
                 alert('Por favor, selecciona un producto y un plan.');
-                event.preventDefault();
+                return;
             } else if (!product) {
                 alert('Por favor, selecciona un producto.');
-                event.preventDefault();
+                return;
             } else if (!plan) {
                 alert('Por favor, selecciona un plan.');
-                event.preventDefault();
+                return;
+            } else if (!payment) {
+                alert('Por favor, selecciona un método de pago.');
+                return;
             }
+
+            // Formulario válido: mostrar loader, desactivar botón y enviar
+            submitButton.classList.add('btn-loading');
+            submitButton.disabled = true;
+
+            submitButton.innerHTML = `
+                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                Enviando...
+            `;
+
+            document.getElementById('overlay-carga').classList.remove('d-none');
+
+            form.submit(); // Enviar manualmente
         });
+
+        // document.querySelector('form').addEventListener('submit', function(event) {
+        //     var product = document.querySelector('input[name="product"]:checked');
+        //     var plan = document.querySelector('input[name="plan"]:checked');
+
+        //     if (!product && !plan) {
+        //         alert('Por favor, selecciona un producto y un plan.');
+        //         event.preventDefault();
+        //     } else if (!product) {
+        //         alert('Por favor, selecciona un producto.');
+        //         event.preventDefault();
+        //     } else if (!plan) {
+        //         alert('Por favor, selecciona un plan.');
+        //         event.preventDefault();
+        //     }
+
+        //     // Mostrar el overlay de carga
+        //     document.getElementById('overlay-carga').classList.remove('d-none');
+        // });
 
 
 
