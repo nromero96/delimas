@@ -390,14 +390,14 @@ una marca de Alamesa Service, una empresa con
                                 <p class="text-center text-sm-start">La programación de pedidos se realiza con un día de anticipación, de lunes a viernes de 10 am a 3 pm; si el pedido llega fuera de ese horario, se programa el
                                     siguiente día útil y la entrega el subsiguiente día.</p>
                             </div>
-                            <div class="form-group mb-3 col-md-6">
+                            <div class="form-group mb-3 col-md-5">
                                 <input type="text" class="form-control rounded-pill" name="name" id="name" placeholder="Nombres y apellidos:" required>
                             </div>
                             <div class="form-group mb-2 mb-sm-3 col-md-3">
                                 <input type="number" class="form-control rounded-pill" name="phone" id="phone" placeholder="Teléfono:" required>
                             </div>
-                            <div class="form-group mb-2 mb-sm-3 col-md-3">
-                                <input type="number" class="form-control rounded-pill" name="document" id="document" placeholder="DNI:" required>
+                            <div class="form-group mb-2 mb-sm-3 col-md-4">
+                                <input type="number" class="form-control rounded-pill" name="document" id="document" placeholder="DNI (Boleta) / RUC (Factura):" maxlength="11" required>
                             </div>
                             <div class="form-group mb-3 col-md-6">
                                 <b class="d-block d-sm-inline-block align-top me-sm-3 text-center text-sm-star border-bottom mb-1 mb-sm-0 text_pagar">Pagar con:</b>
