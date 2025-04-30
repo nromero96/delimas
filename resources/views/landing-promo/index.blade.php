@@ -328,7 +328,7 @@ una marca de Alamesa Service, una empresa con
 
                         <div class="row mt-4 mt-sm-5 rwtb_plan d-none" id="plan_pequeno">
                             <div class="form-group col-md-5">
-                                <img src="{{ asset('images/landing/img-17673.jpg') }}" alt="Landing Promo" class="img-fluid">
+                                <img src="{{ asset('images/landing/prev-menu.jpg') }}" id="img_pequeno" alt="Landing Promo" class="img-fluid">
                             </div>
                             <div class="form-group col-md-7">
                                 <h4 class="mt-2 mt-sm-0">Pequeño</h4>
@@ -341,7 +341,7 @@ una marca de Alamesa Service, una empresa con
 
                         <div class="row mt-4 mt-sm-5 rwtb_plan d-none" id="plan_mediano">
                             <div class="form-group col-md-5">
-                                <img src="{{ asset('images/landing/img-7433.jpg') }}" alt="Landing Promo" class="img-fluid">
+                                <img src="{{ asset('images/landing/prev-menu.jpg') }}" id="img_mediano" alt="Landing Promo" class="img-fluid">
                             </div>
                             <div class="form-group col-md-7">
                                 <h4 class="mt-2 mt-sm-0">Mediano</h4>
@@ -354,7 +354,7 @@ una marca de Alamesa Service, una empresa con
                         
                         <div class="row mt-4 mt-sm-5 rwtb_plan d-none" id="plan_reduccion">
                             <div class="form-group col-md-5">
-                                <img src="{{ asset('images/landing/img-7433.jpg') }}" alt="Landing Promo" class="img-fluid">
+                                <img src="{{ asset('images/landing/prev-menu.jpg') }}" id="img_reduccion" alt="Landing Promo" class="img-fluid">
                             </div>
                             <div class="form-group col-md-7">
                                 <h4 class="mt-2 mt-sm-0">Reducción</h4>
@@ -368,7 +368,7 @@ una marca de Alamesa Service, una empresa con
 
                         <div class="row mt-4 mt-sm-5 rwtb_plan d-none" id="plan_mantenimiento">
                             <div class="form-group col-md-5">
-                                <img src="{{ asset('images/landing/img-7434.jpg') }}" alt="Landing Promo" class="img-fluid">
+                                <img src="{{ asset('images/landing/prev-menu.jpg') }}" id="img_mantenimiento" alt="Landing Promo" class="img-fluid">
                             </div>
                             <div class="form-group col-md-7">
                                 <h4 class="mt-2 mt-sm-0">Mantenimiento</h4>
@@ -637,7 +637,16 @@ una marca de Alamesa Service, una empresa con
                 document.getElementById('overlay-carga').classList.remove('d-none');
 
                 var product = this.value;
-                console.log("Producto seleccionado:", product);
+                
+                //cambiar imagenes
+                if(product == 'Almuerzos saludables Estándar' || product == 'Almuerzos saludables Personalizado'){
+                    document.getElementById('img_pequeno').src = "{{ asset('images/landing/al-pequeno.jpg') }}";
+                    document.getElementById('img_mediano').src = "{{ asset('images/landing/al-reduccion.jpg') }}";
+                    document.getElementById('img_mantenimiento').src = "{{ asset('images/landing/al-mantenimiento.jpg') }}";
+                }else if(product == 'Dieta saludable Estándar' || product == 'Dieta saludable Personalizado'){
+                    document.getElementById('img_reduccion').src = "{{ asset('images/landing/ds-reduccion.jpg') }}";
+                    document.getElementById('img_mantenimiento').src = "{{ asset('images/landing/ds-mantenimiento.jpg') }}";
+                }
 
                 fetch('list-healthplans?product=' + product)
                     .then(response => response.json())
