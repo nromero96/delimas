@@ -11210,6 +11210,13 @@ textarea.form-control-lg {
     margin-left: 10px;
   }
 }
+.lp-form-errors {
+  display: block;
+  color: #ff4040;
+  font-size: 12px;
+  line-height: 12px;
+}
+
 .bg-light {
   background: #f3f4f6 !important;
 }

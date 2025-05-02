@@ -222,6 +222,7 @@ una marca de Alamesa Service, una empresa con
                             <div class="form-group col-md-8">
                                 <label for="address" class="mb-1">Ingresa tu dirección de entrega:</label>
                                 <input type="text" class="form-control rounded-pill" name="address" id="address" placeholder="Ejem: Jirón San Lino 1222, Urb. Santa Luisa" required>
+                                <span id="address-error" class="lp-form-errors"></span>
                             </div>
                             <div class="form-group col-md-4">
                                 <label for="district" class="mb-1">Distrito:</label>
@@ -242,6 +243,7 @@ una marca de Alamesa Service, una empresa con
                                     <option value="Pueblo Libre">Pueblo Libre</option>
                                     <option value="San Luis">San Luis</option>
                                 </select>
+                                <span id="district-error" class="lp-form-errors"></span>
                             </div>
                         </div>
                         <div class="row">
@@ -392,12 +394,15 @@ una marca de Alamesa Service, una empresa con
                             </div>
                             <div class="form-group mb-3 col-md-5">
                                 <input type="text" class="form-control rounded-pill" name="name" id="name" placeholder="Nombres y apellidos:" required>
+                                <span id="name-error" class="lp-form-errors"></span>
                             </div>
                             <div class="form-group mb-2 mb-sm-3 col-md-3">
                                 <input type="number" class="form-control rounded-pill" name="phone" id="phone" placeholder="Teléfono:" required>
+                                <span id="phone-error" class="lp-form-errors"></span>
                             </div>
                             <div class="form-group mb-2 mb-sm-3 col-md-4">
-                                <input type="number" class="form-control rounded-pill" name="document" id="document" placeholder="DNI (Boleta) / RUC (Factura):" maxlength="11" required>
+                                <input type="number" class="form-control rounded-pill" name="document" id="document" placeholder="DNI (Boleta) / RUC (Factura):" required>
+                                <span id="document-error" class="lp-form-errors"></span>
                             </div>
                             <div class="form-group mb-3 col-md-6">
                                 <b class="d-block d-sm-inline-block align-top me-sm-3 text-center text-sm-star border-bottom mb-1 mb-sm-0 text_pagar">Pagar con:</b>
@@ -838,6 +843,69 @@ una marca de Alamesa Service, una empresa con
             var product = document.querySelector('input[name="product"]:checked');
             var plan = document.querySelector('input[name="plan"]:checked');
             var payment = document.querySelector('input[name="payment"]:checked');
+
+
+            const name = document.getElementById("name").value.trim();
+            const name_errorSpan = document.getElementById("name-error");
+            const name_words = name.split(/\s+/);
+
+            if (name_words.length < 2) {
+                name_errorSpan.textContent = "Debes ingresar al menos nombre y apellido.";
+                //focus en el campo de nombre
+                document.getElementById("name").focus();
+                return; // evita que el formulario se envíe
+            }else{
+                name_errorSpan.textContent = ""; // Limpiar el mensaje de error si es válido
+            }
+
+            const address = document.getElementById("address").value.trim();
+            const address_errorSpan = document.getElementById("address-error");
+            const address_words = address.split(/\s+/);
+            const address_hasNumber = /\d/.test(address);
+
+            if (address_words.length < 3 || !address_hasNumber) {
+                address_errorSpan.textContent = "La dirección debe tener al menos dos palabras y un número.";
+                document.getElementById("address").focus();
+                return; // evita que el formulario se envíe
+            }else{
+                address_errorSpan.textContent = ""; // Limpiar el mensaje de error si es válido
+            }
+
+            const district = document.getElementById("district").value.trim();
+            const district_errorSpan = document.getElementById("district-error");
+
+            if (district === "" || district === "0") {
+                district_errorSpan.textContent = "Debes seleccionar un distrito.";
+                document.getElementById("district").focus();
+                return; // evita que el formulario se envíe
+            } else {
+                district_errorSpan.textContent = ""; // Limpiar el mensaje de error si es válido
+            }
+
+
+            const phone = document.getElementById("phone").value.trim();
+            const phone_errorSpan = document.getElementById("phone-error");
+
+            if (!/^9\d{8}$/.test(phone)) {
+                phone_errorSpan.textContent = "Ingresar mínimo 9 dígitos que comience con 9.";
+                document.getElementById("phone").focus();
+                return; // evita que el formulario se envíe
+            }else{
+                phone_errorSpan.textContent = ""; // Limpiar el mensaje de error si es válido
+            }
+
+
+            const doc = document.getElementById("document").value.trim();
+            const doc_errorSpan = document.getElementById("document-error");
+
+            if (!/^\d{8,11}$/.test(doc)) {
+                doc_errorSpan.textContent = "El documento debe tener entre 8 o 11 dígitos numéricos.";
+                document.getElementById("document").focus();
+                return; // evita que el formulario se envíe
+            }else{
+                doc_errorSpan.textContent = ""; // Limpiar el mensaje de error si es válido
+            }
+
 
             // Validar el formulario antes de continuar
             if (!form.checkValidity()) {
