@@ -29,7 +29,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Aleo:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
 
     <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="{{ mix('css/app.css') }}">
+    <link rel="stylesheet" href="{{ mix('css/app.css') }}?v={{ config('app.version') }}">
     <link rel="stylesheet" href="{{ asset('plugins/slick/slick.css') }}">
     <link rel="stylesheet" href="{{ asset('plugins/slick/slick-theme.css') }}">
 </head>
