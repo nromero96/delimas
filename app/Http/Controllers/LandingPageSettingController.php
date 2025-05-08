@@ -17,9 +17,6 @@ class LandingPageSettingController extends Controller
     public function index()
     {
 
-        $weeklyTitleSetting = LandingPageSetting::where('key', 'weekly_title')->first();
-        $weekly_title = $weeklyTitleSetting ? $weeklyTitleSetting->value : '';
-
         // Obtener el menú guardado desde la base de datos
         $menuSetting = LandingPageSetting::where('key', 'weekly_menu')->first();
         $menus = $menuSetting ? json_decode($menuSetting->value, true) : [];
@@ -32,15 +29,12 @@ class LandingPageSettingController extends Controller
         $almuerzosData = $almuerzos ? json_decode($almuerzos->value, true) : [];
         $dietaData = $dieta ? json_decode($dieta->value, true) : [];
 
-        return view('landing-promo/setting_page')->with(compact('menus', 'weekly_title', 'almuerzosData', 'dietaData'));
+        return view('landing-promo/setting_page')->with(compact('menus', 'almuerzosData', 'dietaData'));
     }
 
     public function viewPage()
     {
 
-        $weeklyTitleSetting = LandingPageSetting::where('key', 'weekly_title')->first();
-        $weekly_title = $weeklyTitleSetting ? $weeklyTitleSetting->value : '';
-
         // Obtener el menú guardado desde la base de datos
         $menuSetting = LandingPageSetting::where('key', 'weekly_menu')->first();
         $menus = $menuSetting ? json_decode($menuSetting->value, true) : [];
@@ -52,40 +46,37 @@ class LandingPageSettingController extends Controller
         $almuerzosData = $almuerzos ? json_decode($almuerzos->value, true) : [];
         $dietaData = $dieta ? json_decode($dieta->value, true) : [];
 
-        return view('landing-promo/index')->with(compact('menus', 'weekly_title', 'almuerzosData', 'dietaData'));
+        return view('landing-promo/index')->with(compact('menus', 'almuerzosData', 'dietaData'));
     }
 
     public function saveMenu(Request $request)
     {
-        $weeklyTitle = $request->input('weekly_title', 'Menú Semanal');
         $menus = $request->input('menus', []);
 
         // Obtener los registros existentes
-        $existingTitle = LandingPageSetting::where('key', 'weekly_title')->first();
         $existingMenu = LandingPageSetting::where('key', 'weekly_menu')->first();
         $existingMenus = $existingMenu ? json_decode($existingMenu->value, true) : [];
 
         // Procesar imágenes y mantener las anteriores
         foreach ($menus as $menuIndex => $menu) {
             foreach ($menu['days'] as $day => $dayData) {
-                if ($request->hasFile("menus.$menuIndex.days.$day.image")) {
-                    $image = $request->file("menus.$menuIndex.days.$day.image");
-                    $imagePath = $image->store('public/menu-semanal');
-                    $menus[$menuIndex]['days'][$day]['image'] = str_replace('public/', 'storage/', $imagePath);
+                if ($request->hasFile("menus.$menuIndex.days.$day.opt1_image")) {
+                    $opt1_image = $request->file("menus.$menuIndex.days.$day.opt1_image");
+                    $opt1_imagePath = $opt1_image->store('public/menu-semanal');
+                    $menus[$menuIndex]['days'][$day]['opt1_image'] = str_replace('public/', 'storage/', $opt1_imagePath);
                 } else {
-                    $menus[$menuIndex]['days'][$day]['image'] = $existingMenus[$menuIndex]['days'][$day]['image'] ?? null;
+                    $menus[$menuIndex]['days'][$day]['opt1_image'] = $existingMenus[$menuIndex]['days'][$day]['opt1_image'] ?? null;
                 }
-            }
-        }
 
-        // Guardar `weekly_title` en una fila separada
-        if ($existingTitle) {
-            $existingTitle->update(['value' => $weeklyTitle]);
-        } else {
-            LandingPageSetting::create([
-                'key' => 'weekly_title',
-                'value' => $weeklyTitle,
-            ]);
+                if ($request->hasFile("menus.$menuIndex.days.$day.opt2_image")) {
+                    $opt2_image = $request->file("menus.$menuIndex.days.$day.opt2_image");
+                    $opt2_imagePath = $opt2_image->store('public/menu-semanal');
+                    $menus[$menuIndex]['days'][$day]['opt2_image'] = str_replace('public/', 'storage/', $opt2_imagePath);
+                } else {
+                    $menus[$menuIndex]['days'][$day]['opt2_image'] = $existingMenus[$menuIndex]['days'][$day]['opt2_image'] ?? null;
+                }
+
+            }
         }
 
         // Guardar `menus` en otra fila separada
@@ -100,7 +91,7 @@ class LandingPageSettingController extends Controller
         }
 
         // Guardar en archivo JSON (opcional)
-        Storage::put('public/menu.json', json_encode(['weekly_title' => $weeklyTitle, 'menus' => $menus], JSON_PRETTY_PRINT));
+        Storage::put('public/menu.json', json_encode(['menus' => $menus], JSON_PRETTY_PRINT));
 
         return back()->with('success', 'Menú actualizado correctamente');
     }

@@ -66,6 +66,7 @@
     margin-top: 18px !important;
 
     .iconcalendar-ms{
+        display: inline;
         width: 32px;
         margin-top: -7px;
         margin-right: 7px;
@@ -155,6 +156,10 @@
     }
 }
 
+.slick-prev:hover, .slick-prev:focus, .slick-next:hover, .slick-next:focus {
+    color: #334233 !important;
+}
+
 .listmenusemanal{
     padding-right: 50px;
     padding-left: 50px;
@@ -235,6 +240,7 @@
 
                     img{
                         width: 70px;
+                        height: 70px;
                         border-radius: 50%;
                     }
 

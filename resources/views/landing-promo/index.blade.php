@@ -131,34 +131,67 @@ una marca de Alamesa Service, una empresa con
         <div class="container">
             <div class="row">
                 <div class="col-md-12">
-                    <p class="text-center mt-2 titmenusm">
-                        <img src="{{ asset('images/landing/calendar-img.svg') }}" alt="Menu semanal" class="iconcalendar-ms"> <b>{{ $weekly_title }}</b>
-                    </p>
-
                     <div class="listmenusemanal">
                         @foreach ($menus as $menu)
+
                             <div>
-                                <div class="cardmenu">
-                                    <div class="cardmenu-header" style="background: {{ $menu['color'] ?? '#f8764a' }}">
-                                        <h4>{{ $menu['title'] ?? '' }}</h4>
+                                <p class="text-center mt-2 titmenusm">
+                                    <img src="{{ asset('images/landing/calendar-img.svg') }}" alt="Menu semanal" class="iconcalendar-ms"> <b>{{ $menu['title_week'] ?? '' }}</b>
+                                </p>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="cardmenu">
+                                            <div class="cardmenu-header" style="background: {{ $menu['opt1_color'] ?? '#f8764a' }}">
+                                                <h4>{{ $menu['opt1_title'] ?? '' }}</h4>
+                                            </div>
+                                            <div class="cardmenu-body">
+                                                <table>
+                                                    @foreach (['lunes', 'martes', 'miercoles', 'jueves', 'viernes'] as $day)
+                                                        <tr>
+                                                            <td width="85px">
+                                                                @if (!empty($menu['days'][$day]['opt1_image']))
+                                                                    <img src="{{ asset($menu['days'][$day]['opt1_image']) }}" alt="{{ $menu['days'][$day]['opt1_title'] }}" class="img-fluid">
+                                                                @else
+                                                                    <img src="{{ asset('images/landing/plato.png') }}" alt="Delimas" class="img-fluid">
+                                                                @endif
+                                                            </td>
+                                                            <td>
+                                                                <h5 style="color: {{ $menu['opt1_color'] ?? '#f8764a' }}">{{ ucfirst($day) }}</h5>
+                                                                <h6>{{ $menu['days'][$day]['opt1_title'] ?? '' }}</h6>
+                                                                <p>{{ $menu['days'][$day]['opt1_description'] ?? '' }}</p>
+                                                            </td>
+                                                        </tr>
+                                                    @endforeach
+                                                </table>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div class="cardmenu-body">
-                                        <table>
-                                            @foreach (['lunes', 'martes', 'miercoles', 'jueves', 'viernes'] as $day)
-                                                <tr>
-                                                    <td width="85px">
-                                                        @if (!empty($menu['days'][$day]['image']))
-                                                                    <img src="{{ asset($menu['days'][$day]['image']) }}" alt="{{ $menu['days'][$day]['title'] }}" class="img-fluid">
-                                                        @endif
-                                                    </td>
-                                                    <td>
-                                                        <h5 style="color: {{ $menu['color'] ?? '#f8764a' }}">{{ ucfirst($day) }}</h5>
-                                                        <h6>{{ $menu['days'][$day]['title'] ?? '' }}</h6>
-                                                        <p>{{ $menu['days'][$day]['description'] ?? '' }}</p>
-                                                    </td>
-                                                </tr>
-                                            @endforeach
-                                        </table>
+                                    <div class="col-md-6 mt-3 mt-sm-0">
+                                        <div class="cardmenu">
+                                            <div class="cardmenu-header" style="background: {{ $menu['opt2_color'] ?? '#f8764a' }}">
+                                                <h4>{{ $menu['opt2_title'] ?? '' }}</h4>
+                                            </div>
+                                            <div class="cardmenu-body">
+                                                <table>
+                                                    @foreach (['lunes', 'martes', 'miercoles', 'jueves', 'viernes'] as $day)
+                                                        <tr>
+                                                            <td width="85px">
+                                                                @if (!empty($menu['days'][$day]['opt2_image']))
+                                                                    <img src="{{ asset($menu['days'][$day]['opt2_image']) }}" alt="{{ $menu['days'][$day]['opt2_title'] }}" class="img-fluid">
+                                                                @else
+                                                                    <img src="{{ asset('images/landing/plato.png') }}" alt="Delimas" class="img-fluid">
+                                                                @endif
+                                                            </td>
+                                                            <td>
+                                                                <h5 style="color: {{ $menu['opt2_color'] ?? '#f8764a' }}">{{ ucfirst($day) }}</h5>
+                                                                <h6>{{ $menu['days'][$day]['opt2_title'] ?? '' }}</h6>
+                                                                <p>{{ $menu['days'][$day]['opt2_description'] ?? '' }}</p>
+                                                            </td>
+                                                        </tr>
+                                                    @endforeach
+                                                </table>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -616,7 +649,7 @@ una marca de Alamesa Service, una empresa con
 
             $('.listmenusemanal').slick({
             infinite: true,
-            slidesToShow: 2,
+            slidesToShow: 1,
             slidesToScroll: 1,
             prevArrow: '<button type="button" class="slick-prev"><span>Semana Pasada</span></button>',
             nextArrow: '<button type="button" class="slick-next"><span>Siguiente Semana</span></button>',

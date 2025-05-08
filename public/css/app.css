@@ -10327,6 +10327,7 @@ textarea.form-control-lg {
   margin-top: 18px !important;
 }
 .titmenusm .iconcalendar-ms {
+  display: inline;
   width: 32px;
   margin-top: -7px;
   margin-right: 7px;
@@ -10404,6 +10405,10 @@ textarea.form-control-lg {
   font-weight: bold;
 }
 
+.slick-prev:hover, .slick-prev:focus, .slick-next:hover, .slick-next:focus {
+  color: #334233 !important;
+}
+
 .listmenusemanal {
   padding-right: 50px;
   padding-left: 50px;
@@ -10472,6 +10477,7 @@ textarea.form-control-lg {
 }
 .listmenusemanal .cardmenu .cardmenu-body table td img {
   width: 70px;
+  height: 70px;
   border-radius: 50%;
 }
 .listmenusemanal .cardmenu .cardmenu-body table td h5, .listmenusemanal .cardmenu .cardmenu-body table td .h5 {
