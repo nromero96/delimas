@@ -532,7 +532,7 @@ una marca de Alamesa Service, una empresa con
                             <img src="{{ asset('images/landing/icono-map-ft.svg') }}" alt="Maps" class="img-fluid">
                         </div>
                         <div class="col-md-2 px-0">
-                            <a href="{{route('libro-de-reclamaciones')}}"><img src="{{ asset('images/landing/icono-libro-reclamaciones-delimas.png') }}" alt="Libro de reclamaciones" class="img-fluid"></a>
+                            <a href="/libro-de-reclamaciones"><img src="{{ asset('images/landing/icono-libro-reclamaciones-delimas.png') }}" alt="Libro de reclamaciones" class="img-fluid"></a>
                         </div>
                     </div>
                 </div>
