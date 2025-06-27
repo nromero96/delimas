@@ -26,9 +26,9 @@ use App\Http\Controllers\LandingPageSettingController;
 
 Route::get('/', [LandingPageSettingController::class, 'viewPage'])->name('viewPageLanding');
 
-Route::get('/libro-de-reclamaciones', function () {
-    return view('libro-reclamaciones/index');
-})->name('libro-de-reclamaciones');
+// Route::get('/libro-de-reclamaciones', function () {
+//     return view('libro-reclamaciones/index');
+// })->name('libro-de-reclamaciones');
 
 Route::post('/enviar-reclamo', [PlanrequestController::class, 'sendReclamo'])->name('enviar-reclamo');
 
