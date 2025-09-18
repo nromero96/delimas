@@ -18,6 +18,18 @@
 
         <div class="row">
             <div class="col-md-4 optionshome mb-4">
+                <a href="/deliveriesoftheday" class="shadow pt-0 pb-3">
+                    <i class="bi bi-card-checklist"></i>
+                    <span>Entregas del día</span>
+                </a>
+            </div>
+            <div class="col-md-4 optionshome mb-4">
+                <a href="{{ route('listrequest') }}" class="shadow pt-0 pb-3">
+                    <i class="bi bi-card-list"></i>
+                    <span>Solicitudes de Menú</span>
+                </a>
+            </div>
+            <div class="col-md-4 optionshome mb-4">
                 <a href="/customer" class="shadow pt-0 pb-3">
                     <i class="bi bi-people"></i>
                     <span>Registro de Clientes</span>
@@ -29,12 +41,7 @@
                     <span>Registro de Periodos</span>
                 </a>
             </div>
-            <div class="col-md-4 optionshome mb-4">
-                <a href="{{ route('listrequest') }}" class="shadow pt-0 pb-3">
-                    <i class="bi bi-card-list"></i>
-                    <span>Solicitudes de Menú</span>
-                </a>
-            </div>
+            
         </div>
     </div>
 

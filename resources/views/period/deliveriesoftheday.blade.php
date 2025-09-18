@@ -124,6 +124,11 @@
                             <label>Distrito</label><br>
                             <span id="customer-district" class="infospan">...</span>
                         </div>
+
+                        <div class="col-md-12 mb-3">
+                            <label>Referencia</label><br>
+                            <span id="customer-address_reference" class="infospan">...</span>
+                        </div>
             
                         <div class="col-md-6 mb-1">
                             <label>Número de teléfono</label><br>
@@ -174,6 +179,7 @@
                 $('#customer-name').text(data.name);
                 $('#customer-address').text(data.address);
                 $('#customer-district').text(data.district);
+                $('#customer-address_reference').text(data.address_reference);
                 $('#customer-phone').text(data.phone);
                 $('#customer-email').text(data.email);
             })
@@ -185,6 +191,7 @@
             $('#customer-name').text('...');
             $('#customer-address').text('...');
             $('#customer-district').text('...');
+            $('#customer-address_reference').text('...');
             $('#customer-phone').text('...');
             $('#customer-email').text('...');
         });

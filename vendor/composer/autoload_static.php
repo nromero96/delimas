@@ -621,6 +621,7 @@ class ComposerStaticInitff36d53fa4308b15ea5dd5fb9bffc3ad
         'App\\Http\\Middleware\\TrustHosts' => __DIR__ . '/../..' . '/app/Http/Middleware/TrustHosts.php',
         'App\\Http\\Middleware\\TrustProxies' => __DIR__ . '/../..' . '/app/Http/Middleware/TrustProxies.php',
         'App\\Http\\Middleware\\VerifyCsrfToken' => __DIR__ . '/../..' . '/app/Http/Middleware/VerifyCsrfToken.php',
+        'App\\Mail\\LibroDeReclamaciones' => __DIR__ . '/../..' . '/app/Mail/LibroDeReclamaciones.php',
         'App\\Models\\Customer' => __DIR__ . '/../..' . '/app/Models/Customer.php',
         'App\\Models\\District' => __DIR__ . '/../..' . '/app/Models/District.php',
         'App\\Models\\Holiday' => __DIR__ . '/../..' . '/app/Models/Holiday.php',

@@ -10,17 +10,18 @@
 
             <div class="col-md-6 mb-3">
                 <label class="form-label">Tipo Documento</label>
-                <select class="form-select" name="documenttype" required>
+                <select class="form-select" name="documenttype" id="documenttype" required>
                     <option selected disabled value="">Seleccione...</option>
                     <option value="DNI">DNI</option>
                     <option value="CARNET EXT.">CARNET EXT.</option>
                     <option value="OTROS">OTROS</option>
                 </select>
+                <div class="invalid-feedback">Seleccione un tipo de documento válido.</div>
             </div>
 
             <div class="col-md-6 mb-3">
                 <label class="form-label">N° Documento</label>
-                <input type="number" name="documentnumber" class="form-control" required>
+                <input type="text" name="documentnumber" id="documentnumber" inputmode="numeric" pattern="\d{8}" minlength="8" maxlength="8" class="form-control" required>
             </div>
 
             <div class="col-md-12 mb-3">
@@ -45,9 +46,14 @@
                 </select>
             </div>
 
+            <div class="col-md-12 mb-3">
+                <label class="form-label">Referencia</label>
+                <input type="text" name="address_reference" class="form-control" required>
+            </div>
+
             <div class="col-md-6 mb-3">
                 <label class="form-label">Número de teléfono</label>
-                <input type="text" name="phone" class="form-control" required>
+                <input type="text" name="phone" id="phone" inputmode="numeric" pattern="[0-9]*" class="form-control" required>
             </div>
 
             <div class="col-md-6 mb-3">
@@ -66,11 +72,11 @@
             </div>
 
             <div class="col-md-6 mb-3">
-                <div class="form-check form-switch">
-                    <input type="hidden" name="status" value="Inactivo">
-                    <input class="form-check-input" type="checkbox" name="status" id="statuscustomer" value="Activo" checked>
-                    <label class="form-check-label" for="statuscustomer"> Estado</label>
-                </div>
+                <label class="form-label">Estado</label>
+                <select class="form-select" name="status" required>
+                    <option value="Activo">Activo</option>
+                    <option value="Inactivo">Inactivo</option>
+                </select>
             </div>
 
             <div class="col-md-12 mb-3">
@@ -81,4 +87,74 @@
         </form>
     </div>
 
+@endsection
+
+
+@section('customscripts')
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const docType   = document.getElementById('documenttype');
+    const docNumber = document.getElementById('documentnumber');
+    const phone     = document.getElementById('phone');
+    const form      = document.querySelector('form');
+
+    // 👉 Ajusta reglas según tipo de documento
+    function actualizarReglasDocumento() {
+        if (docType.value === 'DNI') {
+            docNumber.maxLength = 8;
+            docNumber.minLength = 8;
+            docNumber.pattern   = "\\d{8}";
+        } else {
+            // Ejemplo genérico: máximo 12 caracteres
+            docNumber.maxLength = 12;
+            docNumber.minLength = 1;
+            docNumber.pattern   = ".{1,12}";
+        }
+        validarCampo(docNumber); // valida de inmediato al cambiar tipo
+    }
+
+    // 👉 Forzar solo dígitos y límite
+    function soloDigitosYLimite(el, limite) {
+        el.addEventListener('input', function (e) {
+            const onlyDigits = e.target.value.replace(/\D/g, '').slice(0, limite);
+            if (e.target.value !== onlyDigits) e.target.value = onlyDigits;
+            validarCampo(el); // valida en vivo
+        });
+    }
+
+    // 👉 Validación inmediata (Bootstrap)
+    function validarCampo(input) {
+        if (!input.checkValidity()) {
+            input.classList.add('is-invalid');
+            input.classList.remove('is-valid');
+        } else {
+            input.classList.remove('is-invalid');
+            input.classList.add('is-valid');
+        }
+    }
+
+    // Eventos iniciales
+    docType.addEventListener('change', actualizarReglasDocumento);
+    actualizarReglasDocumento();
+
+    soloDigitosYLimite(docNumber, 8);
+    soloDigitosYLimite(phone, 9);
+
+    [docNumber, phone].forEach(input => {
+        input.addEventListener('blur', () => validarCampo(input));
+    });
+
+    // 👉 Validación final antes de enviar
+    form.addEventListener('submit', function (e) {
+        if (!form.checkValidity()) {
+            e.preventDefault();
+            form.reportValidity(); 
+            const firstInvalid = form.querySelector(':invalid');
+            if (firstInvalid) {
+                firstInvalid.focus();
+            }
+        }
+    });
+});
+</script>
 @endsection

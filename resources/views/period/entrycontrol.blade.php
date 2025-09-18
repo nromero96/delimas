@@ -54,7 +54,7 @@
                            <div class="dvstick">
                                 <p style="text-align:right; margin-bottom:0px; font-size: 10px; ">{{ $row->programname }} <br> {{ $row->textcategoryprice }}</p>
                                 <div style="text-transform: uppercase;font-weight: bold;"> {{ $row->customername }}</div>
-                                <span style="text-transform: uppercase;">{{ $row->customeraddress}} - {{ $row->customerdistrict }}</span><br>
+                                <span style="text-transform: uppercase;">{{ $row->customeraddress}} - {{ $row->customerdistrict }}</span> <small style="font-size: 12px; color: #999;">(Ref: {{ $row->customeraddressreference }})</small><br>
                                 CEL: {{ $row->customerphone }}
                            </div>
                         </td>

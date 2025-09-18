@@ -11,6 +11,26 @@
 <div class="row mt-4 mb-4">
 
     <div class="col-md-12">
+
+        @if(session('success'))
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                {{ session('success') }}
+
+                {{-- Boton Registrar periodo --}}
+                <a href="/period/create" class="btn btn-primary ms-2" role="button"><i class="bi bi-plus-circle"></i> Registrar periodo</a>
+
+
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        @endif
+
+        @if(session('error'))
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                {{ session('error') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        @endif
+
         <div class="card shadow">
             <div class="card-header border-bottom d-flex align-items-center">
                 <h5 class="me-auto">Lista de clientes</h5>
@@ -54,7 +74,7 @@
                             <td>{{ $row->created_at }}</td>
                             <td>
                                 <div class="btnsaction">
-                                    <form action="{{ route('customer.destroy',$row->id)}}" method="POST">
+                                    <form action="{{ route('customer.destroy',$row->id)}}" method="POST" onsubmit="return confirmDelete()">
                                         <a href="/customer/{{ $row->id }}/edit" class="btn p-0 text-primary" data-bs-toggle="tooltip" data-bs-placement="top" title="Editar"><i class="bi bi-pencil-square"></i></a> 
                                         @csrf
                                         @method('DELETE')
@@ -76,5 +96,19 @@
     </div>
 
 </div>
+
+@endsection
+
+
+@section('customscripts')
+<script>
+
+    //If click Delete Customer confirmation 
+    confirmDelete = () => {
+        return confirm('¿Desea eliminar el cliente?');
+    }
+
+
+</script>
 
 @endsection

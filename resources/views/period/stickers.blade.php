@@ -59,7 +59,7 @@
                         <td>
                            <div class="dvstick">
                                 <span style="text-transform: uppercase;font-weight: bold;"> {{ $row->customername }}</span><br>
-                                <span style="text-transform: uppercase;">{{ $row->customerdistrict }}</span><br>
+                                <span style="text-transform: uppercase;">{{ $row->customerdistrict }}</span> <small style="font-size: 12px; color: #999;">(Ref: {{ $row->customeraddressreference }})</small><br>
                                 <span style="font-size: 10px;" >{{ $row->programname }}<br>{{ $row->textcategoryprice }}</span>
                            </div>
                         </td>

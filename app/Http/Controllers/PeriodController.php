@@ -264,7 +264,7 @@ class PeriodController extends Controller
                                 ->where('perioddays.date', $datefilter)
                                 ->orderBy('programs.name', 'ASC')
                                 ->orderBy('customers.name', 'ASC')
-                                ->get(['programs.name AS programname', 'programprices.textcategoryprice AS textcategoryprice', 'customers.name AS customername', 'customers.district AS customerdistrict']);
+                                ->get(['programs.name AS programname', 'programprices.textcategoryprice AS textcategoryprice', 'customers.name AS customername', 'customers.district AS customerdistrict', 'customers.address_reference AS customeraddressreference', 'perioddays.date AS perioddate', 'perioddays.quantity AS periodquantity']);
 
         view()->share('period.stickers',$perioddays);
 
@@ -297,7 +297,7 @@ class PeriodController extends Controller
                                 ->where('perioddays.date', $datefilter)
                                 ->orderBy('programs.name', 'ASC')
                                 ->orderBy('customers.name', 'ASC')
-                                ->get(['programs.name AS programname', 'programprices.textcategoryprice AS textcategoryprice' ,'customers.name AS customername', 'customers.address AS customeraddress', 'customers.district AS customerdistrict', 'customers.phone AS customerphone']);
+                                ->get(['programs.name AS programname', 'programprices.textcategoryprice AS textcategoryprice' ,'customers.name AS customername', 'customers.address AS customeraddress', 'customers.district AS customerdistrict', 'customers.phone AS customerphone', 'customers.address_reference AS customeraddressreference']);
 
         view()->share('period.entrycontrol',$perioddays);
 

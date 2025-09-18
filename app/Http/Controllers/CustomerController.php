@@ -51,6 +51,7 @@ class CustomerController extends Controller
         $customers->name = $request->get('name');
         $customers->address = $request->get('address');
         $customers->district = $request->get('district');
+        $customers->address_reference = $request->get('address_reference');
         $customers->phone = $request->get('phone');
         $customers->email = $request->get('email');
         $customers->restriction = $request->get('restriction');
@@ -59,7 +60,8 @@ class CustomerController extends Controller
 
         $customers->save();
 
-        return redirect('/customer');
+        //Retornar con mensaje success
+        return redirect('/customer')->with('success', 'Cliente creado correctamente');
     }
 
 
@@ -86,6 +88,7 @@ class CustomerController extends Controller
         $customer->name = $request->get('name');
         $customer->address = $request->get('address');
         $customer->district = $request->get('district');
+        $customer->address_reference = $request->get('address_reference');
         $customer->phone = $request->get('phone');
         $customer->email = $request->get('email');
         $customer->restriction = $request->get('restriction');
