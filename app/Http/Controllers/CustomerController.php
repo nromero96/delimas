@@ -14,18 +14,23 @@ class CustomerController extends Controller
     public function index(Request $request)
     {
 
-        $numdoc = $request->get('filterbynumdoc');
-        $name = $request->get('filterbyname');
-        $district = $request->get('filterbydate');
+        $query = Customer::query();
 
+        if ($request->filled('filterbynumdoc')) {
+            $query->where('customers.document_number', 'LIKE', '%' . $request->filterbynumdoc . '%');
+        }
 
-        $customers = Customer::where('customers.document_number','LIKE', "%$numdoc%")
-                                ->where('customers.name','LIKE', "%$name%")
-                                ->where('customers.district','LIKE', "%$district%")
-                                ->orderBy('customers.name', 'ASC')
-                                ->paginate(20);
+        if ($request->filled('filterbyname')) {
+            $query->where('customers.name', 'LIKE', '%' . $request->filterbyname . '%');
+        }
 
-        return view('customer.index')->with('customers',$customers);
+        if ($request->filled('filterbydate')) {
+            $query->where('customers.district', 'LIKE', '%' . $request->filterbydate . '%');
+        }
+
+        $customers = $query->orderBy('customers.name', 'ASC')->paginate(20);
+
+        return view('customer.index', compact('customers'));
     }
 
     /**
@@ -53,6 +58,7 @@ class CustomerController extends Controller
         $customers->district = $request->get('district');
         $customers->address_reference = $request->get('address_reference');
         $customers->phone = $request->get('phone');
+        $customers->phone_two = $request->get('phone_two');
         $customers->email = $request->get('email');
         $customers->restriction = $request->get('restriction');
         $customers->recommendation = $request->get('recommendation');
@@ -90,6 +96,7 @@ class CustomerController extends Controller
         $customer->district = $request->get('district');
         $customer->address_reference = $request->get('address_reference');
         $customer->phone = $request->get('phone');
+        $customer->phone_two = $request->get('phone_two');
         $customer->email = $request->get('email');
         $customer->restriction = $request->get('restriction');
         $customer->recommendation = $request->get('recommendation');

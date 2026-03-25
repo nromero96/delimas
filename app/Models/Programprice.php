@@ -17,6 +17,7 @@ class Programprice extends Model
         'fiveprice',
         'tenprice',
         'twentyprice',
+        'thirtyprice',
     ];
 
 }

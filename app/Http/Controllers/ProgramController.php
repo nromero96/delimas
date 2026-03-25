@@ -48,6 +48,7 @@ class ProgramController extends Controller
                             'fiveprice'=>$request->get('fiveprice') [$key],
                             'tenprice'=>$request->get('tenprice') [$key],
                             'twentyprice'=>$request->get('twentyprice') [$key],
+                            'thirtyprice'=>$request->get('thirtyprice') [$key],
                 );
                 Programprice::insert($data);
         }
@@ -94,6 +95,7 @@ class ProgramController extends Controller
                         'fiveprice'=>$request->get('fiveprice') [$key],
                         'tenprice'=>$request->get('tenprice') [$key],
                         'twentyprice'=>$request->get('twentyprice') [$key],
+                        'thirtyprice'=>$request->get('thirtyprice') [$key],
                     );
                     Programprice::insert($data);
                 }else{
@@ -104,6 +106,7 @@ class ProgramController extends Controller
                         'fiveprice'=>$request->get('fiveprice') [$key],
                         'tenprice'=>$request->get('tenprice') [$key],
                         'twentyprice'=>$request->get('twentyprice') [$key],
+                        'thirtyprice'=>$request->get('thirtyprice') [$key],
                     );
                     Programprice::where('id', $idprogramprice)->update($data);
                 }

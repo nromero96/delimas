@@ -40,6 +40,7 @@
                                 <th class="text-center">5 Días</th>
                                 <th class="text-center">10 Días</th>
                                 <th class="text-center">20 Días</th>
+                                <th class="text-center">30 Días</th>
                                 <th style="width: 30px;" class="text-center" ><a href="javascript:void(0);" class="btn rounded-circle btn-primary text-light btn-sm btn-sm btnaddprogprice" onclick="add_row()"><i class="bi bi-plus"></i></a></th>
                             </tr>
                         </thead>
@@ -65,6 +66,9 @@
                                 <td>
                                     <input type="text" name="twentyprice[]" class="form-control text-center" placeholder="00" style="min-width:84px" required>
                                 </td>
+                                <td>
+                                    <input type="text" name="thirtyprice[]" class="form-control text-center" placeholder="00" style="min-width:84px" required>
+                                </td>
                                 <td class="text-center"> <a href="javascript:void(0);" class="btn btn-sm px-1 py-0 text-danger disabled"><i class="bi bi-trash3-fill"></i></a> </td>
                             </tr>
                         </tbody>
@@ -86,7 +90,7 @@ function add_row(){
     sno++;
     var tr=document.createElement("tr");
 
-    tr.innerHTML='<td class="sno">'+sno+'</td><td><input type="text" name="textcategoryprice[]" class="form-control" placeholder="Texto..." required></td> <td><input type="color" name="color[]" class="form-control form-control-color"></td> <td> <div class="input-group"> <span class="input-group-text">S/</span> </div></td><td> <input type="text" name="oneprice[]" class="form-control text-center" placeholder="00" required> </td><td> <input type="text" name="fiveprice[]" class="form-control text-center" placeholder="00" required> </td><td> <input type="text" name="tenprice[]" class="form-control text-center" placeholder="00" required> </td><td> <input type="text" name="twentyprice[]" class="form-control text-center" placeholder="00" required> </td><td class="text-center"> <a href="javascript:void(0);" onclick="remove_row(this)" class="btn btn-sm px-1 py-0 text-danger"><i class="bi bi-trash3-fill"></i></a> </td>'
+    tr.innerHTML='<td class="sno">'+sno+'</td><td><input type="text" name="textcategoryprice[]" class="form-control" placeholder="Texto..." required></td> <td><input type="color" name="color[]" class="form-control form-control-color"></td> <td> <div class="input-group"> <span class="input-group-text">S/</span> </div></td><td> <input type="text" name="oneprice[]" class="form-control text-center" placeholder="00" required> </td><td> <input type="text" name="fiveprice[]" class="form-control text-center" placeholder="00" required> </td><td> <input type="text" name="tenprice[]" class="form-control text-center" placeholder="00" required> </td><td> <input type="text" name="twentyprice[]" class="form-control text-center" placeholder="00" required> </td> <td> <input type="text" name="thirtyprice[]" class="form-control text-center" placeholder="00" required> </td><td class="text-center"> <a href="javascript:void(0);" onclick="remove_row(this)" class="btn btn-sm px-1 py-0 text-danger"><i class="bi bi-trash3-fill"></i></a> </td>'
     document.getElementById("listpricespogram").appendChild(tr);
 }
 

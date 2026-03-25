@@ -17,6 +17,7 @@ class Customer extends Model
         'district',
         'address_reference',
         'phone',
+        'phone_two',
         'email',
         'restriction',
         'recommendation',

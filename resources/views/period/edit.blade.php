@@ -25,7 +25,7 @@
                         <select class="form-select" name="idprogram" id="idprogram" required>
                             @foreach ($programs as $row)
                                 @if( $row->id == $period->id_programprice )
-                                    <option value="{{ $row->id }}" data-unitprice="{{ $row->oneprice }}" data-fiveprice="{{ $row->fiveprice }}" data-tenprice="{{ $row->tenprice }}" data-twentyprice="{{ $row->twentyprice }}" {{ ( $row->id == $period->id_programprice) ? 'selected' : '' }}>{{ $row->programname }} / {{ $row->textcategoryprice }}</option>
+                                    <option value="{{ $row->id }}" data-unitprice="{{ $row->oneprice }}" data-fiveprice="{{ $row->fiveprice }}" data-tenprice="{{ $row->tenprice }}" data-twentyprice="{{ $row->twentyprice }}" data-thirtyprice="{{ $row->thirtyprice }}" {{ ( $row->id == $period->id_programprice) ? 'selected' : '' }}>{{ $row->programname }} / {{ $row->textcategoryprice }}</option>
                                 @endif
                             @endforeach
                         </select>
@@ -33,7 +33,7 @@
                         <select class="form-select" name="idprogram" id="idprogram" required>
                             <option selected disabled value="">Seleccione...</option>
                             @foreach ($programs as $row)
-                                <option value="{{ $row->id }}" data-unitprice="{{ $row->oneprice }}" data-fiveprice="{{ $row->fiveprice }}" data-tenprice="{{ $row->tenprice }}" data-twentyprice="{{ $row->twentyprice }}" {{ ( $row->id == $period->id_programprice) ? 'selected' : '' }}>{{ $row->programname }} / {{ $row->textcategoryprice }}</option>
+                                <option value="{{ $row->id }}" data-unitprice="{{ $row->oneprice }}" data-fiveprice="{{ $row->fiveprice }}" data-tenprice="{{ $row->tenprice }}" data-twentyprice="{{ $row->twentyprice }}" data-thirtyprice="{{ $row->thirtyprice }}" {{ ( $row->id == $period->id_programprice) ? 'selected' : '' }}>{{ $row->programname }} / {{ $row->textcategoryprice }}</option>
                             @endforeach
                         </select>
                     @endif
@@ -491,6 +491,8 @@
                 valueprice = ($('#idprogram option:selected').attr("data-tenprice") / 10).toFixed(2);
             }else if(quantitymenu >= 20){
                 valueprice = ($('#idprogram option:selected').attr("data-twentyprice") / 20).toFixed(2);
+            }else if(quantitymenu >= 30){
+                valueprice = ($('#idprogram option:selected').attr("data-thirtyprice") / 30).toFixed(2);
             }else{
                 valueprice = 0.00;
             }

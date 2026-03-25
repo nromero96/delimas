@@ -11,7 +11,7 @@
 
             <div class="col-md-6 mb-3">
                 <label class="form-label">Tipo Documento</label>
-                <select class="form-select" name="documenttype" id="documenttype" required>
+                <select class="form-select" name="documenttype" id="documenttype">
                     <option disabled value="">Seleccione...</option>
                     <option value="DNI" {{ ( $customer->document_type == 'DNI') ? 'selected' : '' }}>DNI</option>
                     <option value="CARNET EXT." {{ ( $customer->document_type == 'CARNET EXT.') ? 'selected' : '' }}>CARNET EXT.</option>
@@ -21,21 +21,21 @@
 
             <div class="col-md-6 mb-3">
                 <label class="form-label">N° Documento</label>
-                <input type="text" name="documentnumber" id="documentnumber" inputmode="numeric" pattern="\d{8}" minlength="8" maxlength="8" class="form-control" value="{{$customer->document_number}}" required>
+                <input type="text" name="documentnumber" id="documentnumber" inputmode="numeric" pattern="\d{8}" maxlength="8" class="form-control" value="{{$customer->document_number}}">
             </div>
 
             <div class="col-md-12 mb-3">
-                <label class="form-label">Nombre y Apellidos</label>
+                <label class="form-label">Nombre y Apellidos <span class="text-danger">*</span></label>
                 <input type="text" name="name" class="form-control" value="{{$customer->name}}" required>
             </div>
 
             <div class="col-md-6 mb-3">
-                <label class="form-label">Dirección</label>
+                <label class="form-label">Dirección <span class="text-danger">*</span></label>
                 <input type="text" name="address" class="form-control" value="{{$customer->address}}" required>
             </div>
 
             <div class="col-md-6 mb-3">
-                <label class="form-label">Distrito</label>
+                <label class="form-label">Distrito <span class="text-danger">*</span></label>
                 <select class="form-select" name="district" required>
                     <option disabled value="">Seleccione...</option>
 
@@ -50,27 +50,32 @@
 
             <div class="col-md-12 mb-3">
                 <label class="form-label">Referencia</label>
-                <input type="text" name="address_reference" class="form-control" required value="{{$customer->address_reference}}">
+                <input type="text" name="address_reference" class="form-control" value="{{$customer->address_reference}}">
             </div>
 
             <div class="col-md-6 mb-3">
-                <label class="form-label">Número de teléfono</label>
+                <label class="form-label">Número de teléfono <span class="text-danger">*</span></label>
                 <input type="text" name="phone" id="phone" inputmode="numeric" pattern="[0-9]*" class="form-control" value="{{$customer->phone}}" required>
             </div>
 
             <div class="col-md-6 mb-3">
+                <label class="form-label">Número de teléfono Alternativo</label>
+                <input type="text" name="phone_two" id="phone_two" inputmode="numeric" pattern="[0-9]*" value="{{$customer->phone_two}}" class="form-control">
+            </div>
+
+            <div class="col-md-6 mb-3">
                 <label class="form-label">Correo electrónico</label>
-                <input type="email" name="email" class="form-control" value="{{$customer->email}}" required>
+                <input type="email" name="email" class="form-control" value="{{$customer->email}}">
             </div>
 
             <div class="col-md-6 mb-3">
                 <label class="form-label">Restricción</label>
-                <input type="text" name="restriction" class="form-control" value="{{$customer->restriction}}" required>
+                <input type="text" name="restriction" class="form-control" value="{{$customer->restriction}}">
             </div>
 
             <div class="col-md-6 mb-3">
                 <label class="form-label">Recomendación</label>
-                <input type="text" name="recommendation" class="form-control" value="{{$customer->recommendation}}" required>
+                <input type="text" name="recommendation" class="form-control" value="{{$customer->recommendation}}">
             </div>
 
             <div class="col-md-6 mb-3">
