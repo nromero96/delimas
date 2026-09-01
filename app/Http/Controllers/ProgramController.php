@@ -14,7 +14,7 @@ class ProgramController extends Controller
     public function index()
     {
 
-        $programs = Program::all();
+        $programs = Program::with('prices')->orderBy('name')->get();
         return view('program.index')->with('programs',$programs);
     }
 

@@ -32,14 +32,14 @@
                             </a>
                         </li>
                         <li class="nav-item dropdown">
-                            <a class="nav-link opcsmenu dropdown-toggle {{ (request()->is('deliveriesoftheday*')) ? 'active' : '' }}" href="#" id="navbarDropdownProgram" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <a class="nav-link opcsmenu dropdown-toggle {{ (request()->is('deliveriesoftheday*') || request()->is('period-renewals')) ? 'active' : '' }}" href="#" id="navbarDropdownProgram" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                 <i class="bi bi-menu-up"></i>
                                 <span>Diario</span>
                             </a>
                             <ul class="dropdown-menu" aria-labelledby="navbarDropdownProgram">
                                 <li><a class="dropdown-item" href="{{  url('deliveriesoftheday') }}">Clientes por atender</a></li>
                                 <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="#">Renovación de periodos</a></li>
+                                <li><a class="dropdown-item" href="{{ route('period.renewals') }}">Renovación de periodos</a></li>
                             </ul>
                         </li>
                         <li class="nav-item dropdown">
@@ -65,7 +65,7 @@
                             </ul>
                         </li>
                         <li class="nav-item dropdown">
-                            <a class="nav-link opcsmenu dropdown-toggle {{ (request()->is('period*')) ? 'active' : '' }}" href="#" id="navbarDropdownCustomer" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <a class="nav-link opcsmenu dropdown-toggle {{ (request()->is('period*') && !request()->is('period-renewals')) ? 'active' : '' }}" href="#" id="navbarDropdownCustomer" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                 <i class="bi bi-calendar-range"></i>
                                 <span>Periodo</span>
                             </a>

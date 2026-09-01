@@ -148,7 +148,7 @@
 
             <div class="col-md-6">
                 <div class="bxlistday p-3">
-                    <h5 class="text-light">Lista Días</h4>
+                    <h5 class="text-light">Lista Días</h5>
                     <div class="table-responsive dvtable p-3">
                         <table class="table table-hover table-borderless">
                             <thead>
@@ -485,14 +485,14 @@
 
             if(quantitymenu < 5){
                 valueprice = $('#idprogram option:selected').attr("data-unitprice");
-            }else if(quantitymenu >= 5 && quantitymenu < 9){
+            }else if(quantitymenu >= 5 && quantitymenu < 10){
                 valueprice = ($('#idprogram option:selected').attr("data-fiveprice") / 5).toFixed(2);
-            }else if(quantitymenu >= 10 && quantitymenu < 19){
+            }else if(quantitymenu >= 10 && quantitymenu < 20){
                 valueprice = ($('#idprogram option:selected').attr("data-tenprice") / 10).toFixed(2);
-            }else if(quantitymenu >= 20){
-                valueprice = ($('#idprogram option:selected').attr("data-twentyprice") / 20).toFixed(2);
             }else if(quantitymenu >= 30){
                 valueprice = ($('#idprogram option:selected').attr("data-thirtyprice") / 30).toFixed(2);
+            }else if(quantitymenu >= 20){
+                valueprice = ($('#idprogram option:selected').attr("data-twentyprice") / 20).toFixed(2);
             }else{
                 valueprice = 0.00;
             }

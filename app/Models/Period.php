@@ -11,7 +11,7 @@ class Period extends Model
 
     protected $fillable = [
         'id_programprice',
-        'id_idcustomer',
+        'id_customer',
         'start_date',
         'end_date',
         'number_of_days',

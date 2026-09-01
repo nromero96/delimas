@@ -3,8 +3,8 @@
 @section('title', 'Lista de entregas del día')
 
 @section('buttonsarea')
-<a href="{{ route('download-entry-control') }}?filterbyprogram={{ Request::get('filterbyprogram') }}&filterbycustomer={{ Request::get('filterbycustomer') }}&filterbydate={{ Request::get('filterbydate') }}" target="_blank" class="btn btn-info text-light" role="button"><i class="bi bi-file-earmark-pdf"></i> Control de Entrega</a>
-    <a href="{{ route('download-stickers') }}?filterbyprogram={{ Request::get('filterbyprogram') }}&filterbycustomer={{ Request::get('filterbycustomer') }}&filterbydate={{ Request::get('filterbydate') }}" target="_blank" class="btn btn-danger mx-2" role="button"><i class="bi bi-file-earmark-pdf"></i> Stickers</a>
+<a href="{{ route('download-entry-control', request()->only(['filterbyprogram', 'filterbycustomer', 'filterbydate'])) }}" target="_blank" class="btn btn-info text-light" role="button"><i class="bi bi-file-earmark-pdf"></i> Control de Entrega</a>
+    <a href="{{ route('download-stickers', request()->only(['filterbyprogram', 'filterbycustomer', 'filterbydate'])) }}" target="_blank" class="btn btn-danger mx-2" role="button"><i class="bi bi-file-earmark-pdf"></i> Stickers</a>
     <a href="{{  url('period/create') }}" class="btn btn-primary" role="button"><i class="bi bi-plus-circle"></i> Agregar nuevo</a>
 @endsection
 
@@ -15,30 +15,23 @@
 @section('content')
 
 <div class="row mt-4 mb-4">
+    @if (session('delivery_filter_error'))
+        <div class="col-12"><div class="alert alert-danger">{{ session('delivery_filter_error') }}</div></div>
+    @endif
 
     <div class="col-md-12">
-        <marquee behavior="" direction="">
-            <img src="{{ asset('/images/moto-delivery.png')}}" class="moticon" alt="...">
-        </marquee>
-
         <div class="card shadow">
-            <div class="card-header border-bottom d-flex align-items-center">
-
-                @php
-                    if(Request::get('filterbydate')==''){
-                        $datetext = '<em class="datedelday">'. Carbon\Carbon::now()->format('d-m-Y') .'</em>';
-                    }else{
-                        $datetext = '<em class="datedelday">'.Request::get('filterbydate').'</em>';
-                    }
-                @endphp
-
-                <h5 class="me-auto">Lista de entregas para <?= $datetext ?></h5>
-                <div class="">
-                    <form action="" method="GET" class="d-flex">
-                        <input type="text" name="filterbyprogram" class="form-control mx-2" value="{{ Request::get('filterbyprogram') }}" placeholder="Buscar por programa...">
-                        <input type="text" name="filterbycustomer" class="form-control mx-2" value="{{ Request::get('filterbycustomer') }}" placeholder="Buscar por cliente...">
-                        <input type="text" name="filterbydate" id="inputsearchdate" value="{{ Request::get('filterbydate') }}" autocomplete="off" class="form-control mx-2" placeholder="Buscar por fecha...">
-                        <button type="submit" class="btn btn-secondary text-light"><i class="bi bi-search"></i></button>
+            <div class="card-header border-bottom d-flex flex-wrap align-items-center gap-3">
+                <h5 class="me-auto mb-0">Entregas para <em class="datedelday">{{ Carbon\Carbon::parse($datefilter)->format('d-m-Y') }}</em></h5>
+                <div>
+                    <form action="{{ route('deliveriesoftheday') }}" method="GET" class="d-flex flex-wrap gap-2 justify-content-end">
+                        <input type="search" name="filterbyprogram" class="form-control w-auto" value="{{ request('filterbyprogram') }}" placeholder="Programa...">
+                        <input type="search" name="filterbycustomer" class="form-control w-auto" value="{{ request('filterbycustomer') }}" placeholder="Cliente o documento...">
+                        <input type="text" name="filterbydate" id="inputsearchdate" value="{{ request('filterbydate') }}" autocomplete="off" class="form-control w-auto" placeholder="Fecha...">
+                        <button type="submit" class="btn btn-secondary text-light" title="Buscar"><i class="bi bi-search"></i></button>
+                        @if (request()->hasAny(['filterbyprogram', 'filterbycustomer', 'filterbydate']))
+                            <a href="{{ route('deliveriesoftheday') }}" class="btn btn-outline-secondary" title="Limpiar filtros"><i class="bi bi-x-lg"></i></a>
+                        @endif
                     </form>
                 </div>
             </div>
@@ -47,19 +40,22 @@
                     <thead>
                         <tr>
                             <th scope="col">PROGRAMA</th>
-                            <th scope="col">CLIENTE</th>
-                            <th scope="col" class="text-center">UNIDAD</th>
+                            <th scope="col">CLIENTE / DOCUMENTO</th>
+                            <th scope="col">DIRECCIÓN DE ENTREGA</th>
+                            <th scope="col">CONTACTO</th>
+                            <th scope="col" class="text-center">CANTIDAD</th>
                             <th scope="col">FECHA</th>
                             <th scope="col" width="105px">&nbsp;</th>
                         </tr>
                     </thead>
                     <tbody>
 
-                        @foreach ($perioddays as $row)
-                        <tr style="background:{{$row->programcolor}} ">
-
-                            <td>{{ $row->programname }} / {{ $row->textcategoryprice}}</td>
-                            <td>{{ $row->customername }}</td>
+                        @forelse ($perioddays as $row)
+                        <tr>
+                            <td><span class="d-inline-block rounded-circle me-2" style="width:14px;height:14px;background:{{ $row->programcolor }}"></span>{{ $row->programname }}<div class="small text-muted">{{ $row->textcategoryprice }}</div></td>
+                            <td>{{ $row->customername }}<div class="small text-muted">{{ $row->customerdocument ?: 'Sin documento' }}</div></td>
+                            <td>{{ $row->customeraddress }}<div class="small text-muted">{{ $row->customerdistrict }}@if($row->customeraddressreference) · Ref. {{ $row->customeraddressreference }}@endif</div></td>
+                            <td><a href="tel:{{ $row->customerphone }}">{{ $row->customerphone }}</a></td>
                             <td class="text-center">{{ $row->quantity }}</td>
                             <td>{{ Carbon\Carbon::parse($row->date)->format('d-m-Y') }}</td>
                             <td>
@@ -69,7 +65,9 @@
                                 </div>
                             </td>
                         </tr>
-                        @endforeach
+                        @empty
+                            <tr><td colspan="7" class="text-center py-4">No hay entregas programadas para la fecha y filtros seleccionados.</td></tr>
+                        @endforelse
 
                     </tbody>
 
@@ -93,15 +91,15 @@
 <div class="modal fade" id="mdldetailcustomer" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
-            <form action="">
                 <div class="modal-header">
                     <h5 class="modal-title" id="staticBackdropLabel">Información del cliente</h5>
                     <button type="button" class="btn-close" id="btnclosemdinfo" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
+                    <div id="customer-detail-error" class="alert alert-danger d-none">No se pudo cargar la información del cliente.</div>
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label>Tipo Docuemnto</label><br>
+                            <label>Tipo Documento</label><br>
                             <span id="customer-document_type" class="infospan">...</span>
                         </div>
             
@@ -130,20 +128,39 @@
                             <span id="customer-address_reference" class="infospan">...</span>
                         </div>
             
-                        <div class="col-md-6 mb-1">
+                        <div class="col-md-6 mb-3">
                             <label>Número de teléfono</label><br>
                             <span id="customer-phone" class="infospan">...</span>
                         </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label>Teléfono alternativo</label><br>
+                            <span id="customer-phone_two" class="infospan">...</span>
+                        </div>
             
-                        <div class="col-md-6 mb-1">
+                        <div class="col-md-12 mb-1">
                             <label>Correo electrónico</label><br>
                             <span id="customer-email" class="infospan">...</span>
+                        </div>
+
+                        <div class="col-md-12 mt-3 mb-1">
+                            <label>Restricción</label><br>
+                            <span id="customer-restriction" class="infospan">...</span>
+                        </div>
+
+                        <div class="col-md-12 mt-3 mb-1">
+                            <label>Recomendación</label><br>
+                            <span id="customer-recommendation" class="infospan">...</span>
+                        </div>
+
+                        <div class="col-md-12 mt-3 mb-1">
+                            <label>Estado</label><br>
+                            <span id="customer-status" class="infospan">...</span>
                         </div>
                         
                     </div>
                 </div>
                 <div class="modal-footer"> </div>
-            </form>
         </div>
     </div>
 </div>
@@ -172,6 +189,7 @@
         /* When click show user */
         $('body').on('click', '.show-customer', function () {
             var userURL = $(this).data('url');
+            $('#customer-detail-error').addClass('d-none');
             $.get(userURL, function (data) {
                 $('#mdldetailcustomer').modal('show');
                 $('#customer-document_type').text(data.document_type);
@@ -181,8 +199,14 @@
                 $('#customer-district').text(data.district);
                 $('#customer-address_reference').text(data.address_reference);
                 $('#customer-phone').text(data.phone);
-                $('#customer-email').text(data.email);
-            })
+                $('#customer-phone_two').text(data.phone_two || 'No registrado');
+                $('#customer-email').text(data.email || 'No registrado');
+                $('#customer-restriction').text(data.restriction || 'Sin restricciones');
+                $('#customer-recommendation').text(data.recommendation || 'Sin recomendaciones');
+                $('#customer-status').text(data.status);
+            }).fail(function () {
+                $('#customer-detail-error').removeClass('d-none');
+            });
         });
 
         $('#btnclosemdinfo').click(function(){
@@ -193,7 +217,12 @@
             $('#customer-district').text('...');
             $('#customer-address_reference').text('...');
             $('#customer-phone').text('...');
+            $('#customer-phone_two').text('...');
             $('#customer-email').text('...');
+            $('#customer-restriction').text('...');
+            $('#customer-recommendation').text('...');
+            $('#customer-status').text('...');
+            $('#customer-detail-error').addClass('d-none');
         });
         
     

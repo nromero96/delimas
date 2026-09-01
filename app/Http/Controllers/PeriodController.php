@@ -8,9 +8,13 @@ use App\Models\Program;
 use App\Models\Programprice;
 use App\Models\Customer;
 use App\Models\Periodday;
+use App\Models\Holiday;
 
 use Carbon\CarbonPeriod;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
+use Illuminate\Validation\Rule;
 use PDF;
 
 class PeriodController extends Controller
@@ -22,25 +26,111 @@ class PeriodController extends Controller
      */
     public function index(Request $request)
     {
+        $validated = $request->validate([
+            'filterbydate' => ['nullable', 'date_format:d-m-Y'],
+            'filterbystatus' => ['nullable', Rule::in(['vigente', 'proximo', 'vencido', 'suspendido'])],
+        ]);
+        $program = trim((string) $request->query('filterbyprogram', ''));
+        $customer = trim((string) $request->query('filterbycustomer', ''));
+        $status = $validated['filterbystatus'] ?? '';
+        $today = Carbon::today()->format('Y-m-d');
 
-        $program = $request->get('filterbyprogram');
-        $customer = $request->get('filterbycustomer');
-        $filterbydate = $request->get('filterbydate');
+        $query = Period::join('programprices', 'programprices.id', '=', 'periods.id_programprice')
+            ->join('programs', 'programs.id', '=', 'programprices.id_program')
+            ->join('customers', 'customers.id', '=', 'periods.id_customer')
+            ->where('periods.status', '!=', 'Oculto')
+            ->when($program !== '', function ($query) use ($program) {
+                $query->where('programs.name', 'LIKE', '%' . $program . '%');
+            })
+            ->when($customer !== '', function ($query) use ($customer) {
+                $query->where(function ($subquery) use ($customer) {
+                    $subquery->where('customers.name', 'LIKE', '%' . $customer . '%')
+                        ->orWhere('customers.document_number', 'LIKE', '%' . $customer . '%');
+                });
+            })
+            ->when(!empty($validated['filterbydate']), function ($query) use ($validated) {
+                $date = Carbon::createFromFormat('d-m-Y', $validated['filterbydate'])->format('Y-m-d');
+                $query->whereDate('periods.start_date', $date);
+            })
+            ->when($status === 'vigente', function ($query) use ($today) {
+                $query->where('periods.status', 'Activo')->whereDate('periods.start_date', '<=', $today)->whereDate('periods.end_date', '>=', $today);
+            })
+            ->when($status === 'proximo', function ($query) use ($today) {
+                $query->where('periods.status', 'Activo')->whereDate('periods.start_date', '>', $today);
+            })
+            ->when($status === 'vencido', function ($query) use ($today) {
+                $query->whereDate('periods.end_date', '<', $today);
+            })
+            ->when($status === 'suspendido', function ($query) {
+                $query->where('periods.status', 'Suspendido');
+            })
+            ->select([
+                'periods.*',
+                'programs.name as programname',
+                'programprices.textcategoryprice',
+                'programprices.color as programcolor',
+                'customers.name as customername',
+                'customers.document_number as customerdocument',
+            ])
+            ->selectSub(function ($query) use ($today) {
+                $query->from('perioddays')
+                    ->selectRaw('COALESCE(SUM(quantity), 0)')
+                    ->whereColumn('perioddays.id_period', 'periods.id')
+                    ->whereDate('perioddays.date', '<', $today);
+            }, 'elapsed_deliveries')
+            ->selectSub(function ($query) use ($today) {
+                $query->from('perioddays')
+                    ->selectRaw('COALESCE(SUM(quantity), 0)')
+                    ->whereColumn('perioddays.id_period', 'periods.id')
+                    ->whereDate('perioddays.date', '>=', $today);
+            }, 'remaining_deliveries');
 
+        $periods = $query->orderByDesc('periods.id')->paginate(20)->withQueryString();
 
+        return view('period.index', compact('periods'));
+    }
 
-        $periods = Period::join('programprices','programprices.id','=','periods.id_programprice')
-                            ->join('programs','programs.id','=','programprices.id_program')
-                            ->join('customers','customers.id','=','periods.id_customer')
-                            ->where('programs.name','LIKE', "%$program%")
-                            ->where('customers.name','LIKE', "%$customer%")
-                            ->when($filterbydate, function ($query) use ($request) {
-                                $query->where('periods.start_date', \DateTime::createFromFormat('d-m-Y', $request->filterbydate)->format('Y-m-d'));
-                            })
-                            ->orderBy('periods.id', 'desc')
-                            ->paginate(20,['periods.*', 'programs.name AS programname','programprices.textcategoryprice','programprices.color AS programcolor', 'customers.name AS customername']);
+    public function renewals(Request $request)
+    {
+        $program = trim((string) $request->query('filterbyprogram', ''));
+        $customer = trim((string) $request->query('filterbycustomer', ''));
 
-                            return view('period.index')->with('periods',$periods);
+        $periods = Period::from('periods as expired_periods')
+            ->join('programprices', 'programprices.id', '=', 'expired_periods.id_programprice')
+            ->join('programs', 'programs.id', '=', 'programprices.id_program')
+            ->join('customers', 'customers.id', '=', 'expired_periods.id_customer')
+            ->whereDate('expired_periods.end_date', '<', Carbon::today())
+            ->where('expired_periods.status', '!=', 'Oculto')
+            ->whereNull('customers.deleted_at')
+            ->whereNotExists(function ($query) {
+                $query->select(DB::raw(1))
+                    ->from('periods as current_periods')
+                    ->whereColumn('current_periods.id_customer', 'expired_periods.id_customer')
+                    ->whereColumn('current_periods.id_programprice', 'expired_periods.id_programprice')
+                    ->where('current_periods.status', 'Activo')
+                    ->whereDate('current_periods.end_date', '>=', Carbon::today());
+            })
+            ->when($program !== '', function ($query) use ($program) {
+                $query->where('programs.name', 'LIKE', '%' . $program . '%');
+            })
+            ->when($customer !== '', function ($query) use ($customer) {
+                $query->where(function ($subquery) use ($customer) {
+                    $subquery->where('customers.name', 'LIKE', '%' . $customer . '%')
+                        ->orWhere('customers.document_number', 'LIKE', '%' . $customer . '%');
+                });
+            })
+            ->orderByDesc('expired_periods.end_date')
+            ->paginate(20, [
+                'expired_periods.*',
+                'programs.name as programname',
+                'programprices.textcategoryprice',
+                'programprices.color as programcolor',
+                'customers.name as customername',
+                'customers.document_number as customerdocument',
+            ])
+            ->withQueryString();
+
+        return view('period.renewals', compact('periods'));
     }
 
     /**
@@ -48,16 +138,27 @@ class PeriodController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create(Request $request)
     {
         $programs = Programprice::leftJoin('programs','programprices.id_program', '=','programs.id')
                             ->orderBy('programs.name', 'ASC')
                             ->get(['programprices.*', 'programs.id AS programid','programs.name AS programname']);
 
 
-        $customers = Customer::all();
+        $customers = Customer::orderBy('name')->get();
+        $selectedCustomerId = (int) $request->query('customer_id');
+        if ($selectedCustomerId && !$customers->contains('id', $selectedCustomerId)) {
+            $selectedCustomerId = 0;
+        }
+        $selectedProgramPriceId = (int) $request->query('programprice_id');
+        if ($selectedProgramPriceId && !$programs->contains('id', $selectedProgramPriceId)) {
+            $selectedProgramPriceId = 0;
+        }
+        $holidays = Holiday::pluck('date')->map(function ($date) {
+            return Carbon::parse($date)->format('Y-m-d');
+        })->values();
 
-        return view('period.create')->with('programs',$programs)->with('customers',$customers);
+        return view('period.create', compact('programs', 'customers', 'selectedCustomerId', 'selectedProgramPriceId', 'holidays'));
     }
 
     /**
@@ -69,46 +170,166 @@ class PeriodController extends Controller
 
     public function store(Request $request)
     {
-
-        $formatstartdate = \DateTime::createFromFormat('d-m-Y', $request->get('startdate'))->format('Y-m-d');
-
-        $lastlistdates = $request->get('listdate');
-        foreach ($lastlistdates as $element) {
-            if(!next($lastlistdates)) {
-                $formatenddate = $element;
-            }
-        }
-
-        $period_id = Period::insertGetId([
-
-            'id_programprice' => $request->get('idprogram'),
-            'id_customer' => $request->get('idcustomer'),
-            'start_date' => $formatstartdate,
-            'end_date' => $formatenddate,
-            'number_of_days' => $request->get('numberofdays'),
-            'quantity_of_menu' => $request->get('valquantitymenu'),
-            'unitprice_moment' => $request->get('valunitprice'),
-            'total_price' => $request->get('valtotalprice'),
-            'status' => 'Activo',
-            'created_at' => date("Y-m-d H:i:s", strtotime('now')),
-
+        $validated = $request->validate([
+            'idprogram' => ['required', 'integer', 'exists:programprices,id'],
+            'idcustomer' => ['required', 'integer', 'exists:customers,id'],
+            'startdate' => ['required', 'date_format:d-m-Y'],
+            'numberofdays' => ['required', 'integer', 'min:1', 'max:365'],
         ]);
 
-
-        foreach($request->get('listdayname') as $key => $value){
-                $data = array(
-                            'id_period'=>$period_id,
-                            'dayname'=>$request->get('listdayname') [$key],
-                            'date'=> $request->get('listdate') [$key],
-                            'quantity'=>$request->get('listcantidad') [$key],
-                );
-                Periodday::insert($data);
+        $startDate = Carbon::createFromFormat('d-m-Y', $validated['startdate'])->startOfDay();
+        if ($startDate->lt(Carbon::today())) {
+            throw ValidationException::withMessages(['startdate' => 'La fecha de inicio no puede estar en el pasado.']);
         }
 
-        return redirect('/period');
+        $holidayDates = Holiday::pluck('date')->map(function ($date) {
+            return Carbon::parse($date)->format('Y-m-d');
+        })->all();
 
+        if ($startDate->isWeekend() || in_array($startDate->format('Y-m-d'), $holidayDates, true)) {
+            throw ValidationException::withMessages(['startdate' => 'La fecha de inicio debe ser un día laborable.']);
+        }
 
+        $periodDays = $this->buildPeriodDays($startDate, (int) $validated['numberofdays'], $holidayDates);
+        $conflictingPeriod = $this->findConflictingPeriod(
+            (int) $validated['idcustomer'],
+            (int) $validated['idprogram'],
+            $startDate,
+            Carbon::parse(end($periodDays)['date'])
+        );
+        if ($conflictingPeriod) {
+            throw ValidationException::withMessages([
+                'startdate' => 'El cliente ya tiene un período activo para este programa que coincide con las fechas seleccionadas.',
+            ]);
+        }
 
+        $programPrice = Programprice::findOrFail($validated['idprogram']);
+        $quantity = count($periodDays);
+        $unitPrice = $this->unitPriceForQuantity($programPrice, $quantity);
+        $totalPrice = round($unitPrice * $quantity, 2);
+
+        DB::transaction(function () use ($validated, $startDate, $periodDays, $quantity, $unitPrice, $totalPrice) {
+            $period = Period::create([
+                'id_programprice' => $validated['idprogram'],
+                'id_customer' => $validated['idcustomer'],
+                'start_date' => $startDate->format('Y-m-d'),
+                'end_date' => end($periodDays)['date'],
+                'number_of_days' => (int) $validated['numberofdays'],
+                'quantity_of_menu' => $quantity,
+                'unitprice_moment' => $unitPrice,
+                'total_price' => $totalPrice,
+                'status' => 'Activo',
+            ]);
+
+            foreach ($periodDays as &$day) {
+                $day['id_period'] = $period->id;
+            }
+            unset($day);
+            Periodday::insert($periodDays);
+        });
+
+        return redirect('/period')->with('success', 'Período creado correctamente.');
+    }
+
+    private function buildPeriodDays(Carbon $startDate, int $numberOfDays, array $holidayDates): array
+    {
+        $days = [];
+        $date = $startDate->copy();
+
+        while (count($days) < $numberOfDays) {
+            $formattedDate = $date->format('Y-m-d');
+            if (!$date->isWeekend() && !in_array($formattedDate, $holidayDates, true)) {
+                $days[] = [
+                    'dayname' => ucfirst($date->locale('es')->dayName),
+                    'date' => $formattedDate,
+                    'quantity' => 1,
+                ];
+            }
+            $date->addDay();
+        }
+
+        return $days;
+    }
+
+    private function unitPriceForQuantity(Programprice $price, int $quantity): float
+    {
+        if ($quantity >= 30) {
+            return round((float) $price->thirtyprice / 30, 2);
+        }
+        if ($quantity >= 20) {
+            return round((float) $price->twentyprice / 20, 2);
+        }
+        if ($quantity >= 10) {
+            return round((float) $price->tenprice / 10, 2);
+        }
+        if ($quantity >= 5) {
+            return round((float) $price->fiveprice / 5, 2);
+        }
+
+        return round((float) $price->oneprice, 2);
+    }
+
+    private function buildPeriodDaysWithQuantities(Carbon $startDate, array $quantities, array $holidayDates): array
+    {
+        $days = [];
+        $date = $startDate->copy();
+
+        foreach ($quantities as $quantity) {
+            while ($date->isWeekend() || in_array($date->format('Y-m-d'), $holidayDates, true)) {
+                $date->addDay();
+            }
+            $days[] = [
+                'dayname' => ucfirst($date->locale('es')->dayName),
+                'date' => $date->format('Y-m-d'),
+                'quantity' => $quantity,
+            ];
+            $date->addDay();
+        }
+
+        return $days;
+    }
+
+    private function findConflictingPeriod(int $customerId, int $programPriceId, Carbon $startDate, Carbon $endDate): ?Period
+    {
+        return Period::where('id_customer', $customerId)
+            ->where('id_programprice', $programPriceId)
+            ->where('status', 'Activo')
+            ->whereDate('start_date', '<=', $endDate->format('Y-m-d'))
+            ->whereDate('end_date', '>=', $startDate->format('Y-m-d'))
+            ->orderBy('start_date')
+            ->first();
+    }
+
+    public function checkConflict(Request $request)
+    {
+        $validated = $request->validate([
+            'idprogram' => ['required', 'integer', 'exists:programprices,id'],
+            'idcustomer' => ['required', 'integer', 'exists:customers,id'],
+            'startdate' => ['required', 'date_format:d-m-Y'],
+            'numberofdays' => ['required', 'integer', 'min:1', 'max:365'],
+        ]);
+
+        $startDate = Carbon::createFromFormat('d-m-Y', $validated['startdate'])->startOfDay();
+        $holidayDates = Holiday::pluck('date')->map(function ($date) {
+            return Carbon::parse($date)->format('Y-m-d');
+        })->all();
+        $periodDays = $this->buildPeriodDays($startDate, (int) $validated['numberofdays'], $holidayDates);
+        $endDate = Carbon::parse(end($periodDays)['date']);
+        $period = $this->findConflictingPeriod(
+            (int) $validated['idcustomer'],
+            (int) $validated['idprogram'],
+            $startDate,
+            $endDate
+        );
+
+        return response()->json([
+            'conflict' => (bool) $period,
+            'message' => $period
+                ? 'Ya existe un período activo para este cliente y programa, desde '
+                    . Carbon::parse($period->start_date)->format('d-m-Y') . ' hasta '
+                    . Carbon::parse($period->end_date)->format('d-m-Y') . '.'
+                : null,
+        ]);
     }
 
     /**
@@ -152,43 +373,56 @@ class PeriodController extends Controller
      */
     public function update(Request $request, $id)
     {
+        $validated = $request->validate([
+            'idprogram' => ['required', 'integer', 'exists:programprices,id'],
+            'startdate' => ['required', 'date_format:d-m-Y'],
+            'numberofdays' => ['required', 'integer', 'min:1', 'max:365'],
+            'listcantidad' => ['required', 'array', 'min:1', 'max:730'],
+            'listcantidad.*' => ['required', 'integer', 'in:0,1'],
+        ]);
 
-        $formatstartdate = \DateTime::createFromFormat('d-m-Y', $request->get('startdate'))->format('Y-m-d');
-        $lastlistdates = $request->get('listdate');
-        foreach ($lastlistdates as $element) {
-            if(!next($lastlistdates)) {
-                $formatenddate = $element;
-            }
+        $period = Period::findOrFail($id);
+        $startDate = Carbon::createFromFormat('d-m-Y', $validated['startdate'])->startOfDay();
+        $holidayDates = Holiday::pluck('date')->map(function ($date) {
+            return Carbon::parse($date)->format('Y-m-d');
+        })->all();
+
+        if ($startDate->isWeekend() || in_array($startDate->format('Y-m-d'), $holidayDates, true)) {
+            throw ValidationException::withMessages(['startdate' => 'La fecha de inicio debe ser un día laborable.']);
         }
 
-        $period = Period::find($id);
-        $period->id_programprice = $request->get('idprogram');
-        $period->start_date = $formatstartdate;
-        $period->end_date = $formatenddate;
-        $period->number_of_days = $request->get('numberofdays');
-        $period->quantity_of_menu = $request->get('valquantitymenu');
-        $period->unitprice_moment = $request->get('valunitprice');
-        $period->total_price = $request->get('valtotalprice');
-        $period->status = 'Activo';
-        $period->updated_at = date("Y-m-d H:i:s", strtotime('now'));
+        $quantities = array_map('intval', $validated['listcantidad']);
+        if (array_sum($quantities) !== (int) $validated['numberofdays'] || end($quantities) !== 1) {
+            throw ValidationException::withMessages([
+                'numberofdays' => 'La programación diaria no coincide con la cantidad de días del período.',
+            ]);
+        }
 
-        $period->save();
+        $periodDays = $this->buildPeriodDaysWithQuantities($startDate, $quantities, $holidayDates);
+        $quantity = array_sum($quantities);
+        $unitPrice = $this->unitPriceForQuantity(Programprice::findOrFail($validated['idprogram']), $quantity);
 
-            $data = Periodday::leftJoin('periods','perioddays.id_period', '=','periods.id')
-                            ->where('id_period', $id);
-                            $data->delete();
+        DB::transaction(function () use ($period, $validated, $startDate, $periodDays, $quantity, $unitPrice) {
+            $period->update([
+                'id_programprice' => $validated['idprogram'],
+                'start_date' => $startDate->format('Y-m-d'),
+                'end_date' => end($periodDays)['date'],
+                'number_of_days' => (int) $validated['numberofdays'],
+                'quantity_of_menu' => $quantity,
+                'unitprice_moment' => $unitPrice,
+                'total_price' => round($unitPrice * $quantity, 2),
+                'status' => 'Activo',
+            ]);
 
-            foreach($request->get('listdayname') as $key => $value){
-                $data = array(
-                            'id_period'=>$id,
-                            'dayname'=>$request->get('listdayname') [$key],
-                            'date'=> $request->get('listdate') [$key],
-                            'quantity'=>$request->get('listcantidad') [$key],
-                );
-                Periodday::insert($data);
+            Periodday::where('id_period', $period->id)->delete();
+            foreach ($periodDays as &$day) {
+                $day['id_period'] = $period->id;
             }
+            unset($day);
+            Periodday::insert($periodDays);
+        });
 
-        return redirect('period');
+        return redirect('period')->with('success', 'Período actualizado correctamente.');
 
     }
 
@@ -200,75 +434,66 @@ class PeriodController extends Controller
      */
     public function destroy($id)
     {
+        $period = Period::findOrFail($id);
+        $period->update(['status' => 'Oculto']);
 
-
-        $data = Periodday::leftJoin('periods','perioddays.id_period', '=','periods.id')
-                            ->where('id_period', $id);
-        Period::where('id', $id)->delete();
-        $data->delete();
-
-        return redirect('/period');
+        return redirect('/period')->with('success', 'Período ocultado correctamente.');
 
     }
 
 
     public function deliveriesoftheday(Request $request)
     {
+        $datefilter = $this->validatedDeliveryDate($request);
+        $perioddays = $this->deliveryQuery($request, $datefilter)
+            ->orderBy('customers.district')
+            ->orderBy('customers.address')
+            ->orderBy('customers.name')
+            ->paginate(20, [
+                'perioddays.*',
+                'periods.id as periodsid',
+                'programs.name as programname',
+                'programprices.textcategoryprice',
+                'programprices.color as programcolor',
+                'customers.id as customerid',
+                'customers.name as customername',
+                'customers.document_number as customerdocument',
+                'customers.address as customeraddress',
+                'customers.district as customerdistrict',
+                'customers.address_reference as customeraddressreference',
+                'customers.phone as customerphone',
+            ])
+            ->withQueryString();
 
-        $program = $request->get('filterbyprogram');
-        $customer = $request->get('filterbycustomer');
-        $date = $request->get('filterbydate');
-
-        if($date == ''){
-            $datefilter = Carbon::now()->format('Y-m-d');
-        }else{
-            $datefilter = \DateTime::createFromFormat('d-m-Y', $date)->format('Y-m-d');
-        }
-
-        $perioddays = Periodday::join('periods','periods.id','=','perioddays.id_period')
-
-                                ->join('programprices','programprices.id','=','periods.id_programprice')
-                                ->join('programs','programs.id','=','programprices.id_program')
-
-                                ->join('customers','customers.id','=','periods.id_customer')
-                                ->where('programs.name','LIKE', "%$program%")
-                                ->where('customers.name','LIKE', "%$customer%")
-                                ->where('perioddays.date', $datefilter)
-                                ->orderBy('programs.name', 'ASC')
-                                ->orderBy('customers.name', 'ASC')
-                                ->paginate(20,['perioddays.*' , 'periods.id AS periodsid', 'programs.name AS programname','programprices.textcategoryprice AS textcategoryprice','programprices.color AS programcolor', 'customers.id AS customerid', 'customers.name AS customername']);
-
-        return view('period.deliveriesoftheday')->with('perioddays',$perioddays);
+        return view('period.deliveriesoftheday', compact('perioddays', 'datefilter'));
 
     }
 
     // Print list Stickers
     public function downloadStickers(Request $request){
-
-        $program = $request->get('filterbyprogram');
-        $customer = $request->get('filterbycustomer');
-        $date = $request->get('filterbydate');
-
-        if($date == ''){
-            $datefilter = Carbon::now()->format('Y-m-d');
-        }else{
-            $datefilter = \DateTime::createFromFormat('d-m-Y', $date)->format('Y-m-d');
-        }
-
-        $perioddays = Periodday::join('periods','periods.id','=','perioddays.id_period')
-                                ->join('programprices','programprices.id','=','periods.id_programprice')
-                                ->join('programs','programs.id','=','programprices.id_program')
-                                ->join('customers','customers.id','=','periods.id_customer')
-                                ->where('programs.name','LIKE', "%$program%")
-                                ->where('customers.name','LIKE', "%$customer%")
-                                ->where('perioddays.date', $datefilter)
+        $datefilter = $this->validatedDeliveryDate($request);
+        $perioddays = $this->deliveryQuery($request, $datefilter)
                                 ->orderBy('programs.name', 'ASC')
                                 ->orderBy('customers.name', 'ASC')
-                                ->get(['programs.name AS programname', 'programprices.textcategoryprice AS textcategoryprice', 'customers.name AS customername', 'customers.district AS customerdistrict', 'customers.address_reference AS customeraddressreference', 'perioddays.date AS perioddate', 'perioddays.quantity AS periodquantity']);
+                                ->get([
+                                    'programs.name as programname',
+                                    'programprices.textcategoryprice',
+                                    'programprices.color as programcolor',
+                                    'customers.name as customername',
+                                    'customers.document_number as customerdocument',
+                                    'customers.address as customeraddress',
+                                    'customers.district as customerdistrict',
+                                    'customers.address_reference as customeraddressreference',
+                                    'customers.phone as customerphone',
+                                    'perioddays.date as perioddate',
+                                    'perioddays.quantity as periodquantity',
+                                ]);
 
         view()->share('period.stickers',$perioddays);
 
-        $pdf = PDF::loadView('period.stickers', ['perioddays' => $perioddays]);
+        $pdf = PDF::loadView('period.stickers', ['perioddays' => $perioddays])
+            ->setPaper('a4', 'portrait')
+            ->setOptions(['dpi' => 150, 'isRemoteEnabled' => false]);
         //return $pdf->download('Lista de Stickers.pdf');
         return $pdf->stream();
 
@@ -277,34 +502,74 @@ class PeriodController extends Controller
 
     // Print list entry control
     public function downloadEntryControl(Request $request){
-
-        $program = $request->get('filterbyprogram');
-        $customer = $request->get('filterbycustomer');
-        $date = $request->get('filterbydate');
-
-        if($date == ''){
-            $datefilter = Carbon::now()->format('Y-m-d');
-        }else{
-            $datefilter = \DateTime::createFromFormat('d-m-Y', $date)->format('Y-m-d');
-        }
-
-        $perioddays = Periodday::join('periods','periods.id','=','perioddays.id_period')
-                                ->join('programprices','programprices.id','=','periods.id_programprice')
-                                ->join('programs','programs.id','=','programprices.id_program')
-                                ->join('customers','customers.id','=','periods.id_customer')
-                                ->where('programs.name','LIKE', "%$program%")
-                                ->where('customers.name','LIKE', "%$customer%")
-                                ->where('perioddays.date', $datefilter)
+        $datefilter = $this->validatedDeliveryDate($request);
+        $perioddays = $this->deliveryQuery($request, $datefilter)
                                 ->orderBy('programs.name', 'ASC')
                                 ->orderBy('customers.name', 'ASC')
-                                ->get(['programs.name AS programname', 'programprices.textcategoryprice AS textcategoryprice' ,'customers.name AS customername', 'customers.address AS customeraddress', 'customers.district AS customerdistrict', 'customers.phone AS customerphone', 'customers.address_reference AS customeraddressreference']);
+                                ->get([
+                                    'programs.name as programname',
+                                    'programprices.textcategoryprice',
+                                    'customers.name as customername',
+                                    'customers.document_number as customerdocument',
+                                    'customers.address as customeraddress',
+                                    'customers.district as customerdistrict',
+                                    'customers.phone as customerphone',
+                                    'customers.address_reference as customeraddressreference',
+                                    'perioddays.date as perioddate',
+                                    'perioddays.quantity as periodquantity',
+                                ]);
 
         view()->share('period.entrycontrol',$perioddays);
 
-        $pdf = PDF::loadView('period.entrycontrol', ['perioddays' => $perioddays]);
+        $pdf = PDF::loadView('period.entrycontrol', ['perioddays' => $perioddays])
+            ->setPaper('a4', 'landscape')
+            ->setOptions(['dpi' => 150, 'isRemoteEnabled' => false]);
         //return $pdf->download('Lista de Stickers.pdf');
         return $pdf->stream();
 
+    }
+
+    private function validatedDeliveryDate(Request $request): string
+    {
+        $date = trim((string) $request->query('filterbydate', ''));
+        if ($date === '') {
+            return Carbon::today()->format('Y-m-d');
+        }
+
+        try {
+            $parsedDate = Carbon::createFromFormat('d-m-Y', $date);
+            if ($parsedDate->format('d-m-Y') !== $date) {
+                throw new \InvalidArgumentException();
+            }
+            return $parsedDate->format('Y-m-d');
+        } catch (\Throwable $exception) {
+            session()->flash('delivery_filter_error', 'La fecha debe tener el formato día-mes-año. Se muestran las entregas de hoy.');
+            return Carbon::today()->format('Y-m-d');
+        }
+    }
+
+    private function deliveryQuery(Request $request, string $datefilter)
+    {
+        $program = trim((string) $request->query('filterbyprogram', ''));
+        $customer = trim((string) $request->query('filterbycustomer', ''));
+
+        return Periodday::join('periods', 'periods.id', '=', 'perioddays.id_period')
+            ->join('programprices', 'programprices.id', '=', 'periods.id_programprice')
+            ->join('programs', 'programs.id', '=', 'programprices.id_program')
+            ->join('customers', 'customers.id', '=', 'periods.id_customer')
+            ->where('periods.status', 'Activo')
+            ->whereNull('customers.deleted_at')
+            ->where('perioddays.quantity', '>', 0)
+            ->whereDate('perioddays.date', $datefilter)
+            ->when($program !== '', function ($query) use ($program) {
+                $query->where('programs.name', 'LIKE', '%' . $program . '%');
+            })
+            ->when($customer !== '', function ($query) use ($customer) {
+                $query->where(function ($subquery) use ($customer) {
+                    $subquery->where('customers.name', 'LIKE', '%' . $customer . '%')
+                        ->orWhere('customers.document_number', 'LIKE', '%' . $customer . '%');
+                });
+            });
     }
 
 

@@ -5,79 +5,103 @@
 @section('content')
 
     <div class="card shadow p-3 mt-4 mb-4">
-        <form action="/period" class="row" method="POST">
+        @if (session('success'))
+            <div class="alert alert-success" role="alert">{{ session('success') }}</div>
+        @endif
+        @if ($errors->any())
+            <div class="alert alert-danger" role="alert">Revise los campos marcados e inténtelo nuevamente.</div>
+        @endif
+        <div id="period-conflict-alert" class="alert alert-warning d-none" role="alert"></div>
+        <form id="period-form" action="{{ route('period.store') }}" class="row" method="POST">
             @csrf
 
             <div class="col-md-6">
 
                 <div class="mb-3">
                     <label class="form-label">Programa</label>
-                    <select class="form-select" name="idprogram" id="idprogram" required>
-                        <option selected disabled value="">Seleccione...</option>
+                    @if ($selectedProgramPriceId)
+                        <input type="hidden" name="idprogram" value="{{ $selectedProgramPriceId }}">
+                    @endif
+                    <select class="form-select @error('idprogram') is-invalid @enderror" name="{{ $selectedProgramPriceId ? '' : 'idprogram' }}" id="idprogram" {{ $selectedProgramPriceId ? 'disabled' : 'required' }}>
+                        <option disabled value="" {{ old('idprogram', $selectedProgramPriceId) ? '' : 'selected' }}>Seleccione...</option>
 
                         @foreach ($programs as $row)
-                        <option value="{{ $row->id }}" data-unitprice="{{ $row->oneprice }}" data-fiveprice="{{ $row->fiveprice }}" data-tenprice="{{ $row->tenprice }}" data-twentyprice="{{ $row->twentyprice }}" data-thirtyprice="{{ $row->thirtyprice }}">{{ $row->programname }} / {{ $row->textcategoryprice }}</option>
+                        <option value="{{ $row->id }}" data-unitprice="{{ $row->oneprice }}" data-fiveprice="{{ $row->fiveprice }}" data-tenprice="{{ $row->tenprice }}" data-twentyprice="{{ $row->twentyprice }}" data-thirtyprice="{{ $row->thirtyprice }}" {{ (int) old('idprogram', $selectedProgramPriceId) === (int) $row->id ? 'selected' : '' }}>{{ $row->programname }} / {{ $row->textcategoryprice }}</option>
                         @endforeach
 
                     </select>
+                    @if ($selectedProgramPriceId)<div class="form-text"><i class="bi bi-lock-fill"></i> Programa de la renovación.</div>@endif
+                    @error('idprogram')<div class="invalid-feedback">{{ $message }}</div>@enderror
                 </div>
 
                 <div class="mb-3">
                     <label class="form-label">Cliente</label>
                     <div class="input-group">
-                        <select class="form-select" name="idcustomer" required>
-                            <option selected disabled value="">Seleccione...</option>
+                        @if ($selectedCustomerId)
+                            <input type="hidden" name="idcustomer" value="{{ $selectedCustomerId }}">
+                        @endif
+                        <select class="form-select @error('idcustomer') is-invalid @enderror" name="{{ $selectedCustomerId ? '' : 'idcustomer' }}" {{ $selectedCustomerId ? 'disabled' : 'required' }}>
+                            <option disabled value="" {{ old('idcustomer', $selectedCustomerId) ? '' : 'selected' }}>Seleccione...</option>
 
                             @foreach ($customers as $row)
-                            <option value="{{ $row->id }}">{{ $row->name }}</option>
+                            <option value="{{ $row->id }}" {{ (int) old('idcustomer', $selectedCustomerId) === (int) $row->id ? 'selected' : '' }}>
+                                {{ $row->name }} — {{ $row->document_number ?: 'Sin documento' }}
+                            </option>
                             @endforeach
 
                         </select>
                         {{-- <input type="search" name="idcustomer" class="form-control" placeholder="Elija cliente" autocomplete="off" aria-label="Recipient's username" aria-describedby="button-addon2"> --}}
-                        <button class="btn btn-primary" type="button" id="button-addon2" data-bs-toggle="modal" data-bs-target="#mdlnewcustomer"><i class="bi bi-person-plus"></i></button>
+                        @if ($selectedCustomerId)
+                            <span class="input-group-text" title="Cliente fijado"><i class="bi bi-lock-fill"></i></span>
+                        @else
+                            <a class="btn btn-primary" href="{{ route('customer.create') }}" title="Crear cliente"><i class="bi bi-person-plus"></i></a>
+                        @endif
                     </div>
+                    @error('idcustomer')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
                 </div>
 
                 <div class="mb-3">
                     <label class="form-label">Fecha Inicio</label>
                     <div class="input-group dvdate">
-                        <input type="text" name="startdate" id="inputdatestart" class="form-control" placeholder="00-00-0000" autocomplete="off" aria-describedby="inputspdate">
+                        <input type="text" name="startdate" id="inputdatestart" class="form-control @error('startdate') is-invalid @enderror" placeholder="00-00-0000" value="{{ old('startdate') }}" autocomplete="off" aria-describedby="inputspdate" required>
                         <span class="input-group-text" id="inputspdate"><i class="bi bi-calendar2-week"></i></span>
                     </div>
+                    @error('startdate')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
 
                 </div>
 
                 <div class="mb-2">
                     <div class="bxdays text-center text-light p-2">
                         <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" name="numberofdays" id="quantityradio1" value="5">
+                            <input class="form-check-input" type="radio" name="numberofdays" id="quantityradio1" value="5" {{ old('numberofdays') == 5 ? 'checked' : '' }} required>
                             <label class="form-check-label" for="quantityradio1">5 Días</label>
                         </div>
                         <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" name="numberofdays" id="quantityradio2" value="6">
+                            <input class="form-check-input" type="radio" name="numberofdays" id="quantityradio2" value="6" {{ old('numberofdays') == 6 ? 'checked' : '' }}>
                             <label class="form-check-label" for="quantityradio2">6 Días</label>
                         </div>
                         <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" name="numberofdays" id="quantityradio3" value="10">
+                            <input class="form-check-input" type="radio" name="numberofdays" id="quantityradio3" value="10" {{ old('numberofdays') == 10 ? 'checked' : '' }}>
                             <label class="form-check-label" for="quantityradio3">10 Días</label>
                         </div>
                         <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" name="numberofdays" id="quantityradio4" value="12">
+                            <input class="form-check-input" type="radio" name="numberofdays" id="quantityradio4" value="12" {{ old('numberofdays') == 12 ? 'checked' : '' }}>
                             <label class="form-check-label" for="quantityradio4">12 Días</label>
                         </div>
                         <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" name="numberofdays" id="quantityradio5" value="24">
+                            <input class="form-check-input" type="radio" name="numberofdays" id="quantityradio5" value="24" {{ old('numberofdays') == 24 ? 'checked' : '' }}>
                             <label class="form-check-label" for="quantityradio5">24 Días</label>
                         </div>
                         <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" name="numberofdays" id="quantityradio6" value="1">
+                            <input class="form-check-input" type="radio" name="numberofdays" id="quantityradio6" value="{{ old('numberofdays', 1) }}" {{ old('numberofdays') && !in_array((int) old('numberofdays'), [5, 6, 10, 12, 24], true) ? 'checked' : '' }}>
                             <label class="form-check-label" for="quantityradio6">Otro</label>
                         </div>
                     </div>
                 </div>
+                @error('numberofdays')<div class="invalid-feedback d-block mb-2">{{ $message }}</div>@enderror
 
                 <div class="mb-3 d-none divquantity" id="divquantity">
-                    <input type="text" name="customquantity" id="customquantity" class="form-control" min='1' value="1">
+                    <input type="number" id="customquantity" class="form-control" min="1" max="365" value="{{ old('numberofdays', 1) }}">
                 </div>
 
                 <hr>
@@ -93,18 +117,15 @@
                             <tbody>
                                 <tr>
                                     <td><b>Cantidad menú</b></td>
-                                    <td class="text-end quantitymenu">0</td>
-                                    <input type="hidden" name="valquantitymenu" id="valquantitymenu" value="0">
+                                    <td class="text-end"><span class="quantitymenu">0</span><input type="hidden" id="valquantitymenu" value="0"></td>
                                 </tr>
                                 <tr>
                                     <td><b>Precio unitario</b></td>
-                                    <td class="text-end">S/<span id="textunitprice">0.00</span></td>
-                                    <input type="hidden" name="valunitprice" id="valunitprice" value="0">
+                                    <td class="text-end">S/<span id="textunitprice">0.00</span><input type="hidden" id="valunitprice" value="0"></td>
                                 </tr>
                                 <tr>
                                     <td><b>Precio total</b></td>
-                                    <td class="text-end">S/<span id="texttotalprice">0.00</span></td>
-                                    <input type="hidden" name="valtotalprice" id="valtotalprice" value="0">
+                                    <td class="text-end">S/<span id="texttotalprice">0.00</span><input type="hidden" id="valtotalprice" value="0"></td>
                                 </tr>
                             </tbody>
                         </table>
@@ -115,7 +136,7 @@
 
             <div class="col-md-6">
                 <div class="bxlistday p-3">
-                    <h5 class="text-light">Lista Días</h4>
+                    <h5 class="text-light">Lista Días</h5>
                     <div class="table-responsive dvtable p-3">
                         <table class="table table-hover table-borderless">
                             <thead>
@@ -142,88 +163,11 @@
 
             <div class="col-md-12 text-end mt-3 mb-3">
                 <a class="btn btn-secondary" href="{{  url('period') }}" role="button">Cancelar</a>
-                <button type="submit" class="btn btn-primary">Agregar</button>
+                <button type="submit" class="btn btn-primary" id="period-submit">Agregar</button>
             </div>
 
         </form>
     </div>
-
-    {{-- PopUp New Customer --}}
-
-    <div class="modal fade" id="mdlnewcustomer" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg modal-dialog-centered">
-            <div class="modal-content">
-                <form action="">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="staticBackdropLabel">Registrar Nuevo Cliente</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">Tipo Docuemnto</label>
-                                <select class="form-select" name="documenttype" required>
-                                    <option selected disabled value="">Seleccione...</option>
-                                    <option value="DNI">DNI</option>
-                                    <option value="CARNET EXT.">CARNET EXT.</option>
-                                    <option value="OTROS">OTROS</option>
-                                </select>
-                            </div>
-                
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">N° Documento</label>
-                                <input type="number" name="documentnumber" class="form-control" required>
-                            </div>
-                
-                            <div class="col-md-12 mb-3">
-                                <label class="form-label">Nombre y Apellidos</label>
-                                <input type="text" name="name" class="form-control" required>
-                            </div>
-                
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">Dirección</label>
-                                <input type="text" name="address" class="form-control" required>
-                            </div>
-                
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">Distrito</label>
-                                <select class="form-select" name="district" required>
-                                    <option selected disabled value="">Seleccione...</option>
-                                    <option value="Ate">Ate</option>
-                                    <option value="Ancón">Ancón</option>
-                                    <option value="Comas">Comas</option>
-                                </select>
-                            </div>
-                
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">Número de teléfono</label>
-                                <input type="text" name="phone" class="form-control" required>
-                            </div>
-                
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">Correo electrónico</label>
-                                <input type="email" name="email" class="form-control" required>
-                            </div>
-                
-                            <div class="col-md-6 mb-3">
-                                <div class="form-check form-switch">
-                                    <input type="hidden" name="status" value="Inactivo">
-                                    <input class="form-check-input" type="checkbox" name="status" id="statuscustomer" value="Activo" checked>
-                                    <label class="form-check-label" for="statuscustomer"> Estado</label>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                        <button type="button" class="btn btn-primary">Registrar</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    {{-- End PopUp New Customer --}}
 
 @endsection
 
@@ -231,27 +175,11 @@
 
 <script>
     $(document).ready(function(){
+        let conflictTimer;
+        let conflictRequestId = 0;
 
-        var datesForDisable; /*Feridos con formato DD-MM-YYYY*/
-        var holidays; /*Feridos con formato YYYY-MM-DD*/
-
-
-        $.ajax({
-            url: '/holiday-listholidays',
-            method: 'GET',
-            async: false,
-            success : function(res) {
-                var obj = jQuery.parseJSON(res);
-                var a=[];
-                var b=[];
-                $.each(obj, function(key,value) {
-                    a.push(moment(value.date).format('DD-MM-YYYY'));
-                    b.push(moment(value.date).format('YYYY-MM-DD'));
-                });
-                datesForDisable = a;
-                holidays = b;
-            }
-        });
+        const holidays = @json($holidays);
+        const datesForDisable = holidays.map(date => moment(date, 'YYYY-MM-DD').format('DD-MM-YYYY'));
 
 
         $( "#inputdatestart" ).datepicker({
@@ -277,8 +205,9 @@
 
         });
 
-        $('#customquantity').keyup(function(){
-            $('#quantityradio6').val($(this).val());
+        $('#customquantity').on('input', function(){
+            const quantity = Math.min(365, Math.max(1, parseInt($(this).val(), 10) || 1));
+            $('#quantityradio6').val(quantity);
             generatelistdays();
         });
 
@@ -293,72 +222,113 @@
 
         function generatelistdays(){
             $("#tbodylistdays").html('');
-            var days_count = $("input[name=numberofdays]:checked").val();
-            let getdateinput = $('#inputdatestart').val();
-            let dateinputorganize = moment(getdateinput, 'DD-MM-YYYY');
-            let formatdatesistem = dateinputorganize.format('YYYY-MM-DD');
+            const daysCount = parseInt($("input[name=numberofdays]:checked").val(), 10);
+            const currentDate = moment($('#inputdatestart').val(), 'DD-MM-YYYY', true);
 
-                var vardate = new Date(formatdatesistem);
-                vardate.setDate(vardate.getDate() + 1);
-
-                var dias = parseInt(days_count);
-                $i = 1;
-                foundholiday = 0;
-                trdate = '';
-
-                while ($i <= dias) {
-
-                    resultnameday = moment(vardate).format('dddd');
-                    resultdateview = moment(vardate).format('DD-MM-YYYY');
-                    if(resultnameday =='Sabado' || resultnameday =='Domingo'){
-                        vardate.setDate(vardate.getDate() + 1);
-                    }else{
-                        foundholiday = 0;
-                        for (const element of holidays) {
-                            resformatdate = moment(vardate).format('YYYY-MM-DD');
-                            if(element == resformatdate){
-                                foundholiday = 1;
-                                break;
-                            }else{
-
-                            }
-                        }
-
-                        if(foundholiday == 0){
-                            trdate += '<tr><td class="align-middle">'+resultnameday+' <input type="hidden" name="listdayname[]" value="'+resultnameday+'"></td><td class="align-middle">'+resultdateview+'<input type="hidden" name="listdate[]" value="'+resformatdate+'"></td><td class="align-middle"> <input type="text" name="listcantidad[]" class="form-control text-center" value="1" readonly> </td></tr>';
-                            vardate.setDate(vardate.getDate() + 1);
-                            $i++;
-                        } else {
-                            vardate.setDate(vardate.getDate() + 1);
-                        }
-                    }
-
-                }
-
-                $('#tbodylistdays').html(trdate);
-                countmenutotal();
+            if (!daysCount || !currentDate.isValid()) {
+                $('#tbodylistdays').html('<tr><td colspan="3" class="text-center">Seleccione fecha de inicio y cantidad de días.</td></tr>');
+                $('#valquantitymenu').val(0);
+                $('.quantitymenu').text(0);
                 calculateunitprice();
-                totalbillingamount();
+                clearConflictAlert();
+                return;
+            }
+
+            let generated = 0;
+            let rows = '';
+            while (generated < daysCount) {
+                const systemDate = currentDate.format('YYYY-MM-DD');
+                const isWeekend = currentDate.isoWeekday() > 5;
+                if (!isWeekend && !holidays.includes(systemDate)) {
+                    const dayName = currentDate.locale('es').format('dddd');
+                    rows += '<tr><td class="align-middle">'+dayName+'</td><td class="align-middle">'+currentDate.format('DD-MM-YYYY')+'</td><td class="align-middle"><input type="text" class="form-control text-center" value="1" readonly></td></tr>';
+                    generated++;
+                }
+                currentDate.add(1, 'day');
+            }
+
+            $('#tbodylistdays').html(rows);
+            $('.quantitymenu').text(generated);
+            $('#valquantitymenu').val(generated);
+            calculateunitprice();
+            scheduleConflictCheck();
         }
 
 
         $('#idprogram').change(function () {
             calculateunitprice();
+            scheduleConflictCheck();
         });
+
+        $('select[name="idcustomer"]').change(scheduleConflictCheck);
+
+        function clearConflictAlert() {
+            $('#period-conflict-alert').addClass('d-none').text('');
+            $('#period-submit').prop('disabled', false);
+        }
+
+        function scheduleConflictCheck() {
+            clearTimeout(conflictTimer);
+            conflictTimer = setTimeout(checkPeriodConflict, 300);
+        }
+
+        function checkPeriodConflict() {
+            const requestId = ++conflictRequestId;
+            const customerId = $('input[type="hidden"][name="idcustomer"]').val() || $('select[name="idcustomer"]').val();
+            const programId = $('#idprogram').val();
+            const startDate = $('#inputdatestart').val();
+            const numberOfDays = $("input[name=numberofdays]:checked").val();
+
+            if (!customerId || !programId || !startDate || !numberOfDays) {
+                clearConflictAlert();
+                return;
+            }
+
+            const params = new URLSearchParams({
+                idcustomer: customerId,
+                idprogram: programId,
+                startdate: startDate,
+                numberofdays: numberOfDays
+            });
+
+            fetch("{{ route('period.check-conflict') }}?" + params.toString(), {
+                headers: { 'Accept': 'application/json' }
+            })
+                .then(response => response.ok ? response.json() : Promise.reject())
+                .then(data => {
+                    if (requestId !== conflictRequestId) return;
+                    if (data.conflict) {
+                        $('#period-conflict-alert').removeClass('d-none').text(data.message);
+                        $('#period-submit').prop('disabled', true);
+                    } else {
+                        clearConflictAlert();
+                    }
+                })
+                .catch(() => {
+                    if (requestId === conflictRequestId) clearConflictAlert();
+                });
+        }
 
         function calculateunitprice(){
             var  quantitymenu = $('#valquantitymenu').val();
 
+            if (!$('#idprogram').val() || quantitymenu <= 0) {
+                $('#textunitprice').text('0.00');
+                $('#valunitprice').val('0.00');
+                totalbillingamount();
+                return;
+            }
+
             if(quantitymenu < 5){
                 valueprice = $('#idprogram option:selected').attr("data-unitprice");
-            }else if(quantitymenu >= 5 && quantitymenu < 9){
+            }else if(quantitymenu >= 5 && quantitymenu < 10){
                 valueprice = ($('#idprogram option:selected').attr("data-fiveprice") / 5).toFixed(2);
-            }else if(quantitymenu >= 10 && quantitymenu < 19){
+            }else if(quantitymenu >= 10 && quantitymenu < 20){
                 valueprice = ($('#idprogram option:selected').attr("data-tenprice") / 10).toFixed(2);
-            }else if(quantitymenu >= 20){
-                valueprice = ($('#idprogram option:selected').attr("data-twentyprice") / 20).toFixed(2);
             }else if(quantitymenu >= 30){
                 valueprice = ($('#idprogram option:selected').attr("data-thirtyprice") / 30).toFixed(2);
+            }else if(quantitymenu >= 20){
+                valueprice = ($('#idprogram option:selected').attr("data-twentyprice") / 20).toFixed(2);
             }else{
                 valueprice = 0.00;
             }
@@ -366,6 +336,13 @@
             $('#valunitprice').val(valueprice);
             totalbillingamount();
 
+        }
+
+        if ($('#quantityradio6').is(':checked')) {
+            $('#divquantity').removeClass('d-none');
+        }
+        if ($('#inputdatestart').val() && $("input[name=numberofdays]:checked").length) {
+            generatelistdays();
         }
 
         function totalbillingamount(){

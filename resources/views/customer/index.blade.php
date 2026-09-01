@@ -16,10 +16,6 @@
             <div class="alert alert-success alert-dismissible fade show" role="alert">
                 {{ session('success') }}
 
-                {{-- Boton Registrar periodo --}}
-                <a href="/period/create" class="btn btn-primary ms-2" role="button"><i class="bi bi-plus-circle"></i> Registrar periodo</a>
-
-
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         @endif
@@ -34,12 +30,15 @@
         <div class="card shadow">
             <div class="card-header border-bottom d-flex align-items-center">
                 <h5 class="me-auto">Lista de clientes</h5>
-                <div class="">
-                    <form action="" method="GET" class="d-flex">
-                        <input type="text" name="filterbynumdoc" class="form-control mx-2" value="{{ Request::get('filterbynumdoc') }}" placeholder="Buscar por n° documento...">
-                        <input type="text" name="filterbyname" class="form-control mx-2" value="{{ Request::get('filterbyname') }}" placeholder="Buscar por nombre...">
-                        <input type="text" name="filterbydistrict" class="form-control mx-2" value="{{ Request::get('filterbydistrict') }}" placeholder="Buscar por distrito...">
-                        <button type="submit" class="btn btn-secondary text-light"><i class="bi bi-search"></i></button>
+                <div>
+                    <form action="{{ route('customer.index') }}" method="GET" class="d-flex flex-wrap gap-2 justify-content-end">
+                        <input type="search" name="filterbynumdoc" class="form-control w-auto" value="{{ request('filterbynumdoc') }}" maxlength="20" placeholder="Buscar por n° documento...">
+                        <input type="search" name="filterbyname" class="form-control w-auto" value="{{ request('filterbyname') }}" maxlength="255" placeholder="Buscar por nombre...">
+                        <input type="search" name="filterbydistrict" class="form-control w-auto" value="{{ request('filterbydistrict') }}" maxlength="50" placeholder="Buscar por distrito...">
+                        <button type="submit" class="btn btn-secondary text-light" title="Buscar"><i class="bi bi-search"></i></button>
+                        @if (request()->filled('filterbynumdoc') || request()->filled('filterbyname') || request()->filled('filterbydistrict'))
+                            <a href="{{ route('customer.index') }}" class="btn btn-outline-secondary" title="Limpiar filtros"><i class="bi bi-x-lg"></i></a>
+                        @endif
                     </form>
                 </div>
             </div>
@@ -61,7 +60,7 @@
                     </thead>
                     <tbody>
 
-                        @foreach ($customers as $row)
+                        @forelse ($customers as $row)
                         <tr>
                             <td>{{ $row->document_type }}</td>
                             <td>{{ $row->document_number }}</td>
@@ -78,13 +77,17 @@
                                         <a href="/customer/{{ $row->id }}/edit" class="btn p-0 text-primary" data-bs-toggle="tooltip" data-bs-placement="top" title="Editar"><i class="bi bi-pencil-square"></i></a> 
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="btn p-0 ms-2 text-danger" data-bs-toggle="tooltip" data-bs-placement="top" title="Eliminar"><i class="bi bi-trash3-fill"></i></button>
+                                        <button type="submit" class="btn p-0 ms-2 text-danger" data-bs-toggle="tooltip" data-bs-placement="top" title="Ocultar cliente"><i class="bi bi-eye-slash-fill"></i></button>
                                     </form>
                                     
                                 </div>
                             </td>
                         </tr>
-                        @endforeach
+                        @empty
+                            <tr>
+                                <td colspan="10" class="text-center py-4">No se encontraron clientes con los filtros indicados.</td>
+                            </tr>
+                        @endforelse
 
                     </tbody>
                 </table>
@@ -105,7 +108,7 @@
 
     //If click Delete Customer confirmation 
     confirmDelete = () => {
-        return confirm('¿Desea eliminar el cliente?');
+        return confirm('¿Desea ocultar este cliente? Su información se conservará.');
     }
 
 

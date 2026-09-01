@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Customer;
 use App\Models\District;
+use Illuminate\Validation\Rule;
 
 class CustomerController extends Controller
 {
@@ -13,22 +14,26 @@ class CustomerController extends Controller
      */
     public function index(Request $request)
     {
-
         $query = Customer::query();
+        $documentNumber = trim((string) $request->query('filterbynumdoc', ''));
+        $name = trim((string) $request->query('filterbyname', ''));
+        $district = trim((string) $request->query('filterbydistrict', ''));
 
-        if ($request->filled('filterbynumdoc')) {
-            $query->where('customers.document_number', 'LIKE', '%' . $request->filterbynumdoc . '%');
+        if ($documentNumber !== '') {
+            $query->where('customers.document_number', 'LIKE', '%' . $documentNumber . '%');
         }
 
-        if ($request->filled('filterbyname')) {
-            $query->where('customers.name', 'LIKE', '%' . $request->filterbyname . '%');
+        if ($name !== '') {
+            $query->where('customers.name', 'LIKE', '%' . $name . '%');
         }
 
-        if ($request->filled('filterbydate')) {
-            $query->where('customers.district', 'LIKE', '%' . $request->filterbydate . '%');
+        if ($district !== '') {
+            $query->where('customers.district', 'LIKE', '%' . $district . '%');
         }
 
-        $customers = $query->orderBy('customers.name', 'ASC')->paginate(20);
+        $customers = $query->orderBy('customers.name', 'ASC')
+            ->paginate(20)
+            ->withQueryString();
 
         return view('customer.index', compact('customers'));
     }
@@ -49,22 +54,12 @@ class CustomerController extends Controller
      */
     public function store(Request $request)
     {
-        $customers = new Customer();
+        $customer = Customer::create($this->validatedCustomerData($request));
 
-        $customers->document_type = $request->get('documenttype');
-        $customers->document_number = $request->get('documentnumber');
-        $customers->name = $request->get('name');
-        $customers->address = $request->get('address');
-        $customers->district = $request->get('district');
-        $customers->address_reference = $request->get('address_reference');
-        $customers->phone = $request->get('phone');
-        $customers->phone_two = $request->get('phone_two');
-        $customers->email = $request->get('email');
-        $customers->restriction = $request->get('restriction');
-        $customers->recommendation = $request->get('recommendation');
-        $customers->status = $request->get('status');
-
-        $customers->save();
+        if ($request->input('next') === 'period') {
+            return redirect()->route('period.create', ['customer_id' => $customer->id])
+                ->with('success', 'Cliente creado. Complete los datos de su período.');
+        }
 
         //Retornar con mensaje success
         return redirect('/customer')->with('success', 'Cliente creado correctamente');
@@ -78,8 +73,8 @@ class CustomerController extends Controller
     {
         $districts = District::all();
 
-        $customer = Customer::find($id);
-        return view('customer.edit')->with('customer',$customer)->with('districts',$districts);;
+        $customer = Customer::findOrFail($id);
+        return view('customer.edit')->with('customer',$customer)->with('districts',$districts);
     }
 
     /**
@@ -87,24 +82,10 @@ class CustomerController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $customer = Customer::find($id);
+        $customer = Customer::findOrFail($id);
+        $customer->update($this->validatedCustomerData($request, $customer));
 
-        $customer->document_type = $request->get('documenttype');
-        $customer->document_number = $request->get('documentnumber');
-        $customer->name = $request->get('name');
-        $customer->address = $request->get('address');
-        $customer->district = $request->get('district');
-        $customer->address_reference = $request->get('address_reference');
-        $customer->phone = $request->get('phone');
-        $customer->phone_two = $request->get('phone_two');
-        $customer->email = $request->get('email');
-        $customer->restriction = $request->get('restriction');
-        $customer->recommendation = $request->get('recommendation');
-        $customer->status = $request->get('status');
-
-        $customer->save();
-
-        return redirect('/customer');
+        return redirect('/customer')->with('success', 'Cliente actualizado correctamente');
     }
 
     /**
@@ -112,17 +93,63 @@ class CustomerController extends Controller
      */
     public function destroy($id)
     {
-        $customer = Customer::find($id);
+        $customer = Customer::findOrFail($id);
+        $customer->status = 'Inactivo';
+        $customer->save();
         $customer->delete();
-        return redirect('/customer'); 
+        return redirect('/customer')->with('success', 'Cliente ocultado correctamente.');
     }
 
 
     /* View information customer by id format JSON */
     public function showinfocustomer($id)
     {
-        $customer = Customer::find($id);
+        $customer = Customer::findOrFail($id);
         return response()->json($customer);
+    }
+
+    private function validatedCustomerData(Request $request, ?Customer $customer = null): array
+    {
+        $uniqueDocumentNumber = Rule::unique('customers', 'document_number');
+        if ($customer) {
+            $uniqueDocumentNumber->ignore($customer->id);
+        }
+
+        $documentNumberRule = $request->input('documenttype') === 'DNI'
+            ? ['nullable', 'required_with:documenttype', 'regex:/^\d{8}$/', $uniqueDocumentNumber]
+            : ['nullable', 'required_with:documenttype', 'regex:/^[A-Za-z0-9]{1,12}$/', $uniqueDocumentNumber];
+
+        $validated = $request->validate([
+            'documenttype' => ['nullable', 'required_with:documentnumber', Rule::in(['DNI', 'CARNET EXT.', 'OTROS'])],
+            'documentnumber' => $documentNumberRule,
+            'name' => ['required', 'string', 'max:255'],
+            'address' => ['required', 'string', 'max:255'],
+            'district' => ['required', 'string', 'max:50', Rule::exists('districts', 'name')],
+            'address_reference' => ['nullable', 'string', 'max:255'],
+            'phone' => ['required', 'regex:/^\d{9}$/'],
+            'phone_two' => ['nullable', 'regex:/^\d{9}$/'],
+            'email' => ['nullable', 'email', 'max:192'],
+            'restriction' => ['nullable', 'string', 'max:2000'],
+            'recommendation' => ['nullable', 'string', 'max:2000'],
+            'status' => ['required', Rule::in(['Activo', 'Inactivo', 'Suspendido'])],
+        ], [
+            'documentnumber.unique' => 'El número de documento ya está registrado para otro cliente.',
+        ]);
+
+        return [
+            'document_type' => $validated['documenttype'] ?? null,
+            'document_number' => $validated['documentnumber'] ?? null,
+            'name' => $validated['name'],
+            'address' => $validated['address'],
+            'district' => $validated['district'],
+            'address_reference' => $validated['address_reference'] ?? null,
+            'phone' => $validated['phone'],
+            'phone_two' => $validated['phone_two'] ?? null,
+            'email' => $validated['email'] ?? null,
+            'restriction' => $validated['restriction'] ?? null,
+            'recommendation' => $validated['recommendation'] ?? null,
+            'status' => $validated['status'],
+        ];
     }
 
 

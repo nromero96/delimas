@@ -14,4 +14,9 @@ class Program extends Model
         'status',
     ];
 
+    public function prices()
+    {
+        return $this->hasMany(Programprice::class, 'id_program')->orderBy('id');
+    }
+
 }

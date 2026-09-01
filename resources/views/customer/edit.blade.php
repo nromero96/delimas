@@ -5,86 +5,106 @@
 @section('content')
 
     <div class="card p-3 mt-4 mb-4">
-        <form action="/customer/{{$customer->id}}" class="row" method="POST">
+        @if ($errors->any())
+            <div class="alert alert-danger" role="alert">Revise los campos marcados e inténtelo nuevamente.</div>
+        @endif
+        <form id="customer-form" action="{{ route('customer.update', $customer) }}" class="row" method="POST">
             @csrf
             @method('PUT')
 
             <div class="col-md-6 mb-3">
                 <label class="form-label">Tipo Documento</label>
-                <select class="form-select" name="documenttype" id="documenttype">
+                <select class="form-select @error('documenttype') is-invalid @enderror" name="documenttype" id="documenttype">
                     <option disabled value="">Seleccione...</option>
-                    <option value="DNI" {{ ( $customer->document_type == 'DNI') ? 'selected' : '' }}>DNI</option>
-                    <option value="CARNET EXT." {{ ( $customer->document_type == 'CARNET EXT.') ? 'selected' : '' }}>CARNET EXT.</option>
-                    <option value="OTROS" {{ ( $customer->document_type == 'OTROS') ? 'selected' : '' }}>OTROS</option>
+                    <option value="DNI" {{ old('documenttype', $customer->document_type) === 'DNI' ? 'selected' : '' }}>DNI</option>
+                    <option value="CARNET EXT." {{ old('documenttype', $customer->document_type) === 'CARNET EXT.' ? 'selected' : '' }}>CARNET EXT.</option>
+                    <option value="OTROS" {{ old('documenttype', $customer->document_type) === 'OTROS' ? 'selected' : '' }}>OTROS</option>
                 </select>
             </div>
 
             <div class="col-md-6 mb-3">
                 <label class="form-label">N° Documento</label>
-                <input type="text" name="documentnumber" id="documentnumber" inputmode="numeric" pattern="\d{8}" maxlength="8" class="form-control" value="{{$customer->document_number}}">
+                <input type="text" name="documentnumber" id="documentnumber" inputmode="numeric" pattern="\d{8}" maxlength="8" class="form-control @error('documentnumber') is-invalid @enderror" value="{{ old('documentnumber', $customer->document_number) }}" data-server-invalid="{{ $errors->has('documentnumber') ? '1' : '0' }}">
+                <div class="invalid-feedback" id="documentnumber-feedback">
+                    @error('documentnumber')
+                        {{ $message }}
+                    @else
+                        Ingrese un número de documento válido.
+                    @enderror
+                </div>
             </div>
 
             <div class="col-md-12 mb-3">
                 <label class="form-label">Nombre y Apellidos <span class="text-danger">*</span></label>
-                <input type="text" name="name" class="form-control" value="{{$customer->name}}" required>
+                <input type="text" name="name" class="form-control @error('name') is-invalid @enderror" value="{{ old('name', $customer->name) }}" maxlength="255" required>
+                @error('name')<div class="invalid-feedback">{{ $message }}</div>@enderror
             </div>
 
             <div class="col-md-6 mb-3">
                 <label class="form-label">Dirección <span class="text-danger">*</span></label>
-                <input type="text" name="address" class="form-control" value="{{$customer->address}}" required>
+                <input type="text" name="address" class="form-control @error('address') is-invalid @enderror" value="{{ old('address', $customer->address) }}" maxlength="255" required>
+                @error('address')<div class="invalid-feedback">{{ $message }}</div>@enderror
             </div>
 
             <div class="col-md-6 mb-3">
                 <label class="form-label">Distrito <span class="text-danger">*</span></label>
-                <select class="form-select" name="district" required>
+                <select class="form-select @error('district') is-invalid @enderror" name="district" required>
                     <option disabled value="">Seleccione...</option>
 
                     @foreach ($districts as $item)
 
-                        <option value="{{$item->name}}" {{ ( $customer->district == $item->name) ? 'selected' : '' }}>{{$item->name}}</option>
+                        <option value="{{$item->name}}" {{ old('district', $customer->district) === $item->name ? 'selected' : '' }}>{{$item->name}}</option>
 
                     @endforeach
 
                 </select>
+                @error('district')<div class="invalid-feedback">{{ $message }}</div>@enderror
             </div>
 
             <div class="col-md-12 mb-3">
                 <label class="form-label">Referencia</label>
-                <input type="text" name="address_reference" class="form-control" value="{{$customer->address_reference}}">
+                <input type="text" name="address_reference" class="form-control @error('address_reference') is-invalid @enderror" value="{{ old('address_reference', $customer->address_reference) }}" maxlength="255">
+                @error('address_reference')<div class="invalid-feedback">{{ $message }}</div>@enderror
             </div>
 
             <div class="col-md-6 mb-3">
                 <label class="form-label">Número de teléfono <span class="text-danger">*</span></label>
-                <input type="text" name="phone" id="phone" inputmode="numeric" pattern="[0-9]*" class="form-control" value="{{$customer->phone}}" required>
+                <input type="text" name="phone" id="phone" inputmode="numeric" pattern="\d{9}" minlength="9" maxlength="9" class="form-control @error('phone') is-invalid @enderror" value="{{ old('phone', $customer->phone) }}" required>
+                @error('phone')<div class="invalid-feedback">{{ $message }}</div>@enderror
             </div>
 
             <div class="col-md-6 mb-3">
                 <label class="form-label">Número de teléfono Alternativo</label>
-                <input type="text" name="phone_two" id="phone_two" inputmode="numeric" pattern="[0-9]*" value="{{$customer->phone_two}}" class="form-control">
+                <input type="text" name="phone_two" id="phone_two" inputmode="numeric" pattern="\d{9}" minlength="9" maxlength="9" value="{{ old('phone_two', $customer->phone_two) }}" class="form-control @error('phone_two') is-invalid @enderror">
+                @error('phone_two')<div class="invalid-feedback">{{ $message }}</div>@enderror
             </div>
 
             <div class="col-md-6 mb-3">
                 <label class="form-label">Correo electrónico</label>
-                <input type="email" name="email" class="form-control" value="{{$customer->email}}">
+                <input type="email" name="email" class="form-control @error('email') is-invalid @enderror" value="{{ old('email', $customer->email) }}" maxlength="192">
+                @error('email')<div class="invalid-feedback">{{ $message }}</div>@enderror
             </div>
 
             <div class="col-md-6 mb-3">
                 <label class="form-label">Restricción</label>
-                <input type="text" name="restriction" class="form-control" value="{{$customer->restriction}}">
+                <input type="text" name="restriction" class="form-control @error('restriction') is-invalid @enderror" value="{{ old('restriction', $customer->restriction) }}" maxlength="2000">
+                @error('restriction')<div class="invalid-feedback">{{ $message }}</div>@enderror
             </div>
 
             <div class="col-md-6 mb-3">
                 <label class="form-label">Recomendación</label>
-                <input type="text" name="recommendation" class="form-control" value="{{$customer->recommendation}}">
+                <input type="text" name="recommendation" class="form-control @error('recommendation') is-invalid @enderror" value="{{ old('recommendation', $customer->recommendation) }}" maxlength="2000">
+                @error('recommendation')<div class="invalid-feedback">{{ $message }}</div>@enderror
             </div>
 
             <div class="col-md-6 mb-3">
                 <label class="form-label">Estado</label>
-                <select class="form-select" name="status" required>
-                    <option value="Activo" {{ ( $customer->status == 'Activo') ? 'selected' : '' }}>Activo</option>
-                    <option value="Inactivo" {{ ( $customer->status == 'Inactivo') ? 'selected' : '' }}>Inactivo</option>
-                    <option value="Suspendido" {{ ( $customer->status == 'Suspendido') ? 'selected' : '' }}>Suspendido</option>
+                <select class="form-select @error('status') is-invalid @enderror" name="status" required>
+                    <option value="Activo" {{ old('status', $customer->status) === 'Activo' ? 'selected' : '' }}>Activo</option>
+                    <option value="Inactivo" {{ old('status', $customer->status) === 'Inactivo' ? 'selected' : '' }}>Inactivo</option>
+                    <option value="Suspendido" {{ old('status', $customer->status) === 'Suspendido' ? 'selected' : '' }}>Suspendido</option>
                 </select>
+                @error('status')<div class="invalid-feedback">{{ $message }}</div>@enderror
             </div>
 
             <div class="col-md-12 mb-3">
@@ -103,7 +123,8 @@ document.addEventListener('DOMContentLoaded', function () {
     const docType   = document.getElementById('documenttype');
     const docNumber = document.getElementById('documentnumber');
     const phone     = document.getElementById('phone');
-    const form      = document.querySelector('form');
+    const phoneTwo  = document.getElementById('phone_two');
+    const form      = document.getElementById('customer-form');
 
     // 👉 Ajusta reglas según tipo de documento
     function actualizarReglasDocumento() {
@@ -112,12 +133,12 @@ document.addEventListener('DOMContentLoaded', function () {
             docNumber.minLength = 8;
             docNumber.pattern   = "\\d{8}";
         } else {
-            // Ejemplo genérico: máximo 12 caracteres
             docNumber.maxLength = 12;
             docNumber.minLength = 1;
-            docNumber.pattern   = ".{1,12}";
+            docNumber.pattern   = "[A-Za-z0-9]{1,12}";
         }
-        validarCampo(docNumber); // valida de inmediato al cambiar tipo
+        docNumber.inputMode = docType.value === 'DNI' ? 'numeric' : 'text';
+        normalizarDocumento();
     }
 
     // 👉 Forzar solo dígitos y límite
@@ -129,14 +150,23 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
+    function normalizarDocumento() {
+        const limite = docType.value === 'DNI' ? 8 : 12;
+        const permitido = docType.value === 'DNI' ? /\D/g : /[^A-Za-z0-9]/g;
+        docNumber.value = docNumber.value.replace(permitido, '').slice(0, limite);
+        validarCampo(docNumber);
+    }
+
     // 👉 Validación inmediata (Bootstrap)
     function validarCampo(input) {
+        if (input.dataset.serverInvalid === '1') {
+            input.classList.add('is-invalid');
+            return;
+        }
         if (!input.checkValidity()) {
             input.classList.add('is-invalid');
-            input.classList.remove('is-valid');
         } else {
             input.classList.remove('is-invalid');
-            input.classList.add('is-valid');
         }
     }
 
@@ -144,10 +174,14 @@ document.addEventListener('DOMContentLoaded', function () {
     docType.addEventListener('change', actualizarReglasDocumento);
     actualizarReglasDocumento();
 
-    soloDigitosYLimite(docNumber, 8);
+    docNumber.addEventListener('input', function () {
+        docNumber.dataset.serverInvalid = '0';
+        normalizarDocumento();
+    });
     soloDigitosYLimite(phone, 9);
+    soloDigitosYLimite(phoneTwo, 9);
 
-    [docNumber, phone].forEach(input => {
+    [docNumber, phone, phoneTwo].forEach(input => {
         input.addEventListener('blur', () => validarCampo(input));
     });
 

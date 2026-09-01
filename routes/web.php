@@ -102,6 +102,8 @@ Route::middleware([
     Route::resource('holiday','App\Http\Controllers\HolidayController');
     Route::get('holiday-listholidays', [HolidayController::class, 'getlistholidays'])->name('holidays.holidaylistholidays');
 
+    Route::get('period-check-conflict', [PeriodController::class, 'checkConflict'])->name('period.check-conflict');
+    Route::get('period-renewals', [PeriodController::class, 'renewals'])->name('period.renewals');
     Route::resource('period','App\Http\Controllers\PeriodController');
 
     Route::get('deliveriesoftheday', [PeriodController::class, 'deliveriesoftheday'])->name('deliveriesoftheday');
