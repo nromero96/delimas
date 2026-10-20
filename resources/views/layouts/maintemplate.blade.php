@@ -25,16 +25,10 @@
                 </button>
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                        <li class="nav-item">
-                            <a class="nav-link opcsmenu {{ (request()->is('dashboard')) ? 'active' : '' }}" aria-current="page" href="{{  url('dashboard') }}">
-                                <i class="bi bi-speedometer2"></i>
-                                <span>Tablero</span>
-                            </a>
-                        </li>
                         <li class="nav-item dropdown">
                             <a class="nav-link opcsmenu dropdown-toggle {{ (request()->is('deliveriesoftheday*') || request()->is('period-renewals')) ? 'active' : '' }}" href="#" id="navbarDropdownProgram" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                 <i class="bi bi-menu-up"></i>
-                                <span>Diario</span>
+                                <span>Despacho</span>
                             </a>
                             <ul class="dropdown-menu" aria-labelledby="navbarDropdownProgram">
                                 <li><a class="dropdown-item" href="{{  url('deliveriesoftheday') }}">Clientes por atender</a></li>
@@ -67,13 +61,20 @@
                         <li class="nav-item dropdown">
                             <a class="nav-link opcsmenu dropdown-toggle {{ (request()->is('period*') && !request()->is('period-renewals')) ? 'active' : '' }}" href="#" id="navbarDropdownCustomer" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                 <i class="bi bi-calendar-range"></i>
-                                <span>Periodo</span>
+                                <span>Diario</span>
                             </a>
                             <ul class="dropdown-menu" aria-labelledby="navbarDropdownCustomer">
                                 <li><a class="dropdown-item" href="{{  url('period/create') }}">Nuevo</a></li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li><a class="dropdown-item" href="{{  url('period') }}">Lista</a></li>
                             </ul>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link opcsmenu {{ request()->is('list-request*') || request()->is('show-request*') ? 'active' : '' }}" href="{{ route('listrequest') }}">
+                                <i class="bi bi-inbox"></i>
+                                <span>Solicitudes de menú</span>
+                            </a>
                         </li>
 
                         <li class="nav-itemv dropdown">
@@ -131,6 +132,15 @@
 
         <header class="d-flex py-2 bg-white shadow-sm border-bottom">
             <div class="container d-flex align-items-center">
+                @unless(request()->routeIs('dashboard'))
+                    @php
+                        $previousUrl = url()->previous();
+                        $backUrl = $previousUrl !== url()->current() ? $previousUrl : route('dashboard');
+                    @endphp
+                    <a href="{{ $backUrl }}" class="btn btn-outline-secondary me-2" title="Volver a la pantalla anterior">
+                        <i class="bi bi-arrow-left"></i> Volver
+                    </a>
+                @endunless
                 <h2 class="h4 me-auto font-weight-bold titlepage mb-0">@yield('title')</h2>
                 @yield('buttonsarea')
             </div>

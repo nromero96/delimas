@@ -1,9 +1,9 @@
 @extends('layouts.maintemplate')
 
-@section('title', 'Periodos')
+@section('title', 'Diario')
 
 @section('buttonsarea')
-<a href="{{  url('deliveriesoftheday') }}" class="btn btn-secondary mx-2" role="button"><i class="bi bi-list"></i> Entregas del día</a>
+<a href="{{  url('deliveriesoftheday') }}" class="btn btn-secondary mx-2" role="button"><i class="bi bi-list"></i> Despacho</a>
     <a href="{{  url('period/create') }}" class="btn btn-primary" role="button"><i class="bi bi-plus-circle"></i> Agregar nuevo</a>
 @endsection
 
@@ -20,7 +20,7 @@
     <div class="col-md-12">
         <div class="card shadow">
             <div class="card-header border-bottom d-flex align-items-center">
-                <h5 class="me-auto">Lista de periodos</h5>
+                <h5 class="me-auto">Registro diario de períodos</h5>
                 <div>
                     <form action="{{ route('period.index') }}" method="GET" class="d-flex flex-wrap gap-2 justify-content-end">
                         <input type="search" name="filterbyprogram" class="form-control w-auto" value="{{ request('filterbyprogram') }}" placeholder="Programa...">
@@ -49,7 +49,6 @@
                             <th scope="col">CLIENTE / DOCUMENTO</th>
                             <th scope="col">VIGENCIA</th>
                             <th scope="col" style="min-width: 180px">AVANCE</th>
-                            <th scope="col" class="text-end">TOTAL</th>
                             <th scope="col" style="min-width: 130px">&nbsp;</th>
                         </tr>
                     </thead>
@@ -60,7 +59,9 @@
                             $today = Carbon\Carbon::today();
                             $start = Carbon\Carbon::parse($row->start_date);
                             $end = Carbon\Carbon::parse($row->end_date);
-                            if ($row->status === 'Suspendido') {
+                            if ($row->status === 'Anulado') {
+                                $visualStatus = 'Anulado'; $statusClass = 'bg-danger';
+                            } elseif ($row->status === 'Suspendido') {
                                 $visualStatus = 'Suspendido'; $statusClass = 'bg-warning text-dark';
                             } elseif ($start->gt($today)) {
                                 $visualStatus = 'Próximo'; $statusClass = 'bg-info text-dark';
@@ -82,24 +83,16 @@
                                 <div class="progress" style="height: 6px"><div class="progress-bar" role="progressbar" style="width: {{ $progress }}%" aria-valuenow="{{ $progress }}" aria-valuemin="0" aria-valuemax="100"></div></div>
                                 <div class="small text-muted">Avance por calendario</div>
                             </td>
-                            <td class="text-end fw-bold">S/ {{ number_format($row->total_price, 2) }}</td>
                             <td>
                                 <div class="btnsaction">
-                                    <form action="{{ route('period.destroy',$row->id)}}" method="POST" onsubmit="return confirm('¿Desea ocultar este período? Su información se conservará.')">
-                                        <a href="{{ route('period.edit', $row->id) }}" class="btn btn-sm btn-outline-primary" title="Ver o editar"><i class="bi bi-pencil-square"></i></a>
-                                        @if ($end->lt($today))
-                                            <a href="{{ route('period.create', ['customer_id' => $row->id_customer, 'programprice_id' => $row->id_programprice]) }}" class="btn btn-sm btn-success" title="Renovar"><i class="bi bi-arrow-repeat"></i></a>
-                                        @endif
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="btn btn-sm btn-outline-danger" title="Ocultar"><i class="bi bi-eye-slash-fill"></i></button>
-                                    </form>
+                                    <a href="{{ route('period.edit', $row->id) }}" class="btn btn-sm btn-outline-primary" title="Ver o editar"><i class="bi bi-pencil-square"></i></a>
+                                    @if ($end->lt($today))<a href="{{ route('period.create', ['customer_id' => $row->id_customer, 'programprice_id' => $row->id_programprice]) }}" class="btn btn-sm btn-success" title="Renovar"><i class="bi bi-arrow-repeat"></i></a>@endif
 
                                 </div>
                             </td>
                         </tr>
                         @empty
-                            <tr><td colspan="7" class="text-center py-4">No se encontraron períodos con los filtros indicados.</td></tr>
+                            <tr><td colspan="6" class="text-center py-4">No se encontraron períodos con los filtros indicados.</td></tr>
                         @endforelse
 
                     </tbody>

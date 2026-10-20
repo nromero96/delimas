@@ -1,6 +1,6 @@
 @extends('layouts.maintemplate')
 
-@section('title', 'Lista de entregas del día')
+@section('title', 'Despacho')
 
 @section('buttonsarea')
 <a href="{{ route('download-entry-control', request()->only(['filterbyprogram', 'filterbycustomer', 'filterbydate'])) }}" target="_blank" class="btn btn-info text-light" role="button"><i class="bi bi-file-earmark-pdf"></i> Control de Entrega</a>
@@ -19,6 +19,11 @@
         <div class="col-12"><div class="alert alert-danger">{{ session('delivery_filter_error') }}</div></div>
     @endif
 
+    <div class="col-12 mb-3"><div class="d-flex flex-wrap gap-2">
+        @foreach($totalsByPlan as $total)<div class="card border-0 shadow-sm" style="border-left:6px solid {{ $total->programcolor }} !important"><div class="card-body py-2"><small>{{ $total->programname }} / {{ $total->textcategoryprice }}</small><div class="h5 mb-0">{{ $total->totalquantity }} menús</div></div></div>@endforeach
+        <div class="card bg-dark text-white shadow-sm"><div class="card-body py-2"><small>Total general</small><div class="h5 mb-0">{{ $grandTotal }} menús</div></div></div>
+    </div></div>
+
     <div class="col-md-12">
         <div class="card shadow">
             <div class="card-header border-bottom d-flex flex-wrap align-items-center gap-3">
@@ -28,6 +33,7 @@
                         <input type="search" name="filterbyprogram" class="form-control w-auto" value="{{ request('filterbyprogram') }}" placeholder="Programa...">
                         <input type="search" name="filterbycustomer" class="form-control w-auto" value="{{ request('filterbycustomer') }}" placeholder="Cliente o documento...">
                         <input type="text" name="filterbydate" id="inputsearchdate" value="{{ request('filterbydate') }}" autocomplete="off" class="form-control w-auto" placeholder="Fecha...">
+                        <select name="sortprogram" class="form-select w-auto"><option value="asc" {{ $sortProgram==='asc'?'selected':'' }}>Programa A–Z</option><option value="desc" {{ $sortProgram==='desc'?'selected':'' }}>Programa Z–A</option></select>
                         <button type="submit" class="btn btn-secondary text-light" title="Buscar"><i class="bi bi-search"></i></button>
                         @if (request()->hasAny(['filterbyprogram', 'filterbycustomer', 'filterbydate']))
                             <a href="{{ route('deliveriesoftheday') }}" class="btn btn-outline-secondary" title="Limpiar filtros"><i class="bi bi-x-lg"></i></a>
@@ -40,33 +46,25 @@
                     <thead>
                         <tr>
                             <th scope="col">PROGRAMA</th>
-                            <th scope="col">CLIENTE / DOCUMENTO</th>
-                            <th scope="col">DIRECCIÓN DE ENTREGA</th>
-                            <th scope="col">CONTACTO</th>
-                            <th scope="col" class="text-center">CANTIDAD</th>
-                            <th scope="col">FECHA</th>
-                            <th scope="col" width="105px">&nbsp;</th>
+                            <th scope="col">CLIENTE</th><th>PLAN</th><th>DÍAS CONTRATADOS</th><th>UNIDADES/DÍA</th><th>INICIO / FIN</th><th>ATENDIDOS / PENDIENTES</th><th scope="col" width="170px">ACCIONES</th>
                         </tr>
                     </thead>
                     <tbody>
 
                         @forelse ($perioddays as $row)
-                        <tr>
+                        <tr style="border-left:6px solid {{ $row->programcolor }}">
                             <td><span class="d-inline-block rounded-circle me-2" style="width:14px;height:14px;background:{{ $row->programcolor }}"></span>{{ $row->programname }}<div class="small text-muted">{{ $row->textcategoryprice }}</div></td>
-                            <td>{{ $row->customername }}<div class="small text-muted">{{ $row->customerdocument ?: 'Sin documento' }}</div></td>
-                            <td>{{ $row->customeraddress }}<div class="small text-muted">{{ $row->customerdistrict }}@if($row->customeraddressreference) · Ref. {{ $row->customeraddressreference }}@endif</div></td>
-                            <td><a href="tel:{{ $row->customerphone }}">{{ $row->customerphone }}</a></td>
-                            <td class="text-center">{{ $row->quantity }}</td>
-                            <td>{{ Carbon\Carbon::parse($row->date)->format('d-m-Y') }}</td>
+                            <td>{{ $row->customername }}</td><td>{{ $row->textcategoryprice }}</td><td>{{ $row->number_of_days }}</td><td>{{ $row->quantity }}</td><td>{{ Carbon\Carbon::parse($row->start_date)->format('d-m-Y') }}<br><small class="text-muted">{{ Carbon\Carbon::parse($row->end_date)->format('d-m-Y') }}</small></td><td><strong>{{ $row->attended_deliveries }}</strong> atendidos<br><small class="text-muted">{{ $row->pending_deliveries }} pendientes</small></td>
                             <td>
                                 <div class="btnsaction">
-                                    <a href="javascript:void(0)" class="btn btn-light pt-0 pb-0 show-customer" data-bs-toggle="modal" data-toggle="modal" data-bs-target="#mdldetailcustomer" data-url="{{ route('customers.showinfocustomer', $row->customerid) }}"><i class="bi bi-person-lines-fill"></i></a> 
-                                    <a href="/period/{{ $row->periodsid }}/edit" class="btn btn-light pt-0 pb-0" data-bs-toggle="tooltip" data-bs-placement="top" title="Editar"><i class="bi bi-pencil-square"></i></a>
+                                    <a href="{{ route('period.edit',$row->periodsid) }}" class="btn btn-sm btn-outline-warning" title="Reprogramar"><i class="bi bi-calendar2-week"></i></a>
+                                    <a href="{{ route('period.create',['customer_id'=>$row->customerid,'programprice_id'=>$row->id_programprice]) }}" class="btn btn-sm btn-outline-success" title="Generar nuevo período"><i class="bi bi-plus-circle"></i></a>
+                                    <a href="javascript:void(0)" class="btn btn-sm btn-outline-primary show-customer" data-bs-toggle="modal" data-bs-target="#mdldetailcustomer" data-url="{{ route('customers.showinfocustomer', $row->customerid) }}" title="Ver cliente"><i class="bi bi-person-lines-fill"></i></a>
                                 </div>
                             </td>
                         </tr>
                         @empty
-                            <tr><td colspan="7" class="text-center py-4">No hay entregas programadas para la fecha y filtros seleccionados.</td></tr>
+                            <tr><td colspan="8" class="text-center py-4">No hay entregas programadas para la fecha y filtros seleccionados.</td></tr>
                         @endforelse
 
                     </tbody>

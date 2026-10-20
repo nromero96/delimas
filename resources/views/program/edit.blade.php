@@ -39,9 +39,9 @@
                                 <th style="width: 55px;"></th>
                                 <th class="text-center">1 Día</th>
                                 <th class="text-center">5 Días</th>
-                                <th class="text-center">10 Días</th>
-                                <th class="text-center">20 Días</th>
-                                <th class="text-center">30 Días</th>
+                                <th class="text-center">10+1 Días</th>
+                                <th class="text-center">20+2 Días</th>
+                                <th class="text-center">30+5 Días</th>
                                 <th style="width: 30px;" class="text-center" ><a href="javascript:void(0);" class="btn rounded-circle btn-primary text-light btn-sm btn-sm btnaddprogprice" onclick="add_row()"><i class="bi bi-plus"></i></a></th>
                             </tr>
                         </thead>

@@ -5,6 +5,7 @@
 @section('content')
 
     <div class="card p-3 mt-4 mb-4">
+        @if(session('success'))<div class="alert alert-success">{{ session('success') }}</div>@endif
         @if ($errors->any())
             <div class="alert alert-danger" role="alert">Revise los campos marcados e inténtelo nuevamente.</div>
         @endif
@@ -13,8 +14,8 @@
             @method('PUT')
 
             <div class="col-md-6 mb-3">
-                <label class="form-label">Tipo Documento</label>
-                <select class="form-select @error('documenttype') is-invalid @enderror" name="documenttype" id="documenttype">
+                <label class="form-label">Tipo Documento <span class="text-danger">*</span></label>
+                <select class="form-select @error('documenttype') is-invalid @enderror" name="documenttype" id="documenttype" required>
                     <option disabled value="">Seleccione...</option>
                     <option value="DNI" {{ old('documenttype', $customer->document_type) === 'DNI' ? 'selected' : '' }}>DNI</option>
                     <option value="CARNET EXT." {{ old('documenttype', $customer->document_type) === 'CARNET EXT.' ? 'selected' : '' }}>CARNET EXT.</option>
@@ -23,8 +24,8 @@
             </div>
 
             <div class="col-md-6 mb-3">
-                <label class="form-label">N° Documento</label>
-                <input type="text" name="documentnumber" id="documentnumber" inputmode="numeric" pattern="\d{8}" maxlength="8" class="form-control @error('documentnumber') is-invalid @enderror" value="{{ old('documentnumber', $customer->document_number) }}" data-server-invalid="{{ $errors->has('documentnumber') ? '1' : '0' }}">
+                <label class="form-label">N° Documento <span class="text-danger">*</span></label>
+                <input type="text" name="documentnumber" id="documentnumber" inputmode="numeric" pattern="\d{8}" maxlength="8" class="form-control @error('documentnumber') is-invalid @enderror" value="{{ old('documentnumber', $customer->document_number) }}" data-server-invalid="{{ $errors->has('documentnumber') ? '1' : '0' }}" required>
                 <div class="invalid-feedback" id="documentnumber-feedback">
                     @error('documentnumber')
                         {{ $message }}
@@ -69,13 +70,13 @@
 
             <div class="col-md-6 mb-3">
                 <label class="form-label">Número de teléfono <span class="text-danger">*</span></label>
-                <input type="text" name="phone" id="phone" inputmode="numeric" pattern="\d{9}" minlength="9" maxlength="9" class="form-control @error('phone') is-invalid @enderror" value="{{ old('phone', $customer->phone) }}" required>
+                <input type="tel" name="phone" id="phone" inputmode="tel" pattern="\+?[0-9]{7,19}" minlength="7" maxlength="20" class="form-control @error('phone') is-invalid @enderror" value="{{ old('phone', $customer->phone) }}" required>
                 @error('phone')<div class="invalid-feedback">{{ $message }}</div>@enderror
             </div>
 
             <div class="col-md-6 mb-3">
                 <label class="form-label">Número de teléfono Alternativo</label>
-                <input type="text" name="phone_two" id="phone_two" inputmode="numeric" pattern="\d{9}" minlength="9" maxlength="9" value="{{ old('phone_two', $customer->phone_two) }}" class="form-control @error('phone_two') is-invalid @enderror">
+                <input type="tel" name="phone_two" id="phone_two" inputmode="tel" pattern="\+?[0-9]{7,19}" minlength="7" maxlength="20" value="{{ old('phone_two', $customer->phone_two) }}" class="form-control @error('phone_two') is-invalid @enderror">
                 @error('phone_two')<div class="invalid-feedback">{{ $message }}</div>@enderror
             </div>
 
@@ -99,20 +100,54 @@
 
             <div class="col-md-6 mb-3">
                 <label class="form-label">Estado</label>
-                <select class="form-select @error('status') is-invalid @enderror" name="status" required>
-                    <option value="Activo" {{ old('status', $customer->status) === 'Activo' ? 'selected' : '' }}>Activo</option>
-                    <option value="Inactivo" {{ old('status', $customer->status) === 'Inactivo' ? 'selected' : '' }}>Inactivo</option>
-                    <option value="Suspendido" {{ old('status', $customer->status) === 'Suspendido' ? 'selected' : '' }}>Suspendido</option>
-                </select>
+                @if($customer->status === 'Bloqueado')
+                    <input type="hidden" name="status" value="Bloqueado">
+                    <input class="form-control" value="Bloqueado" disabled>
+                    <div class="form-text">Use el botón Desbloquear para volver a activar al cliente.</div>
+                @else
+                    <select class="form-select @error('status') is-invalid @enderror" name="status" required>
+                        <option value="Activo" {{ old('status', $customer->status) === 'Activo' ? 'selected' : '' }}>Activo</option>
+                        <option value="Inactivo" {{ old('status', $customer->status) === 'Inactivo' ? 'selected' : '' }}>Inactivo</option>
+                        <option value="Suspendido" {{ old('status', $customer->status) === 'Suspendido' ? 'selected' : '' }}>Suspendido</option>
+                    </select>
+                @endif
                 @error('status')<div class="invalid-feedback">{{ $message }}</div>@enderror
             </div>
 
             <div class="col-md-12 mb-3">
                 <a class="btn btn-secondary" href="{{  url('customer') }}" role="button">Cancelar</a>
                 <button type="submit" class="btn btn-primary">Actualizar</button>
+                <a href="{{ route('period.create', ['customer_id' => $customer->id]) }}" class="btn btn-success">Crear nuevo período</a>
+                @if ($customer->status !== 'Bloqueado')
+                    <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#blockCustomerModal">Bloquear</button>
+                @else
+                    <button type="submit" form="unblock-customer-form" class="btn btn-outline-success" onclick="return confirm('¿Desbloquear y activar a este cliente?')"><i class="bi bi-unlock"></i> Desbloquear</button>
+                @endif
             </div>
                 
-        </form>  
+        </form>
+        <form id="unblock-customer-form" action="{{ route('customer.unblock', $customer) }}" method="POST" class="d-none">@csrf @method('PATCH')</form>
+    </div>
+
+    <div class="modal fade" id="blockCustomerModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered"><div class="modal-content">
+            <div class="modal-header"><h5 class="modal-title">Bloquear cliente</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+            <div class="modal-body">
+                <p>El cliente conservará sus datos e historial, pero no podrá generar ni renovar períodos.</p>
+                @if($activePeriodsCount > 0)
+                    <div class="alert alert-warning mb-0"><strong>{{ $activePeriodsCount }} período(s) vigente(s).</strong><br>Elija qué hacer con estas entregas.</div>
+                @else
+                    <div class="alert alert-info mb-0">El cliente no tiene períodos vigentes.</div>
+                @endif
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <form action="{{ route('customer.block', $customer) }}" method="POST" class="d-inline">@csrf @method('PATCH')<button class="btn btn-outline-danger" name="period_action" value="keep">Bloquear y mantener períodos</button></form>
+                @if($activePeriodsCount > 0)
+                    <form action="{{ route('customer.block', $customer) }}" method="POST" class="d-inline">@csrf @method('PATCH')<button class="btn btn-danger" name="period_action" value="suspend">Bloquear y suspender períodos</button></form>
+                @endif
+            </div>
+        </div></div>
     </div>
 
 @endsection
@@ -133,25 +168,25 @@ document.addEventListener('DOMContentLoaded', function () {
             docNumber.minLength = 8;
             docNumber.pattern   = "\\d{8}";
         } else {
-            docNumber.maxLength = 12;
-            docNumber.minLength = 1;
-            docNumber.pattern   = "[A-Za-z0-9]{1,12}";
+            docNumber.maxLength = 20;
+            docNumber.minLength = 5;
+            docNumber.pattern   = "[A-Za-z0-9]{5,20}";
         }
         docNumber.inputMode = docType.value === 'DNI' ? 'numeric' : 'text';
         normalizarDocumento();
     }
 
     // 👉 Forzar solo dígitos y límite
-    function soloDigitosYLimite(el, limite) {
+    function normalizarTelefono(el) {
         el.addEventListener('input', function (e) {
-            const onlyDigits = e.target.value.replace(/\D/g, '').slice(0, limite);
-            if (e.target.value !== onlyDigits) e.target.value = onlyDigits;
-            validarCampo(el); // valida en vivo
+            const prefijo = e.target.value.trim().startsWith('+') ? '+' : '';
+            e.target.value = prefijo + e.target.value.replace(/\D/g, '').slice(0, 19);
+            validarCampo(el);
         });
     }
 
     function normalizarDocumento() {
-        const limite = docType.value === 'DNI' ? 8 : 12;
+        const limite = docType.value === 'DNI' ? 8 : 20;
         const permitido = docType.value === 'DNI' ? /\D/g : /[^A-Za-z0-9]/g;
         docNumber.value = docNumber.value.replace(permitido, '').slice(0, limite);
         validarCampo(docNumber);
@@ -178,8 +213,8 @@ document.addEventListener('DOMContentLoaded', function () {
         docNumber.dataset.serverInvalid = '0';
         normalizarDocumento();
     });
-    soloDigitosYLimite(phone, 9);
-    soloDigitosYLimite(phoneTwo, 9);
+    normalizarTelefono(phone);
+    normalizarTelefono(phoneTwo);
 
     [docNumber, phone, phoneTwo].forEach(input => {
         input.addEventListener('blur', () => validarCampo(input));

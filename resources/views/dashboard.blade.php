@@ -20,7 +20,7 @@
             <div class="col-md-4 optionshome mb-4">
                 <a href="/deliveriesoftheday" class="shadow pt-0 pb-3">
                     <i class="bi bi-card-checklist"></i>
-                    <span>Entregas del día</span>
+                    <span>Despacho</span>
                 </a>
             </div>
             <div class="col-md-4 optionshome mb-4">
@@ -38,7 +38,7 @@
             <div class="col-md-4 optionshome mb-4">
                 <a href="/period" class="shadow pt-0 pb-3">
                     <i class="bi bi-calendar-range"></i>
-                    <span>Registro de Periodos</span>
+                    <span>Diario</span>
                 </a>
             </div>
             

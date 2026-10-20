@@ -92,16 +92,22 @@ class PeriodController extends Controller
 
     public function renewals(Request $request)
     {
+        $validated = $request->validate(['filterbydate' => ['nullable', 'date_format:d-m-Y']]);
         $program = trim((string) $request->query('filterbyprogram', ''));
         $customer = trim((string) $request->query('filterbycustomer', ''));
+        $renewalDate = !empty($validated['filterbydate'])
+            ? Carbon::createFromFormat('d-m-Y', $validated['filterbydate'])->format('Y-m-d')
+            : null;
 
         $periods = Period::from('periods as expired_periods')
             ->join('programprices', 'programprices.id', '=', 'expired_periods.id_programprice')
             ->join('programs', 'programs.id', '=', 'programprices.id_program')
             ->join('customers', 'customers.id', '=', 'expired_periods.id_customer')
             ->whereDate('expired_periods.end_date', '<', Carbon::today())
-            ->where('expired_periods.status', '!=', 'Oculto')
+            ->when($renewalDate, fn ($query) => $query->whereDate('expired_periods.end_date', $renewalDate))
+            ->whereNotIn('expired_periods.status', ['Oculto', 'Anulado'])
             ->whereNull('customers.deleted_at')
+            ->where('customers.status', '!=', 'Bloqueado')
             ->whereNotExists(function ($query) {
                 $query->select(DB::raw(1))
                     ->from('periods as current_periods')
@@ -119,6 +125,8 @@ class PeriodController extends Controller
                         ->orWhere('customers.document_number', 'LIKE', '%' . $customer . '%');
                 });
             })
+            ->orderBy('programs.name')
+            ->orderBy('programprices.textcategoryprice')
             ->orderByDesc('expired_periods.end_date')
             ->paginate(20, [
                 'expired_periods.*',
@@ -130,7 +138,7 @@ class PeriodController extends Controller
             ])
             ->withQueryString();
 
-        return view('period.renewals', compact('periods'));
+        return view('period.renewals', compact('periods', 'renewalDate'));
     }
 
     /**
@@ -145,7 +153,7 @@ class PeriodController extends Controller
                             ->get(['programprices.*', 'programs.id AS programid','programs.name AS programname']);
 
 
-        $customers = Customer::orderBy('name')->get();
+        $customers = Customer::where('status', '!=', 'Bloqueado')->orderBy('name')->get();
         $selectedCustomerId = (int) $request->query('customer_id');
         if ($selectedCustomerId && !$customers->contains('id', $selectedCustomerId)) {
             $selectedCustomerId = 0;
@@ -172,30 +180,29 @@ class PeriodController extends Controller
     {
         $validated = $request->validate([
             'idprogram' => ['required', 'integer', 'exists:programprices,id'],
-            'idcustomer' => ['required', 'integer', 'exists:customers,id'],
+            'idcustomer' => ['required', 'integer', Rule::exists('customers', 'id')->where(fn ($query) => $query->where('status', '!=', 'Bloqueado')->whereNull('deleted_at'))],
             'startdate' => ['required', 'date_format:d-m-Y'],
             'numberofdays' => ['required', 'integer', 'min:1', 'max:365'],
+            'listdate' => ['required', 'array', 'min:1', 'max:365'],
+            'listdate.*' => ['required', 'date_format:Y-m-d', 'distinct'],
+            'listcantidad' => ['required', 'array', 'min:1', 'max:365'],
+            'listcantidad.*' => ['required', 'integer', 'min:0', 'max:999'],
+            'valunitprice' => ['required', 'numeric', 'min:0'],
+            'valtotalprice' => ['required', 'numeric', 'min:0'],
         ]);
 
-        $startDate = Carbon::createFromFormat('d-m-Y', $validated['startdate'])->startOfDay();
+        $periodDays = $this->manualPeriodDays($validated);
+        $startDate = Carbon::parse($periodDays[0]['date'])->startOfDay();
         if ($startDate->lt(Carbon::today())) {
             throw ValidationException::withMessages(['startdate' => 'La fecha de inicio no puede estar en el pasado.']);
         }
 
-        $holidayDates = Holiday::pluck('date')->map(function ($date) {
-            return Carbon::parse($date)->format('Y-m-d');
-        })->all();
-
-        if ($startDate->isWeekend() || in_array($startDate->format('Y-m-d'), $holidayDates, true)) {
-            throw ValidationException::withMessages(['startdate' => 'La fecha de inicio debe ser un día laborable.']);
-        }
-
-        $periodDays = $this->buildPeriodDays($startDate, (int) $validated['numberofdays'], $holidayDates);
+        $endDate = Carbon::parse(end($periodDays)['date']);
         $conflictingPeriod = $this->findConflictingPeriod(
             (int) $validated['idcustomer'],
             (int) $validated['idprogram'],
             $startDate,
-            Carbon::parse(end($periodDays)['date'])
+            $endDate
         );
         if ($conflictingPeriod) {
             throw ValidationException::withMessages([
@@ -203,10 +210,9 @@ class PeriodController extends Controller
             ]);
         }
 
-        $programPrice = Programprice::findOrFail($validated['idprogram']);
-        $quantity = count($periodDays);
-        $unitPrice = $this->unitPriceForQuantity($programPrice, $quantity);
-        $totalPrice = round($unitPrice * $quantity, 2);
+        $quantity = array_sum(array_column($periodDays, 'quantity'));
+        $unitPrice = round((float) $validated['valunitprice'], 2);
+        $totalPrice = round((float) $validated['valtotalprice'], 2);
 
         DB::transaction(function () use ($validated, $startDate, $periodDays, $quantity, $unitPrice, $totalPrice) {
             $period = Period::create([
@@ -214,7 +220,7 @@ class PeriodController extends Controller
                 'id_customer' => $validated['idcustomer'],
                 'start_date' => $startDate->format('Y-m-d'),
                 'end_date' => end($periodDays)['date'],
-                'number_of_days' => (int) $validated['numberofdays'],
+                'number_of_days' => count($periodDays),
                 'quantity_of_menu' => $quantity,
                 'unitprice_moment' => $unitPrice,
                 'total_price' => $totalPrice,
@@ -253,14 +259,14 @@ class PeriodController extends Controller
 
     private function unitPriceForQuantity(Programprice $price, int $quantity): float
     {
-        if ($quantity >= 30) {
-            return round((float) $price->thirtyprice / 30, 2);
+        if ($quantity >= 35) {
+            return round((float) $price->thirtyprice / 35, 2);
         }
-        if ($quantity >= 20) {
-            return round((float) $price->twentyprice / 20, 2);
+        if ($quantity >= 22) {
+            return round((float) $price->twentyprice / 22, 2);
         }
-        if ($quantity >= 10) {
-            return round((float) $price->tenprice / 10, 2);
+        if ($quantity >= 11) {
+            return round((float) $price->tenprice / 11, 2);
         }
         if ($quantity >= 5) {
             return round((float) $price->fiveprice / 5, 2);
@@ -377,40 +383,30 @@ class PeriodController extends Controller
             'idprogram' => ['required', 'integer', 'exists:programprices,id'],
             'startdate' => ['required', 'date_format:d-m-Y'],
             'numberofdays' => ['required', 'integer', 'min:1', 'max:365'],
+            'listdate' => ['required', 'array', 'min:1', 'max:365'],
+            'listdate.*' => ['required', 'date_format:Y-m-d', 'distinct'],
             'listcantidad' => ['required', 'array', 'min:1', 'max:730'],
-            'listcantidad.*' => ['required', 'integer', 'in:0,1'],
+            'listcantidad.*' => ['required', 'integer', 'min:0', 'max:999'],
+            'valunitprice' => ['required', 'numeric', 'min:0'],
+            'valtotalprice' => ['required', 'numeric', 'min:0'],
         ]);
 
         $period = Period::findOrFail($id);
-        $startDate = Carbon::createFromFormat('d-m-Y', $validated['startdate'])->startOfDay();
-        $holidayDates = Holiday::pluck('date')->map(function ($date) {
-            return Carbon::parse($date)->format('Y-m-d');
-        })->all();
+        $periodDays = $this->manualPeriodDays($validated);
+        $startDate = Carbon::parse($periodDays[0]['date'])->startOfDay();
+        $quantity = array_sum(array_column($periodDays, 'quantity'));
+        $unitPrice = round((float) $validated['valunitprice'], 2);
+        $totalPrice = round((float) $validated['valtotalprice'], 2);
 
-        if ($startDate->isWeekend() || in_array($startDate->format('Y-m-d'), $holidayDates, true)) {
-            throw ValidationException::withMessages(['startdate' => 'La fecha de inicio debe ser un día laborable.']);
-        }
-
-        $quantities = array_map('intval', $validated['listcantidad']);
-        if (array_sum($quantities) !== (int) $validated['numberofdays'] || end($quantities) !== 1) {
-            throw ValidationException::withMessages([
-                'numberofdays' => 'La programación diaria no coincide con la cantidad de días del período.',
-            ]);
-        }
-
-        $periodDays = $this->buildPeriodDaysWithQuantities($startDate, $quantities, $holidayDates);
-        $quantity = array_sum($quantities);
-        $unitPrice = $this->unitPriceForQuantity(Programprice::findOrFail($validated['idprogram']), $quantity);
-
-        DB::transaction(function () use ($period, $validated, $startDate, $periodDays, $quantity, $unitPrice) {
+        DB::transaction(function () use ($period, $validated, $startDate, $periodDays, $quantity, $unitPrice, $totalPrice) {
             $period->update([
                 'id_programprice' => $validated['idprogram'],
                 'start_date' => $startDate->format('Y-m-d'),
                 'end_date' => end($periodDays)['date'],
-                'number_of_days' => (int) $validated['numberofdays'],
+                'number_of_days' => count($periodDays),
                 'quantity_of_menu' => $quantity,
                 'unitprice_moment' => $unitPrice,
-                'total_price' => round($unitPrice * $quantity, 2),
+                'total_price' => $totalPrice,
                 'status' => 'Activo',
             ]);
 
@@ -441,17 +437,70 @@ class PeriodController extends Controller
 
     }
 
+    public function cancel(Period $period)
+    {
+        $period->update(['status' => 'Anulado']);
+
+        return back()->with('success', 'Período anulado correctamente.');
+    }
+
+    public function customerHistory(Customer $customer)
+    {
+        $history = Period::join('programprices', 'programprices.id', '=', 'periods.id_programprice')
+            ->join('programs', 'programs.id', '=', 'programprices.id_program')
+            ->where('periods.id_customer', $customer->id)
+            ->orderByDesc('periods.start_date')
+            ->limit(10)
+            ->get(['periods.id', 'periods.start_date', 'periods.end_date', 'periods.status', 'programs.name as programname', 'programprices.textcategoryprice']);
+
+        return response()->json($history);
+    }
+
+    private function manualPeriodDays(array $validated): array
+    {
+        if (count($validated['listdate']) !== count($validated['listcantidad']) || count($validated['listdate']) !== (int) $validated['numberofdays']) {
+            throw ValidationException::withMessages(['numberofdays' => 'La cantidad de fechas no coincide con los días del período.']);
+        }
+
+        $days = [];
+        foreach ($validated['listdate'] as $index => $date) {
+            $parsed = Carbon::createFromFormat('Y-m-d', $date);
+            $days[] = [
+                'dayname' => ucfirst($parsed->locale('es')->dayName),
+                'date' => $parsed->format('Y-m-d'),
+                'quantity' => (int) $validated['listcantidad'][$index],
+            ];
+        }
+        usort($days, fn ($a, $b) => strcmp($a['date'], $b['date']));
+
+        return $days;
+    }
+
 
     public function deliveriesoftheday(Request $request)
     {
         $datefilter = $this->validatedDeliveryDate($request);
-        $perioddays = $this->deliveryQuery($request, $datefilter)
-            ->orderBy('customers.district')
+        $sortProgram = $request->query('sortprogram') === 'desc' ? 'desc' : 'asc';
+        $baseQuery = $this->deliveryQuery($request, $datefilter);
+        $totalsByPlan = (clone $baseQuery)
+            ->groupBy('programs.id', 'programs.name', 'programprices.textcategoryprice', 'programprices.color')
+            ->orderBy('programs.name', $sortProgram)
+            ->get([
+                'programs.name as programname', 'programprices.textcategoryprice',
+                'programprices.color as programcolor', DB::raw('SUM(perioddays.quantity) as totalquantity'),
+            ]);
+        $grandTotal = (int) (clone $baseQuery)->sum('perioddays.quantity');
+        $perioddays = $baseQuery
+            ->orderBy('programs.name', $sortProgram)
             ->orderBy('customers.address')
             ->orderBy('customers.name')
-            ->paginate(20, [
+            ->select([
                 'perioddays.*',
                 'periods.id as periodsid',
+                'periods.start_date',
+                'periods.end_date',
+                'periods.number_of_days',
+                'periods.id_programprice',
                 'programs.name as programname',
                 'programprices.textcategoryprice',
                 'programprices.color as programcolor',
@@ -463,9 +512,22 @@ class PeriodController extends Controller
                 'customers.address_reference as customeraddressreference',
                 'customers.phone as customerphone',
             ])
+            ->selectSub(function ($query) use ($datefilter) {
+                $query->from('perioddays as attended_days')->selectRaw('COUNT(*)')
+                    ->whereColumn('attended_days.id_period', 'periods.id')
+                    ->where('attended_days.quantity', '>', 0)
+                    ->whereDate('attended_days.date', '<', $datefilter);
+            }, 'attended_deliveries')
+            ->selectSub(function ($query) use ($datefilter) {
+                $query->from('perioddays as pending_days')->selectRaw('COUNT(*)')
+                    ->whereColumn('pending_days.id_period', 'periods.id')
+                    ->where('pending_days.quantity', '>', 0)
+                    ->whereDate('pending_days.date', '>=', $datefilter);
+            }, 'pending_deliveries')
+            ->paginate(20)
             ->withQueryString();
 
-        return view('period.deliveriesoftheday', compact('perioddays', 'datefilter'));
+        return view('period.deliveriesoftheday', compact('perioddays', 'datefilter', 'totalsByPlan', 'grandTotal', 'sortProgram'));
 
     }
 
@@ -514,6 +576,7 @@ class PeriodController extends Controller
                                     'customers.address as customeraddress',
                                     'customers.district as customerdistrict',
                                     'customers.phone as customerphone',
+                                    'customers.recommendation as customerrecommendation',
                                     'customers.address_reference as customeraddressreference',
                                     'perioddays.date as perioddate',
                                     'perioddays.quantity as periodquantity',

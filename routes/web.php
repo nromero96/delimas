@@ -97,6 +97,8 @@ Route::middleware([
     Route::get('destroysinglepp/{id}', [ProgramController::class, 'destroysingleprogramprice'])->name('programs.destroysingleprogramprice');
 
     Route::resource('customer','App\Http\Controllers\CustomerController');
+    Route::patch('customer/{customer}/block', [CustomerController::class, 'block'])->name('customer.block');
+    Route::patch('customer/{customer}/unblock', [CustomerController::class, 'unblock'])->name('customer.unblock');
     Route::get('customershow/{id}', [CustomerController::class, 'showinfocustomer'])->name('customers.showinfocustomer');
 
     Route::resource('holiday','App\Http\Controllers\HolidayController');
@@ -104,6 +106,8 @@ Route::middleware([
 
     Route::get('period-check-conflict', [PeriodController::class, 'checkConflict'])->name('period.check-conflict');
     Route::get('period-renewals', [PeriodController::class, 'renewals'])->name('period.renewals');
+    Route::patch('period/{period}/cancel', [PeriodController::class, 'cancel'])->name('period.cancel');
+    Route::get('customer/{customer}/period-history', [PeriodController::class, 'customerHistory'])->name('period.customer-history');
     Route::resource('period','App\Http\Controllers\PeriodController');
 
     Route::get('deliveriesoftheday', [PeriodController::class, 'deliveriesoftheday'])->name('deliveriesoftheday');

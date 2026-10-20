@@ -54,11 +54,11 @@
                                                 <thead class="border-bottom">
                                                     <tr>
                                                         <th>CATEGORÍA</th>
-                                                        <th class="text-end">1 MENÚ</th>
-                                                        <th class="text-end">5 MENÚS</th>
-                                                        <th class="text-end">10 MENÚS</th>
-                                                        <th class="text-end">20 MENÚS</th>
-                                                        <th class="text-end">30 MENÚS</th>
+                                                        <th class="text-end">1 DÍA</th>
+                                                        <th class="text-end">5 DÍAS</th>
+                                                        <th class="text-end">10+1 DÍAS</th>
+                                                        <th class="text-end">20+2 DÍAS</th>
+                                                        <th class="text-end">30+5 DÍAS</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>

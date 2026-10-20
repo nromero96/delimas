@@ -69,16 +69,11 @@
                             <td>{{ $row->district }}</td>
                             <td>{{ $row->phone }}</td>
                             <td>{{ $row->email }}</td>
-                            <td><span class="badge rounded-pill {{$row->status == 'Activo' ? 'bg-success' : 'bg-danger'}}">{{ $row->status }}</span></td>
+                            <td><span class="badge rounded-pill {{ $row->status === 'Activo' ? 'bg-success' : ($row->status === 'Bloqueado' ? 'bg-dark' : 'bg-danger') }}">{{ $row->status }}</span></td>
                             <td>{{ $row->created_at }}</td>
                             <td>
                                 <div class="btnsaction">
-                                    <form action="{{ route('customer.destroy',$row->id)}}" method="POST" onsubmit="return confirmDelete()">
-                                        <a href="/customer/{{ $row->id }}/edit" class="btn p-0 text-primary" data-bs-toggle="tooltip" data-bs-placement="top" title="Editar"><i class="bi bi-pencil-square"></i></a> 
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="btn p-0 ms-2 text-danger" data-bs-toggle="tooltip" data-bs-placement="top" title="Ocultar cliente"><i class="bi bi-eye-slash-fill"></i></button>
-                                    </form>
+                                    <a href="{{ route('customer.edit', $row->id) }}" class="btn p-0 text-primary" data-bs-toggle="tooltip" data-bs-placement="top" title="Editar"><i class="bi bi-pencil-square"></i></a>
                                     
                                 </div>
                             </td>
@@ -99,19 +94,5 @@
     </div>
 
 </div>
-
-@endsection
-
-
-@section('customscripts')
-<script>
-
-    //If click Delete Customer confirmation 
-    confirmDelete = () => {
-        return confirm('¿Desea ocultar este cliente? Su información se conservará.');
-    }
-
-
-</script>
 
 @endsection

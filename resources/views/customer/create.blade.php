@@ -12,8 +12,8 @@
             @csrf
 
             <div class="col-md-6 mb-3">
-                <label class="form-label">Tipo Documento</label>
-                <select class="form-select @error('documenttype') is-invalid @enderror" name="documenttype" id="documenttype">
+                <label class="form-label">Tipo Documento <span class="text-danger">*</span></label>
+                <select class="form-select @error('documenttype') is-invalid @enderror" name="documenttype" id="documenttype" required>
                     <option selected disabled value="">Seleccione...</option>
                     <option value="DNI" {{ old('documenttype') === 'DNI' ? 'selected' : '' }}>DNI</option>
                     <option value="CARNET EXT." {{ old('documenttype') === 'CARNET EXT.' ? 'selected' : '' }}>CARNET EXT.</option>
@@ -23,8 +23,8 @@
             </div>
 
             <div class="col-md-6 mb-3">
-                <label class="form-label">N° Documento</label>
-                <input type="text" name="documentnumber" id="documentnumber" inputmode="numeric" pattern="\d{8}" maxlength="8" class="form-control @error('documentnumber') is-invalid @enderror" value="{{ old('documentnumber') }}" data-server-invalid="{{ $errors->has('documentnumber') ? '1' : '0' }}">
+                <label class="form-label">N° Documento <span class="text-danger">*</span></label>
+                <input type="text" name="documentnumber" id="documentnumber" inputmode="numeric" pattern="\d{8}" maxlength="8" class="form-control @error('documentnumber') is-invalid @enderror" value="{{ old('documentnumber') }}" data-server-invalid="{{ $errors->has('documentnumber') ? '1' : '0' }}" required>
                 <div class="invalid-feedback" id="documentnumber-feedback">
                     @error('documentnumber')
                         {{ $message }}
@@ -67,13 +67,13 @@
 
             <div class="col-md-6 mb-3">
                 <label class="form-label">Número de teléfono <span class="text-danger">*</span></label>
-                <input type="text" name="phone" id="phone" inputmode="numeric" pattern="\d{9}" minlength="9" maxlength="9" class="form-control @error('phone') is-invalid @enderror" value="{{ old('phone') }}" required>
+                <input type="tel" name="phone" id="phone" inputmode="tel" pattern="\+?[0-9]{7,19}" minlength="7" maxlength="20" class="form-control @error('phone') is-invalid @enderror" value="{{ old('phone') }}" placeholder="Ej. +51987654321" required>
                 @error('phone')<div class="invalid-feedback">{{ $message }}</div>@enderror
             </div>
 
             <div class="col-md-6 mb-3">
                 <label class="form-label">Número de teléfono Alternativo</label>
-                <input type="text" name="phone_two" id="phone_two" inputmode="numeric" pattern="\d{9}" minlength="9" maxlength="9" class="form-control @error('phone_two') is-invalid @enderror" value="{{ old('phone_two') }}">
+                <input type="tel" name="phone_two" id="phone_two" inputmode="tel" pattern="\+?[0-9]{7,19}" minlength="7" maxlength="20" class="form-control @error('phone_two') is-invalid @enderror" value="{{ old('phone_two') }}" placeholder="Ej. +51987654321">
                 @error('phone_two')<div class="invalid-feedback">{{ $message }}</div>@enderror
             </div>
 
@@ -135,25 +135,25 @@ document.addEventListener('DOMContentLoaded', function () {
             docNumber.minLength = 8;
             docNumber.pattern   = "\\d{8}";
         } else {
-            docNumber.maxLength = 12;
-            docNumber.minLength = 1;
-            docNumber.pattern   = "[A-Za-z0-9]{1,12}";
+            docNumber.maxLength = 20;
+            docNumber.minLength = 5;
+            docNumber.pattern   = "[A-Za-z0-9]{5,20}";
         }
         docNumber.inputMode = docType.value === 'DNI' ? 'numeric' : 'text';
         normalizarDocumento();
     }
 
     // 👉 Forzar solo dígitos y límite
-    function soloDigitosYLimite(el, limite) {
+    function normalizarTelefono(el) {
         el.addEventListener('input', function (e) {
-            const onlyDigits = e.target.value.replace(/\D/g, '').slice(0, limite);
-            if (e.target.value !== onlyDigits) e.target.value = onlyDigits;
-            validarCampo(el); // valida en vivo
+            const prefijo = e.target.value.trim().startsWith('+') ? '+' : '';
+            e.target.value = prefijo + e.target.value.replace(/\D/g, '').slice(0, prefijo ? 19 : 19);
+            validarCampo(el);
         });
     }
 
     function normalizarDocumento() {
-        const limite = docType.value === 'DNI' ? 8 : 12;
+        const limite = docType.value === 'DNI' ? 8 : 20;
         const permitido = docType.value === 'DNI' ? /\D/g : /[^A-Za-z0-9]/g;
         docNumber.value = docNumber.value.replace(permitido, '').slice(0, limite);
         validarCampo(docNumber);
@@ -180,8 +180,8 @@ document.addEventListener('DOMContentLoaded', function () {
         docNumber.dataset.serverInvalid = '0';
         normalizarDocumento();
     });
-    soloDigitosYLimite(phone, 9);
-    soloDigitosYLimite(phoneTwo, 9);
+    normalizarTelefono(phone);
+    normalizarTelefono(phoneTwo);
 
     [docNumber, phone, phoneTwo].forEach(input => {
         input.addEventListener('blur', () => validarCampo(input));

@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Customer;
 use App\Models\District;
+use App\Models\Period;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\DB;
 
 class CustomerController extends Controller
 {
@@ -74,7 +76,12 @@ class CustomerController extends Controller
         $districts = District::all();
 
         $customer = Customer::findOrFail($id);
-        return view('customer.edit')->with('customer',$customer)->with('districts',$districts);
+        $activePeriodsCount = Period::where('id_customer', $customer->id)
+            ->where('status', 'Activo')
+            ->whereDate('end_date', '>=', now()->toDateString())
+            ->count();
+
+        return view('customer.edit', compact('customer', 'districts', 'activePeriodsCount'));
     }
 
     /**
@@ -100,6 +107,37 @@ class CustomerController extends Controller
         return redirect('/customer')->with('success', 'Cliente ocultado correctamente.');
     }
 
+    public function block(Request $request, Customer $customer)
+    {
+        $validated = $request->validate([
+            'period_action' => ['required', Rule::in(['keep', 'suspend'])],
+        ]);
+
+        DB::transaction(function () use ($customer, $validated) {
+            $customer->update(['status' => 'Bloqueado']);
+
+            if ($validated['period_action'] === 'suspend') {
+                Period::where('id_customer', $customer->id)
+                    ->where('status', 'Activo')
+                    ->whereDate('end_date', '>=', now()->toDateString())
+                    ->update(['status' => 'Suspendido']);
+            }
+        });
+
+        $message = $validated['period_action'] === 'suspend'
+            ? 'Cliente bloqueado y períodos vigentes suspendidos.'
+            : 'Cliente bloqueado. Sus períodos vigentes se mantuvieron activos.';
+
+        return redirect()->route('customer.index')->with('success', $message);
+    }
+
+    public function unblock(Customer $customer)
+    {
+        $customer->update(['status' => 'Activo']);
+
+        return redirect()->route('customer.edit', $customer)->with('success', 'Cliente desbloqueado correctamente.');
+    }
+
 
     /* View information customer by id format JSON */
     public function showinfocustomer($id)
@@ -116,22 +154,24 @@ class CustomerController extends Controller
         }
 
         $documentNumberRule = $request->input('documenttype') === 'DNI'
-            ? ['nullable', 'required_with:documenttype', 'regex:/^\d{8}$/', $uniqueDocumentNumber]
-            : ['nullable', 'required_with:documenttype', 'regex:/^[A-Za-z0-9]{1,12}$/', $uniqueDocumentNumber];
+            ? ['required', 'regex:/^\d{8}$/', $uniqueDocumentNumber]
+            : ['required', 'regex:/^[A-Za-z0-9]{5,20}$/', $uniqueDocumentNumber];
 
         $validated = $request->validate([
-            'documenttype' => ['nullable', 'required_with:documentnumber', Rule::in(['DNI', 'CARNET EXT.', 'OTROS'])],
+            'documenttype' => ['required', Rule::in(['DNI', 'CARNET EXT.', 'OTROS'])],
             'documentnumber' => $documentNumberRule,
             'name' => ['required', 'string', 'max:255'],
             'address' => ['required', 'string', 'max:255'],
             'district' => ['required', 'string', 'max:50', Rule::exists('districts', 'name')],
             'address_reference' => ['nullable', 'string', 'max:255'],
-            'phone' => ['required', 'regex:/^\d{9}$/'],
-            'phone_two' => ['nullable', 'regex:/^\d{9}$/'],
+            'phone' => ['required', 'regex:/^\+?[0-9]{7,19}$/'],
+            'phone_two' => ['nullable', 'regex:/^\+?[0-9]{7,19}$/'],
             'email' => ['nullable', 'email', 'max:192'],
             'restriction' => ['nullable', 'string', 'max:2000'],
             'recommendation' => ['nullable', 'string', 'max:2000'],
-            'status' => ['required', Rule::in(['Activo', 'Inactivo', 'Suspendido'])],
+            'status' => ['required', Rule::in($customer && $customer->status === 'Bloqueado'
+                ? ['Bloqueado']
+                : ['Activo', 'Inactivo', 'Suspendido'])],
         ], [
             'documentnumber.unique' => 'El número de documento ya está registrado para otro cliente.',
         ]);
